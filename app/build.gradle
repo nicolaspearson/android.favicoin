@@ -1,0 +1,239 @@
+apply plugin: 'com.android.application'
+apply plugin: 'io.fabric'
+apply plugin: 'realm-android'
+
+repositories {
+    maven { url 'https://maven.fabric.io/public' }
+}
+
+android {
+    compileSdkVersion 27
+    buildToolsVersion '27.0.3'
+
+    defaultConfig {
+        applicationId "com.lupinemoon.favicoin"
+
+        minSdkVersion 16
+        targetSdkVersion 27
+
+        versionCode 1
+        versionName "1.0.0" // Semantic Versioning http://semver.org/
+
+        vectorDrawables.useSupportLibrary = true
+
+        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+
+        buildConfigField("String", "HTTP_API_ENDPOINT", "\"https://staging.favicoin.lupinemoon.com/api/v1/\"")
+        buildConfigField("String", "HTTP_IMAGE_URL_ENDPOINT", "\"https://staging.favicoin.lupinemoon.com/\"")
+
+        buildConfigField("String", "FLAVOR_STORAGE", "\"base_storage\"")
+
+        buildConfigField("Integer", "HTTP_TIMEOUT", "40")
+        buildConfigField("Integer", "STORAGE_MEM_CACHE_SIZE", "100")
+
+        buildConfigField("Boolean", "SPLASH_ANIMATION_ENABLED", "true")
+        buildConfigField("Boolean", "STAGING", "false")
+
+        buildConfigField("Boolean", "LOCAL_REPO_COMBINE_SOURCES", "false")
+        buildConfigField("Boolean", "LOCAL_REPO_OFFLINE_FIRST", "false")
+        buildConfigField("Integer", "LOCAL_REPO_SOURCE_DELAY", "300")
+
+        resValue("integer", "username_min_length", "10")
+        resValue("integer", "password_min_length", "6")
+    }
+
+    signingConfigs {
+        debug {
+            Properties properties = new Properties()
+            File propertiesFile = new File('keys/debug.properties')
+            propertiesFile.withInputStream {
+                properties.load(it)
+            }
+
+            storeFile rootProject.file('keys/debug.jks')
+            keyAlias properties.getProperty("keyAlias")
+            keyPassword properties.getProperty("keyPassword")
+            storePassword properties.getProperty("storePassword")
+        }
+    }
+
+    productFlavors {
+        favicoin {
+            minSdkVersion 16
+            applicationId "com.lupinemoon.favicoin"
+        }
+    }
+
+    def distributionGroup = 'testers'
+
+    buildTypes {
+        debug {
+            applicationIdSuffix '.debug'
+            minifyEnabled true
+            shrinkResources true
+            useProguard true
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+
+            signingConfig signingConfigs.debug
+
+            ext.betaDistributionGroupAliases = "$distributionGroup"
+            ext.betaDistributionReleaseNotes = "Release Notes: ${defaultConfig.versionName} v${defaultConfig.versionCode}"
+
+        }
+
+        staging {
+            applicationIdSuffix '.staging'
+            minifyEnabled true
+            shrinkResources true
+            useProguard true
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+
+            signingConfig signingConfigs.debug
+
+            ext.betaDistributionGroupAliases = "$distributionGroup"
+            ext.betaDistributionReleaseNotes = "Release Notes: ${defaultConfig.versionName} v${defaultConfig.versionCode}"
+
+        }
+
+        release {
+            productFlavors.favicoin.signingConfig signingConfigs.debug
+            minifyEnabled true
+            shrinkResources true
+            useProguard true
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+
+            ext.betaDistributionGroupAliases = "$distributionGroup"
+            ext.betaDistributionReleaseNotes = "Release Notes: ${defaultConfig.versionName} v${defaultConfig.versionCode}"
+
+        }
+    }
+
+    applicationVariants.all { variant ->
+        variant.outputs.all {
+            outputFileName = "${variant.applicationId}-${variant.versionName}-${variant.versionCode}.apk"
+        }
+    }
+
+    // Tasks are created in gradle projects tab in Android Studio. Run the send task to perform the clean, build and upload.
+    def localGradleProjectsGroup = "CrashlyticsDistribution"
+
+    // Get names of release build types and all product flavors
+    def buildTypes = android.buildTypes.collect { type -> type.name }
+    def productFlavors = android.productFlavors.collect { flavor -> flavor.name }
+
+    flavorDimensions "default"
+
+    productFlavors.each { productFlavorName ->
+        buildTypes.each { buildTypeName ->
+            // Create variant and target names
+            def flavorNameCapitalized = "${productFlavorName.capitalize()}"
+            def buildNameCapitalized = "${buildTypeName.capitalize()}"
+            def targetName = "${flavorNameCapitalized}${buildNameCapitalized}"
+
+            // Create task to clean, then assemble a release variant
+            def cleanAndBuildName = "cleanAndAssemble${targetName}"
+            def cleanAndBuildTask = tasks.create(name: cleanAndBuildName) {
+                group = localGradleProjectsGroup
+                description = "cleans and assembles ${targetName}"
+            }
+            cleanAndBuildTask.dependsOn("clean")
+            cleanAndBuildTask.finalizedBy("assemble${targetName}")
+
+            // Create a task to send release variant to Crashlytics
+            def sendToCrashName = "send${targetName}ToCrashlytics"
+            def sendToCrash = tasks.create(name: sendToCrashName) {
+                group = localGradleProjectsGroup
+                description = "sends ${targetName} to crashlytics"
+            }
+            sendToCrash.dependsOn(cleanAndBuildTask)
+            sendToCrash.finalizedBy("crashlyticsUploadDistribution${targetName}")
+        }
+    }
+
+    dataBinding {
+        enabled = true
+    }
+
+    packagingOptions {
+        exclude 'META-INF/rxjava.properties'
+    }
+}
+
+ext {
+    caligraphyVersion = '2.3.0'
+    fabricVersion = '2.9.1'
+    glideVersion = '4.6.1'
+    glideModuleVersion = '4.6.1'
+    leakCanaryVersion = '1.5.4'
+    lombokVersion = '1.16.20'
+    okHttpLoggingInterceptorVersion = '3.10.0'
+    parcelerVersion = '1.1.10'
+    playServicesVersion = '12.0.1'
+    retrofitVersion = '2.4.0'
+    rxAndroidVersion = '2.0.2'
+    rxJavaVersion = '2.1.12'
+    rxJavaRetrofitAdapterVersion = '2.4.0'
+    rxJavaExtrasVersion = '0.1.10'
+    supportLibVersion = '27.1.0'
+    timberVersion = '4.7.0'
+}
+
+dependencies {
+    // Android Support Libs
+    implementation "com.android.support:appcompat-v7:${supportLibVersion}"
+    implementation "com.android.support:design:${supportLibVersion}"
+    implementation "com.android.support:cardview-v7:${supportLibVersion}"
+    implementation "com.android.support:recyclerview-v7:${supportLibVersion}"
+    implementation "com.android.support:support-vector-drawable:${supportLibVersion}"
+    implementation "com.android.support:animated-vector-drawable:${supportLibVersion}"
+
+    // Play Services
+    implementation "com.google.android.gms:play-services-gcm:${playServicesVersion}"
+
+    // Answers + Crashlytics
+    implementation("com.crashlytics.sdk.android:crashlytics:${fabricVersion}@aar") {
+        transitive = true
+    }
+
+    // Font
+    implementation "uk.co.chrisjenx:calligraphy:${caligraphyVersion}"
+
+    // Image Libs
+    implementation "com.github.bumptech.glide:glide:${glideVersion}"
+    implementation "com.github.bumptech.glide:okhttp3-integration:${glideModuleVersion}@aar"
+
+    // Logging
+    implementation "com.jakewharton.timber:timber:${timberVersion}"
+
+    // Lombok
+    compileOnly "org.projectlombok:lombok:${lombokVersion}"
+    annotationProcessor "org.projectlombok:lombok:${lombokVersion}"
+
+    // Leak Canary
+    debugImplementation "com.squareup.leakcanary:leakcanary-android:${leakCanaryVersion}"
+    stagingImplementation "com.squareup.leakcanary:leakcanary-android-no-op:${leakCanaryVersion}"
+    releaseImplementation "com.squareup.leakcanary:leakcanary-android-no-op:${leakCanaryVersion}"
+    testImplementation "com.squareup.leakcanary:leakcanary-android-no-op:${leakCanaryVersion}"
+
+    // Network
+    implementation "com.squareup.retrofit2:retrofit:${retrofitVersion}"
+    implementation "com.squareup.retrofit2:converter-gson:${retrofitVersion}"
+    implementation "com.squareup.okhttp3:logging-interceptor:${okHttpLoggingInterceptorVersion}"
+
+    // Parceler
+    implementation "org.parceler:parceler-api:${parcelerVersion}"
+    annotationProcessor "org.parceler:parceler:${parcelerVersion}"
+
+    // RX Java
+    implementation "io.reactivex.rxjava2:rxjava:${rxJavaVersion}"
+    implementation "io.reactivex.rxjava2:rxandroid:${rxAndroidVersion}"
+    implementation "com.squareup.retrofit2:adapter-rxjava2:${rxJavaRetrofitAdapterVersion}"
+    implementation "com.github.davidmoten:rxjava2-extras:${rxJavaExtrasVersion}"
+
+    androidTestImplementation('com.android.support.test.espresso:espresso-core:2.2.2', {
+        exclude group: 'com.android.support', module: 'support-annotations'
+    })
+
+    testImplementation 'junit:junit:4.12'
+}
+
