@@ -1,5 +1,7 @@
 package com.lupinemoon.favicoin.data.models;
 
+import android.support.annotation.NonNull;
+
 import com.lupinemoon.favicoin.presentation.utils.StringUtils;
 
 import io.realm.RealmObject;
@@ -48,7 +50,7 @@ public class NetworkRequest extends RealmObject {
         setNetworkRequestBody(new NetworkRequestBody(getPrimaryKey(), requestBody));
     }
 
-    public String getMethod() {
+    public @NonNull String getMethod() {
         return method;
     }
 

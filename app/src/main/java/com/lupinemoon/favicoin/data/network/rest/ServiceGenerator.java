@@ -2,6 +2,7 @@ package com.lupinemoon.favicoin.data.network.rest;
 
 import android.content.Context;
 import android.os.Build;
+import android.support.annotation.NonNull;
 import android.text.TextUtils;
 
 import com.google.gson.Gson;
@@ -109,7 +110,7 @@ public class ServiceGenerator {
         clientBuilder.addInterceptor(new Interceptor() {
 
             @Override
-            public Response intercept(Chain chain) throws IOException {
+            public Response intercept(@NonNull Chain chain) throws IOException {
 
                 Request origRequest = chain.request();
                 Request.Builder builder = origRequest.newBuilder().addHeader("platform", "android")

@@ -6,12 +6,11 @@ import com.google.gson.annotations.SerializedName;
 
 import org.parceler.Parcel;
 
+import io.realm.KeyValueRealmProxy;
 import io.realm.RealmObject;
 import io.realm.annotations.Index;
 import io.realm.annotations.PrimaryKey;
 import lombok.ToString;
-
-import io.realm.KeyValueRealmProxy;
 
 @ToString
 @Parcel(implementations = { KeyValueRealmProxy.class },

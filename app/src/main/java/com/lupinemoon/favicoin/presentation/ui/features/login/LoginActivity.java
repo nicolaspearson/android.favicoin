@@ -12,7 +12,6 @@ import com.lupinemoon.favicoin.databinding.ActivityLoginBinding;
 import com.lupinemoon.favicoin.presentation.ui.base.BaseVMPActivity;
 import com.lupinemoon.favicoin.presentation.ui.base.BaseViewModel;
 import com.lupinemoon.favicoin.presentation.utils.ActivityUtils;
-import com.lupinemoon.favicoin.presentation.utils.AnimationUtils;
 
 import timber.log.Timber;
 

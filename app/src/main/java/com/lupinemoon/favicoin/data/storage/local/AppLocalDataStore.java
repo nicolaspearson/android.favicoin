@@ -1,15 +1,21 @@
 package com.lupinemoon.favicoin.data.storage.local;
 
 import android.content.Context;
+import android.support.annotation.NonNull;
 
 import com.lupinemoon.favicoin.BuildConfig;
 import com.lupinemoon.favicoin.data.models.AuthToken;
+import com.lupinemoon.favicoin.data.models.CoinItem;
+import com.lupinemoon.favicoin.data.models.Coins;
 import com.lupinemoon.favicoin.data.models.KeyValue;
 import com.lupinemoon.favicoin.data.models.NetworkHeader;
 import com.lupinemoon.favicoin.data.models.NetworkMediaType;
 import com.lupinemoon.favicoin.data.models.NetworkRequest;
 import com.lupinemoon.favicoin.data.models.NetworkRequestBody;
 import com.lupinemoon.favicoin.data.storage.interfaces.AppDataStore;
+import com.lupinemoon.favicoin.presentation.services.rxbus.RxBus;
+import com.lupinemoon.favicoin.presentation.services.rxbus.events.UpdatedCoinsEvent;
+import com.lupinemoon.favicoin.presentation.utils.Constants;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -21,6 +27,7 @@ import io.reactivex.Completable;
 import io.reactivex.Flowable;
 import io.realm.Realm;
 import io.realm.RealmConfiguration;
+import io.realm.RealmList;
 import io.realm.RealmResults;
 import timber.log.Timber;
 
@@ -122,7 +129,7 @@ public class AppLocalDataStore implements AppDataStore {
         try {
             iRealm.executeTransaction(new Realm.Transaction() {
                 @Override
-                public void execute(Realm realm) {
+                public void execute(@NonNull Realm realm) {
                     realm.copyToRealmOrUpdate(keyValue);
                 }
             });
@@ -144,7 +151,7 @@ public class AppLocalDataStore implements AppDataStore {
             if (result != null) {
                 iRealm.executeTransaction(new Realm.Transaction() {
                     @Override
-                    public void execute(Realm realm) {
+                    public void execute(@NonNull Realm realm) {
                         result.deleteAllFromRealm();
                     }
                 });
@@ -199,7 +206,7 @@ public class AppLocalDataStore implements AppDataStore {
         try{
             iRealm.executeTransaction(new Realm.Transaction(){
                 @Override
-                public void execute(Realm realm) {
+                public void execute(@NonNull Realm realm) {
                     realm.copyToRealmOrUpdate(networkRequest);
                 }
             });
@@ -221,7 +228,7 @@ public class AppLocalDataStore implements AppDataStore {
             if (result != null) {
                 iRealm.executeTransaction(new Realm.Transaction() {
                     @Override
-                    public void execute(Realm realm) {
+                    public void execute(@NonNull Realm realm) {
                         result.deleteAllFromRealm();
                     }
                 });
@@ -240,7 +247,7 @@ public class AppLocalDataStore implements AppDataStore {
             if (result != null) {
                 iRealm.executeTransaction(new Realm.Transaction() {
                     @Override
-                    public void execute(Realm realm) {
+                    public void execute(@NonNull Realm realm) {
                         result.deleteAllFromRealm();
                     }
                 });
@@ -263,7 +270,7 @@ public class AppLocalDataStore implements AppDataStore {
             if (result != null) {
                 iRealm.executeTransaction(new Realm.Transaction() {
                     @Override
-                    public void execute(Realm realm) {
+                    public void execute(@NonNull Realm realm) {
                         result.deleteAllFromRealm();
                     }
                 });
@@ -282,7 +289,7 @@ public class AppLocalDataStore implements AppDataStore {
             if (result != null) {
                 iRealm.executeTransaction(new Realm.Transaction() {
                     @Override
-                    public void execute(Realm realm) {
+                    public void execute(@NonNull Realm realm) {
                         result.deleteAllFromRealm();
                     }
                 });
@@ -305,7 +312,7 @@ public class AppLocalDataStore implements AppDataStore {
             if (result != null) {
                 iRealm.executeTransaction(new Realm.Transaction() {
                     @Override
-                    public void execute(Realm realm) {
+                    public void execute(@NonNull Realm realm) {
                         result.deleteAllFromRealm();
                     }
                 });
@@ -327,7 +334,7 @@ public class AppLocalDataStore implements AppDataStore {
             if (result != null) {
                 iRealm.executeTransaction(new Realm.Transaction() {
                     @Override
-                    public void execute(Realm realm) {
+                    public void execute(@NonNull Realm realm) {
                         result.deleteAllFromRealm();
                     }
                 });
@@ -350,7 +357,7 @@ public class AppLocalDataStore implements AppDataStore {
             if (result != null) {
                 iRealm.executeTransaction(new Realm.Transaction() {
                     @Override
-                    public void execute(Realm realm) {
+                    public void execute(@NonNull Realm realm) {
                         result.deleteAllFromRealm();
                     }
                 });
@@ -369,7 +376,7 @@ public class AppLocalDataStore implements AppDataStore {
             if (result != null) {
                 iRealm.executeTransaction(new Realm.Transaction() {
                     @Override
-                    public void execute(Realm realm) {
+                    public void execute(@NonNull Realm realm) {
                         result.deleteAllFromRealm();
                     }
                 });
@@ -380,4 +387,99 @@ public class AppLocalDataStore implements AppDataStore {
             closeRealm(iRealm);
         }
     }
+
+    // region Coins API
+    @Override
+    public Flowable<Coins> getCoins(Context context, int limit) {
+        Realm iRealm = getRealm();
+        Coins coins = new Coins();
+        coins.setSource(Constants.SOURCE_REALM);
+        RealmList<CoinItem> coinItems = new RealmList<>();
+        try {
+            RealmResults<CoinItem> result = iRealm.where(CoinItem.class).findAll();
+            if (result != null) {
+                // Get detached object from realm
+                Collection<CoinItem> detachedCoinItems = iRealm.copyFromRealm(result);
+                Timber.d("getCoins: %s", detachedCoinItems);
+                coinItems.addAll(detachedCoinItems);
+            }
+        } catch (Exception e) {
+            Timber.e(e);
+        } finally {
+            closeRealm(iRealm);
+        }
+        coins.setCoinItems(coinItems);
+        return Flowable.just(coins);
+    }
+
+    private void refreshCoins() {
+        Realm iRealm = getRealm();
+        Coins coins = new Coins();
+        coins.setSource(Constants.SOURCE_REALM);
+        RealmList<CoinItem> coinItems = new RealmList<>();
+        try {
+            RealmResults<CoinItem> result = iRealm.where(CoinItem.class).findAll();
+            if (result != null) {
+                // Get detached object from realm
+                Collection<CoinItem> detachedCoinItems = iRealm.copyFromRealm(result);
+                Timber.d("getCoins: %s", detachedCoinItems);
+                coinItems.addAll(detachedCoinItems);
+            }
+        } catch (Exception e) {
+            Timber.e(e);
+        } finally {
+            closeRealm(iRealm);
+        }
+        coins.setCoinItems(coinItems);
+        RxBus.getDefault().post(new UpdatedCoinsEvent(coins));
+    }
+
+    public void saveCoins(final List<CoinItem> coinItems) {
+        Realm iRealm = getRealm();
+        Timber.d("saveCoins: %s", coinItems);
+        clearCoins();
+        try {
+            iRealm.executeTransaction(new Realm.Transaction() {
+                @Override
+                public void execute(@NonNull Realm realm) {
+                    realm.copyToRealmOrUpdate(coinItems);
+                }
+            });
+        } catch (Exception e) {
+            Timber.e(e);
+        } finally {
+            closeRealm(iRealm);
+        }
+
+        Coins coins = new Coins();
+        coins.setSource(Constants.SOURCE_REALM);
+        RealmList<CoinItem> updatedCoinItems = new RealmList<>();
+        updatedCoinItems.addAll(coinItems);
+        coins.setCoinItems(updatedCoinItems);
+        RxBus.getDefault().post(new UpdatedCoinsEvent(coins));
+    }
+
+    private void clearCoins() {
+        Realm iRealm = getRealm();
+        Timber.d("clearCoins");
+        try {
+            iRealm.executeTransaction(new Realm.Transaction() {
+                @Override
+                public void execute(@NonNull Realm realm) {
+                    realm.delete(CoinItem.class);
+                }
+            });
+            iRealm.executeTransaction(new Realm.Transaction() {
+                @Override
+                public void execute(@NonNull Realm realm) {
+
+                }
+            });
+        } catch (Exception e) {
+            Timber.e(e);
+        } finally {
+            closeRealm(iRealm);
+        }
+    }
+    //endregion
 }

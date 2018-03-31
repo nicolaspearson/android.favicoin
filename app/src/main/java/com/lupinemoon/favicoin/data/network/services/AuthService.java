@@ -6,7 +6,6 @@ import com.lupinemoon.favicoin.MainApplication;
 import com.lupinemoon.favicoin.data.models.AuthToken;
 import com.lupinemoon.favicoin.data.network.interfaces.AuthApi;
 import com.lupinemoon.favicoin.data.network.rest.ServiceGenerator;
-import com.lupinemoon.favicoin.data.storage.AppRepository;
 import com.lupinemoon.favicoin.presentation.utils.Constants;
 import com.lupinemoon.favicoin.presentation.utils.DateTimeUtils;
 
@@ -19,15 +18,13 @@ public class AuthService {
 
     private AuthApi authApi;
 
-    private AppRepository appRepository;
-
-    private AuthService(AppRepository appRepository) {
-        this.appRepository = appRepository;
+    private AuthService() {
+        // Empty Constructor
     }
 
-    public static synchronized AuthService getInstance(AppRepository appRepository) {
+    public static synchronized AuthService getInstance() {
         if (authService == null) {
-            authService = new AuthService(appRepository);
+            authService = new AuthService();
         }
         return authService;
     }

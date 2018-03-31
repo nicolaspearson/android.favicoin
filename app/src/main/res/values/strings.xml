@@ -102,4 +102,6 @@
     <string name="saving_cancelled">Saving cancelled</string>
     <string name="saving_did_not_complete">Upload failed</string>
 
+    <!-- Home -->
+    <string name="title_coins_failed">Fetching Coins Failed</string>
 </resources>

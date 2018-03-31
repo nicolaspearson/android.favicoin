@@ -29,7 +29,7 @@ public abstract class BaseVMPFragment<VM extends IBaseViewModel, P extends IBase
     }
 
     @Nullable
-    public abstract P createPresenter(@NonNull Bundle args);
+    public abstract P createPresenter(@Nullable Bundle args);
 
     public P getPresenter() {
         return presenter;
@@ -57,7 +57,7 @@ public abstract class BaseVMPFragment<VM extends IBaseViewModel, P extends IBase
     }
 
     @Override
-    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
         Timber.d("onViewCreated: %s", getFragmentTag());
@@ -140,7 +140,10 @@ public abstract class BaseVMPFragment<VM extends IBaseViewModel, P extends IBase
     }
 
     @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+    public void onRequestPermissionsResult(
+            int requestCode,
+            @NonNull String[] permissions,
+            @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         if (getPresenter() != null) {
             getPresenter().requestPermissionsResult(requestCode, permissions, grantResults);

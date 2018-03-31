@@ -29,4 +29,7 @@ public class Constants {
 
     public static final int DEFAULT_SELECTOR_DELAY = 150;
 
+    // REALM
+    public static final String SOURCE_REALM = "source_realm";
+
 }

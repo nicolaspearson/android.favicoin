@@ -4,18 +4,20 @@ import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.v4.app.Fragment;
 import android.support.v7.app.AppCompatActivity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
 import com.lupinemoon.favicoin.R;
+import com.lupinemoon.favicoin.data.models.CoinItem;
 import com.lupinemoon.favicoin.databinding.FragmentHomeBinding;
 import com.lupinemoon.favicoin.presentation.ui.base.BaseVMPFragment;
 import com.lupinemoon.favicoin.presentation.ui.base.BaseViewModel;
 import com.lupinemoon.favicoin.presentation.widgets.OnBackPressedListener;
 import com.lupinemoon.favicoin.presentation.widgets.interfaces.GenericCallback;
+
+import java.util.List;
 
 public class HomeFragment extends BaseVMPFragment<HomeContract.ViewModel, HomeContract.Presenter, FragmentHomeBinding> implements HomeContract.View {
 
@@ -90,11 +92,6 @@ public class HomeFragment extends BaseVMPFragment<HomeContract.ViewModel, HomeCo
     }
 
     @Override
-    public Fragment getFragment() {
-        return this;
-    }
-
-    @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setRetainInstance(true);
@@ -145,5 +142,20 @@ public class HomeFragment extends BaseVMPFragment<HomeContract.ViewModel, HomeCo
     private void toggleNoNetworkView(boolean hide) {
         View noNetworkView = getBinding().noNetworkLayout.getRoot();
         noNetworkView.setVisibility(hide ? View.GONE : View.VISIBLE);
+    }
+
+    @Override
+    public List<CoinItem> getCoinItems() {
+        return null;
+    }
+
+    @Override
+    public void setCoinItems(List<CoinItem> coinItems) {
+
+    }
+
+    @Override
+    public void addCoinItems(List<CoinItem> coinItems) {
+
     }
 }

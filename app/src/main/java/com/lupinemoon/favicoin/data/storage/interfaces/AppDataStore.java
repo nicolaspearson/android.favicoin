@@ -3,6 +3,7 @@ package com.lupinemoon.favicoin.data.storage.interfaces;
 import android.content.Context;
 
 import com.lupinemoon.favicoin.data.models.AuthToken;
+import com.lupinemoon.favicoin.data.models.Coins;
 import com.lupinemoon.favicoin.data.models.KeyValue;
 
 import io.reactivex.Completable;
@@ -17,4 +18,7 @@ public interface AppDataStore {
 
     // Auth API
     Flowable<AuthToken> doLogin(Context context, String msisdn, String password, String websiteId);
+
+    // Coin API
+    Flowable<Coins> getCoins(final Context context, int limit);
 }

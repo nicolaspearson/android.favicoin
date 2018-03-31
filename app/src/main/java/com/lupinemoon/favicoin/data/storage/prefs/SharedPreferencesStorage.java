@@ -343,6 +343,7 @@ public class SharedPreferencesStorage implements Storage {
 
     }
 
-    public static class CacheMissException extends Exception {
+    private static class CacheMissException extends Exception {
+        // Record an exception if the cached item could not be found
     }
 }

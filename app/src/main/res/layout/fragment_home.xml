@@ -20,14 +20,24 @@
             android:layout_height="match_parent"
             android:background="@color/grey_ee">
 
-            <TextView
-                style="@style/TextBold.Field.Large"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_centerInParent="true"
-                android:text="@string/home"
-                android:textAllCaps="true"
-                android:textColor="@color/grey_3e"/>
+            <android.support.v4.widget.SwipeRefreshLayout
+                android:id="@+id/home_swipe_refresh_layout"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_below="@+id/offline_banner_layout"
+                android:visibility="gone">
+
+                <android.support.v7.widget.RecyclerView
+                    android:id="@+id/home_recycler_view"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"/>
+
+            </android.support.v4.widget.SwipeRefreshLayout>
+
+            <include
+                android:id="@+id/offline_banner_layout"
+                layout="@layout/offline_banner"
+                android:visibility="gone"/>
 
         </RelativeLayout>
 
@@ -42,11 +52,6 @@
         <include
             android:id="@+id/no_network_layout"
             layout="@layout/fragment_no_network"
-            android:visibility="gone"/>
-
-        <include
-            android:id="@+id/offline_banner_layout"
-            layout="@layout/offline_banner"
             android:visibility="gone"/>
 
     </FrameLayout>

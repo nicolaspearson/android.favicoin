@@ -23,8 +23,8 @@ android {
 
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
 
-        buildConfigField("String", "HTTP_API_ENDPOINT", "\"https://staging.favicoin.lupinemoon.com/api/v1/\"")
-        buildConfigField("String", "HTTP_IMAGE_URL_ENDPOINT", "\"https://staging.favicoin.lupinemoon.com/\"")
+        buildConfigField("String", "HTTP_API_ENDPOINT", "\"https://api.coinmarketcap.com/v1/\"")
+        buildConfigField("String", "HTTP_IMAGE_URL_ENDPOINT", "\"https://api.coinmarketcap.com/v1/\"")
 
         buildConfigField("String", "FLAVOR_STORAGE", "\"base_storage\"")
 
