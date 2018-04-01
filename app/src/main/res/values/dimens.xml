@@ -55,4 +55,13 @@
     <dimen name="button_rounding_width_s">2dp</dimen>
     <dimen name="button_rounding_width_m">4dp</dimen>
 
+    <dimen name="coin_list_item_height">100dp</dimen>
+
+    <!-- Custom defined text size for headings -->
+    <dimen name="text.size.list_item_name">16dp</dimen>
+
+    <dimen name="text_view_max_width">144dp</dimen>
+
+    <dimen name="list_item_avatar_height">80dp</dimen>
+
 </resources>

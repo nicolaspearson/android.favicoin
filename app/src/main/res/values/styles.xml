@@ -312,6 +312,10 @@
         <item name="android:textSize">@dimen/text.size.l</item>
     </style>
 
+    <style name="TextRegular.Field.ListItemName">
+        <item name="android:textSize">@dimen/text.size.list_item_name</item>
+    </style>
+
     <style name="TextRegular.InputText">
         <item name="android:textSize">@dimen/text.size.m</item>
         <item name="android:textColor">@color/text_primary</item>

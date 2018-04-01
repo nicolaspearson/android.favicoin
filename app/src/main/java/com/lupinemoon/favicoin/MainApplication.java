@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.StrictMode;
+import android.support.annotation.NonNull;
 import android.text.TextUtils;
 import android.util.Log;
 
@@ -12,9 +13,11 @@ import com.crashlytics.android.Crashlytics;
 import com.crashlytics.android.core.CrashlyticsCore;
 import com.lupinemoon.favicoin.data.analytics.AnalyticsService;
 import com.lupinemoon.favicoin.data.storage.AppRepository;
+import com.lupinemoon.favicoin.data.storage.interfaces.BitmapCache;
 import com.lupinemoon.favicoin.data.storage.interfaces.Storage;
 import com.lupinemoon.favicoin.data.storage.local.AppLocalDataStore;
 import com.lupinemoon.favicoin.data.storage.prefs.SharedPreferencesStorage;
+import com.lupinemoon.favicoin.data.storage.prefs.TransitionBitmapCache;
 import com.lupinemoon.favicoin.presentation.utils.Constants;
 import com.lupinemoon.favicoin.presentation.widgets.AppLifecycleHandler;
 import com.squareup.leakcanary.LeakCanary;
@@ -27,6 +30,8 @@ import uk.co.chrisjenx.calligraphy.CalligraphyConfig;
 public class MainApplication extends Application {
 
     private static Storage storage;
+
+    private static BitmapCache bitmapCache;
 
     private static boolean loggedIn = false;
 
@@ -84,6 +89,13 @@ public class MainApplication extends Application {
             storage = new SharedPreferencesStorage(context);
         }
         return storage;
+    }
+
+    public static BitmapCache getBitmapCache() {
+        if (bitmapCache == null) {
+            bitmapCache = new TransitionBitmapCache(storage);
+        }
+        return bitmapCache;
     }
 
     public static boolean isLoggedIn() {
@@ -206,7 +218,7 @@ public class MainApplication extends Application {
 
     private class CrashlyticsLogTree extends Timber.DebugTree {
         @Override
-        protected void log(int priority, String tag, String message, Throwable throwable) {
+        protected void log(int priority, String tag, @NonNull String message, Throwable throwable) {
             if (priority == Log.VERBOSE || priority == Log.DEBUG || priority == Log.INFO || priority == Log.WARN) {
                 return;
             }

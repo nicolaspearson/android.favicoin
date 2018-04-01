@@ -104,4 +104,11 @@
 
     <!-- Home -->
     <string name="title_coins_failed">Fetching Coins Failed</string>
+
+    <!-- Coin Detail -->
+    <string name="title_coin_detail">Coin Detail</string>
+
+    <!-- Shared Element Transition -->
+    <string name="shared_image" translatable="false">sharedImage</string>
+
 </resources>

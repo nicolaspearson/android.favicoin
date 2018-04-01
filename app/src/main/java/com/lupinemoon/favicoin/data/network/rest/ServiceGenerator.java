@@ -97,9 +97,6 @@ public class ServiceGenerator {
         clientBuilder = clientBuilder.connectTimeout(BuildConfig.HTTP_TIMEOUT, SECONDS)
                 .readTimeout(BuildConfig.HTTP_TIMEOUT, SECONDS).writeTimeout(BuildConfig.HTTP_TIMEOUT, SECONDS);
 
-        // This allows us to monitor uploads in 16 kb chunks
-        clientBuilder.socketFactory(new RestrictedSocketFactory(16 * 1024));
-
         long DISK_CACHE_SIZE = 1024 * 1024 * 50; // 50 mb
 
         // Install the HTTP cache in the application cache directory

@@ -7,7 +7,7 @@ import io.reactivex.subjects.ReplaySubject;
 import io.reactivex.subjects.Subject;
 
 public class RxBus<T> {
-    
+
     private final Subject<T> subject;
 
     private static RxBus<Object> rxBusDefault;
@@ -70,6 +70,7 @@ public class RxBus<T> {
     private static <T> RxBus<T> createEmitLatest() {
         return new RxBus<>(BehaviorSubject.<T>create());
     }
+
     /**
      * ReplaySubject emits to any observer all of the items that were emitted by the
      * source Observable(s), regardless of when the observer subscribes.

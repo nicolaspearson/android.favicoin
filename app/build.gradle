@@ -38,6 +38,10 @@ android {
         buildConfigField("Boolean", "LOCAL_REPO_OFFLINE_FIRST", "false")
         buildConfigField("Integer", "LOCAL_REPO_SOURCE_DELAY", "300")
 
+        // The API does not provide a nice way to perform pagination
+        buildConfigField("Integer", "MAX_NUM_COINS", "1600")
+        buildConfigField("Integer", "COIN_PAGE_SIZE", "50")
+
         resValue("integer", "username_min_length", "10")
         resValue("integer", "password_min_length", "6")
     }

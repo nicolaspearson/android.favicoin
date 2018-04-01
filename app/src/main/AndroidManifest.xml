@@ -46,6 +46,11 @@
             android:screenOrientation="sensor"
             android:theme="@style/AppTheme.Translucent.Basic" />
         <activity
+            android:name="com.lupinemoon.favicoin.presentation.ui.features.coindetail.CoinDetailActivity"
+            android:label="@string/title_coin_detail"
+            android:screenOrientation="sensor"
+            android:theme="@style/AppTheme.Translucent.Basic" />
+        <activity
             android:name="com.lupinemoon.favicoin.presentation.ui.features.offline.OfflineActivity"
             android:label="@string/title_offline"
             android:screenOrientation="sensor"

@@ -11,9 +11,9 @@ import io.realm.annotations.PrimaryKey;
 import lombok.ToString;
 
 @ToString
-@Parcel(implementations = { CoinItemRealmProxy.class },
+@Parcel(implementations = {CoinItemRealmProxy.class},
         value = Parcel.Serialization.BEAN,
-        analyze = { CoinItem.class })
+        analyze = {CoinItem.class})
 @SuppressWarnings("WeakerAccess, unused")
 public class CoinItem extends RealmObject {
 
@@ -65,6 +65,8 @@ public class CoinItem extends RealmObject {
 
     @SerializedName("last_updated")
     String lastUpdated;
+
+    String imageUrl;
 
     public String getId() {
         return id;
@@ -184,5 +186,13 @@ public class CoinItem extends RealmObject {
 
     public void setLastUpdated(String lastUpdated) {
         this.lastUpdated = lastUpdated;
+    }
+
+    public String getImageUrl() {
+        return imageUrl;
+    }
+
+    public void setImageUrl(String imageUrl) {
+        this.imageUrl = imageUrl;
     }
 }

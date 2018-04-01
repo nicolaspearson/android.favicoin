@@ -6,6 +6,7 @@ public class Constants {
     public static final int PLAY_SERVICES_RESOLUTION_REQUEST = 9000;
 
     public static final int BACK_PRESSED_EXIT_TIME_INTERVAL = 2000;
+    public static final long DRAWER_CLOSED_TIME_INTERVAL = 300;
 
     public static final String KEY_NO_AUTH_TOKEN = "no_auth_token";
 
@@ -28,6 +29,10 @@ public class Constants {
     public static final String URI_WEB_PLAY_SERVICES = "https://play.google.com/store/apps/details?id=com.google.android.gms";
 
     public static final int DEFAULT_SELECTOR_DELAY = 150;
+
+    public static final String KEY_SHOULD_USE_CIRCLE = "should_use_circle";
+
+    public static final String INTENT_COIN_ITEM = "intent_coin_item";
 
     // REALM
     public static final String SOURCE_REALM = "source_realm";
