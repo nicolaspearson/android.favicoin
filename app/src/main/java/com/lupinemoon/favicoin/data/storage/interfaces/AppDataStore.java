@@ -17,8 +17,8 @@ public interface AppDataStore {
     Flowable<KeyValue> saveKeyValue(Context context, KeyValue keyValue);
 
     // Auth API
-    Flowable<AuthToken> doLogin(Context context, String msisdn, String password, String websiteId);
+    Flowable<AuthToken> doLogin(Context context, String username, String password);
 
     // Coin API
-    Flowable<Coins> getCoins(final Context context, int limit);
+    Flowable<Coins> getCoins(final Context context, int start, int limit);
 }

@@ -38,8 +38,8 @@ public class AppRemoteDataStore implements AppDataStore {
     // region Auth API
     @Override
     public Flowable<AuthToken> doLogin(
-            Context context, String msisdn, String password, String websiteId) {
-        return authService.doLogin(context, msisdn, password, websiteId);
+            Context context, String username, String password) {
+        return authService.doLogin(context, username, password);
     }
     // endregion
 
@@ -62,8 +62,8 @@ public class AppRemoteDataStore implements AppDataStore {
 
     // region Coins API
     @Override
-    public Flowable<Coins> getCoins(Context context, int limit) {
-        return coinService.getCoins(context, limit);
+    public Flowable<Coins> getCoins(Context context, int start, int limit) {
+        return coinService.getCoins(context, start, limit);
     }
     // endregion
 }

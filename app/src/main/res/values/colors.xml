@@ -51,7 +51,8 @@
 
     <color name="transparent">#00FFFFFF</color>
 
-    <color name="red">#FF6060</color>
+    <color name="red">#F44336</color>
+    <color name="green">#388E3C</color>
 
     <color name="grey_ee">#EEEEEE</color>
     <color name="grey_ef">#EFEFEF</color>

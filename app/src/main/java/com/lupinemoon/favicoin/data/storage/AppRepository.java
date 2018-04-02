@@ -1,6 +1,7 @@
 package com.lupinemoon.favicoin.data.storage;
 
 import android.content.Context;
+import android.support.annotation.NonNull;
 import android.text.TextUtils;
 
 import com.lupinemoon.favicoin.BuildConfig;
@@ -27,12 +28,9 @@ import java.io.IOException;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
-import javax.annotation.ParametersAreNonnullByDefault;
-
 import io.reactivex.Completable;
 import io.reactivex.Flowable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
-import io.reactivex.annotations.NonNull;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.functions.Action;
 import io.reactivex.functions.BiFunction;
@@ -161,8 +159,8 @@ public class AppRepository implements AppDataStore {
                                             call.enqueue(new Callback() {
                                                 @Override
                                                 public void onResponse(
-                                                        @ParametersAreNonnullByDefault Call call,
-                                                        @ParametersAreNonnullByDefault okhttp3.Response response) {
+                                                        @NonNull Call call,
+                                                        @NonNull okhttp3.Response response) {
                                                     // We can remove the request from the queue if it
                                                     // was sent, we might not get a successful result
                                                     // i.e. 400 on some requests if already true on API
@@ -183,11 +181,8 @@ public class AppRepository implements AppDataStore {
                                                                     && response.request().url() != null
                                                                     && !TextUtils.isEmpty(response.request().url().toString())) {
 
-                                                                // Empty
-                                                                // Block to handle success
-                                                                // if needed
-
                                                                 String url = response.request().url().toString();
+                                                                Timber.d("Retry url: %s", url);
                                                             }
                                                         } catch (Exception e) {
                                                             Timber.w(
@@ -198,7 +193,9 @@ public class AppRepository implements AppDataStore {
                                                 }
 
                                                 @Override
-                                                public void onFailure(Call call, IOException e) {
+                                                public void onFailure(
+                                                        @NonNull Call call,
+                                                        @NonNull IOException e) {
                                                     Timber.w(e, "Process Request Failed");
                                                 }
                                             });
@@ -245,9 +242,9 @@ public class AppRepository implements AppDataStore {
 
     @Override
     public Flowable<AuthToken> doLogin(
-            Context context, String msisdn, String password, String websiteId) {
+            Context context, String username, String password) {
         // Never done locally
-        return appRemoteDataStore.doLogin(context, msisdn, password, websiteId);
+        return appRemoteDataStore.doLogin(context, username, password);
     }
     // endregion
 
@@ -326,17 +323,17 @@ public class AppRepository implements AppDataStore {
 
     // region Coins API
     @Override
-    public Flowable<Coins> getCoins(Context context, int limit) {
+    public Flowable<Coins> getCoins(Context context, int start, int limit) {
         if (!NetworkUtils.isConnected(context)) {
             // NO CONNECTION
             // Return local result only
-            return appLocalDataStore.getCoins(context, limit)
+            return appLocalDataStore.getCoins(context, start, limit)
                     .subscribeOn(Schedulers.io())
                     .delay(BuildConfig.LOCAL_REPO_SOURCE_DELAY, TimeUnit.MILLISECONDS)
                     .filter(new Predicate<Coins>() {
                         @Override
                         public boolean test(@NonNull Coins coins) throws Exception {
-                            if (coins != null && coins.getCoinItems() != null && coins.getCoinItems().size() > 0) {
+                            if (coins.getCoinItems() != null && coins.getCoinItems().size() > 0) {
                                 return true;
                             } else {
                                 throw new Exception();
@@ -348,9 +345,9 @@ public class AppRepository implements AppDataStore {
             // Fire both calls in sequence and combine the results
             // removing duplicates before submitting the merged result
             return combineLatest(
-                    appLocalDataStore.getCoins(context, limit)
+                    appLocalDataStore.getCoins(context, start, limit)
                             .subscribeOn(Schedulers.io()),
-                    appRemoteDataStore.getCoins(context, limit)
+                    appRemoteDataStore.getCoins(context, start, limit)
                             .subscribeOn(Schedulers.io())
                             .observeOn(Schedulers.io())
                             .doOnNext(new Consumer<Coins>() {
@@ -368,9 +365,9 @@ public class AppRepository implements AppDataStore {
                             RealmList<CoinItem> resultCoinItemList = new RealmList<>();
 
                             try {
-                                if (localCoins != null && localCoins.getCoinItems() != null && localCoins.getCoinItems().size() > 0) {
+                                if (localCoins.getCoinItems() != null && localCoins.getCoinItems().size() > 0) {
                                     Timber.d("localCoinItems: %s", localCoins.getCoinItems());
-                                    if (networkCoins != null && networkCoins.getCoinItems() != null && networkCoins.getCoinItems().size() > 0) {
+                                    if (networkCoins.getCoinItems() != null && networkCoins.getCoinItems().size() > 0) {
                                         Timber.d(
                                                 "networkCoinItems: %s",
                                                 networkCoins.getCoinItems());
@@ -397,7 +394,7 @@ public class AppRepository implements AppDataStore {
                                         // No network coins
                                         return localCoins;
                                     }
-                                } else if (networkCoins != null && networkCoins.getCoinItems() != null && networkCoins.getCoinItems().size() > 0) {
+                                } else if (networkCoins.getCoinItems() != null && networkCoins.getCoinItems().size() > 0) {
                                     // No local coins
                                     return networkCoins;
                                 }
@@ -415,9 +412,9 @@ public class AppRepository implements AppDataStore {
             // Fire both calls simultaneously on separate threads
             // Return first result, refresh on subsequent result
             return mergeDelayError(
-                    appLocalDataStore.getCoins(context, limit)
+                    appLocalDataStore.getCoins(context, start, limit)
                             .subscribeOn(Schedulers.io()),
-                    appRemoteDataStore.getCoins(context, limit)
+                    appRemoteDataStore.getCoins(context, start, limit)
                             .subscribeOn(Schedulers.io())
                             .observeOn(Schedulers.io())
                             .doOnNext(new Consumer<Coins>() {

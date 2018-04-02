@@ -23,7 +23,6 @@ import com.lupinemoon.favicoin.presentation.ui.base.BaseViewModel;
 import com.lupinemoon.favicoin.presentation.ui.features.landing.home.adapters.CoinItemAdapter;
 import com.lupinemoon.favicoin.presentation.utils.Constants;
 import com.lupinemoon.favicoin.presentation.widgets.OnBackPressedListener;
-import com.lupinemoon.favicoin.presentation.widgets.WrapContentLinearLayoutManager;
 import com.lupinemoon.favicoin.presentation.widgets.interfaces.GenericCallback;
 
 import java.util.ArrayList;
@@ -154,7 +153,7 @@ public class HomeFragment extends BaseVMPFragment<HomeContract.ViewModel, HomeCo
             }
         });
 
-        getBinding().homeRecyclerView.setLayoutManager(new WrapContentLinearLayoutManager(getActivity()));
+        getBinding().homeRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity(), LinearLayoutManager.VERTICAL, false));
 
         getBinding().homeSwipeRefreshLayout.setColorSchemeResources(R.color.color_accent);
         getBinding().homeSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {

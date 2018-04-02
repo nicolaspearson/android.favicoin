@@ -33,8 +33,8 @@
 
                 <com.lupinemoon.favicoin.presentation.widgets.transitionimageview.TransitionImageView
                     android:id="@+id/coin_item_image_view"
-                    android:layout_width="@dimen/list_item_avatar_height"
-                    android:layout_height="@dimen/list_item_avatar_height"
+                    android:layout_width="@dimen/list_item_image_height"
+                    android:layout_height="@dimen/list_item_image_height"
                     android:layout_centerInParent="true"
                     android:onClick="@{() -> viewModel.onCoinItemClicked()}"
                     android:scaleType="centerCrop"
@@ -46,8 +46,8 @@
             </RelativeLayout>
 
             <RelativeLayout
-                android:id="@+id/coin_details_container"
-                android:layout_width="match_parent"
+                android:id="@+id/coin_details_first_container"
+                android:layout_width="@dimen/text_view_max_width"
                 android:layout_height="wrap_content"
                 android:layout_centerInParent="true"
                 android:layout_marginLeft="@dimen/dialog.margin.m"
@@ -57,7 +57,7 @@
 
                 <TextView
                     android:id="@+id/name"
-                    style="@style/TextRegular.Field.ListItemName"
+                    style="@style/TextRegular.Field.ListItemTitle"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginEnd="@dimen/dialog.margin.s"
@@ -66,53 +66,78 @@
                     android:ellipsize="end"
                     android:maxLines="1"
                     android:maxWidth="@dimen/text_view_max_width"
-                    android:text="@{viewModel.name}"
-                    android:textColor="@color/grey_33"/>
+                    android:text="@{viewModel.name}"/>
 
                 <TextView
                     android:id="@+id/rank"
-                    style="@style/TextRegular.Field.Small"
-                    android:layout_width="30dp"
-                    android:layout_height="30dp"
-                    android:layout_alignParentEnd="true"
-                    android:layout_alignParentRight="true"
-                    android:layout_below="@+id/percentage_change_24h"
+                    style="@style/TextRegular.Field.ListItemSubtitle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentLeft="true"
+                    android:layout_alignParentStart="true"
+                    android:layout_below="@+id/name"
                     android:layout_marginEnd="@dimen/dialog.margin.xl"
                     android:layout_marginRight="@dimen/dialog.margin.xl"
                     android:layout_marginTop="@dimen/dialog.margin.m"
-                    android:gravity="center"
+                    android:gravity="bottom"
                     android:text="@{viewModel.rank}"
-                    android:textColor="@color/grey_33"
                     app:minTextSize="@dimen/text.size.xs"/>
+
+            </RelativeLayout>
+
+            <RelativeLayout
+                android:id="@+id/coin_details_second_container"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerInParent="true"
+                android:layout_marginLeft="@dimen/dialog.margin.m"
+                android:layout_marginStart="@dimen/dialog.margin.m"
+                android:layout_toEndOf="@+id/coin_details_first_container"
+                android:layout_toRightOf="@+id/coin_details_first_container">
+
+                <TextView
+                    android:id="@+id/price"
+                    style="@style/TextRegular.Field.ListItemTitle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="@dimen/dialog.margin.s"
+                    android:layout_marginRight="@dimen/dialog.margin.s"
+                    android:layout_marginTop="@dimen/dialog.margin.s"
+                    android:ellipsize="end"
+                    android:maxLines="1"
+                    android:maxWidth="@dimen/text_view_max_width"
+                    android:text="@{viewModel.priceUsd}"/>
 
                 <TextView
                     android:id="@+id/market_cap"
-                    style="@style/TextLight.Field.Small"
+                    style="@style/TextRegular.Field.ListItemSubtitle"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_below="@+id/name"
-                    android:layout_marginEnd="@dimen/dialog.margin.m"
-                    android:layout_marginRight="@dimen/dialog.margin.m"
-                    android:layout_marginTop="@dimen/dialog.margin.s"
-                    android:ellipsize="end"
-                    android:maxLines="2"
-                    android:maxWidth="@dimen/text_view_max_width"
+                    android:layout_alignParentLeft="true"
+                    android:layout_alignParentStart="true"
+                    android:layout_below="@+id/price"
+                    android:layout_marginEnd="@dimen/dialog.margin.xl"
+                    android:layout_marginRight="@dimen/dialog.margin.xl"
+                    android:layout_marginTop="@dimen/dialog.margin.m"
+                    android:gravity="bottom"
                     android:text="@{viewModel.marketCapUsd}"
-                    android:textColor="@color/grey_33"/>
+                    app:minTextSize="@dimen/text.size.xs"/>
 
                 <TextView
                     android:id="@+id/percentage_change_24h"
-                    style="@style/TextItalic.Field.Small"
+                    style="@style/TextRegular.Field.ListItemSubtitle"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_alignBottom="@+id/name"
                     android:layout_alignParentEnd="true"
                     android:layout_alignParentRight="true"
                     android:layout_marginEnd="@dimen/dialog.margin.m"
                     android:layout_marginRight="@dimen/dialog.margin.m"
                     android:layout_marginTop="@dimen/dialog.margin.s"
+                    android:layout_toLeftOf="@+id/price"
+                    android:layout_toStartOf="@+id/price"
                     android:text="@{viewModel.percentChange24h}"
-                    android:textColor="@color/grey_33"/>
+                    android:textColor="@{viewModel.percentChange24hValue > 0 ? @color/green : @color/red}"/>
+
             </RelativeLayout>
 
         </RelativeLayout>

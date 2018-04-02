@@ -40,10 +40,9 @@ public class AuthService {
 
     public Flowable<AuthToken> doLogin(
             final Context context,
-            String msisdn,
-            String password,
-            String websiteId) {
-        return getAuthApi(context).postLogin(msisdn, password, websiteId)
+            String username,
+            String password) {
+        return getAuthApi(context).postLogin(username, password)
                 .map(new Function<AuthToken, AuthToken>() {
                     @Override
                     public AuthToken apply(AuthToken token) {

@@ -43,8 +43,8 @@ public class CoinService {
         return coinApi;
     }
 
-    public Flowable<Coins> getCoins(Context context, int limit) {
-        return getCoinApi(context).getCoins(limit).map(new Function<List<CoinItem>, Coins>() {
+    public Flowable<Coins> getCoins(Context context, int start, int limit) {
+        return getCoinApi(context).getCoins(start, limit).map(new Function<List<CoinItem>, Coins>() {
             @Override
             public Coins apply(@NonNull List<CoinItem> coinItems) {
                 Coins coins = new Coins();

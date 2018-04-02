@@ -12,8 +12,7 @@ public interface AuthApi {
     @FormUrlEncoded
     @POST("login")
     Flowable<AuthToken> postLogin(
-            @Field("msisdn") String msisdn,
-            @Field("password") String password,
-            @Field("website_id") String websiteId);
+            @Field("username") String username,
+            @Field("password") String password);
 
 }

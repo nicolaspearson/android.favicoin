@@ -85,7 +85,7 @@ public class AppLocalDataStore implements AppDataStore {
 
     @Override
     public Flowable<AuthToken> doLogin(
-            Context context, String msisdn, String password, String websiteId) {
+            Context context, String username, String password) {
         // Never done locally
         return null;
     }
@@ -390,7 +390,7 @@ public class AppLocalDataStore implements AppDataStore {
 
     // region Coins API
     @Override
-    public Flowable<Coins> getCoins(Context context, int limit) {
+    public Flowable<Coins> getCoins(Context context, int start, int limit) {
         Realm iRealm = getRealm();
         Coins coins = new Coins();
         coins.setSource(Constants.SOURCE_REALM);

@@ -12,6 +12,7 @@ public interface CoinApi {
 
     @GET("ticker")
     Flowable<List<CoinItem>> getCoins(
+            @Query("start") int start,
             @Query("limit") int limit);
 
 }

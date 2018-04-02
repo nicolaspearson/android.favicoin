@@ -102,8 +102,10 @@
     <string name="saving_cancelled">Saving cancelled</string>
     <string name="saving_did_not_complete">Upload failed</string>
 
-    <!-- Home -->
+    <!-- Home / Coin List -->
     <string name="title_coins_failed">Fetching Coins Failed</string>
+    <string name="dollar_format">$ %1$s</string>
+    <string name="rank">Rank: %1$s</string>
 
     <!-- Coin Detail -->
     <string name="title_coin_detail">Coin Detail</string>

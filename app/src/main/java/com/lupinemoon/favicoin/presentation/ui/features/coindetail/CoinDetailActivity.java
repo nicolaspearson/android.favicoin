@@ -57,6 +57,11 @@ public class CoinDetailActivity extends BaseVMPActivity<CoinDetailContract.ViewM
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        if (getSupportActionBar() != null) {
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+            getSupportActionBar().setTitle(R.string.title_coin_detail);
+        }
+
         // Set the view model variable
         getBinding().setViewModel((CoinDetailViewModel) getViewModel());
     }

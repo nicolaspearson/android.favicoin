@@ -60,7 +60,7 @@ class HomePresenter extends BasePresenter implements HomeContract.Presenter {
     @Override
     public void updateCoinItems(Coins coins) {
         if (coins != null) {
-            coinItemList.clear();
+            // coinItemList.clear();
             coinItemList.addAll(coins.getCoinItems());
             homeView.setCoinItems(coinItemList, true);
         }
@@ -80,7 +80,9 @@ class HomePresenter extends BasePresenter implements HomeContract.Presenter {
 
             nonViewDisposables.add(
                     appRepository.getCoins(
-                            homeView.getActivity().getApplicationContext(), 100)
+                            homeView.getActivity().getApplicationContext(),
+                            BuildConfig.COIN_PAGE_SIZE * (page - 1),
+                            BuildConfig.COIN_PAGE_SIZE)
                             .delay(delay > 0 ? delay : 0, TimeUnit.MILLISECONDS)
                             .concatMap(new Function<Coins, Publisher<Coins>>() {
                                 @Override
@@ -110,20 +112,11 @@ class HomePresenter extends BasePresenter implements HomeContract.Presenter {
 
                                                 homeView.hideLoading();
 
-                                                if (TextUtils.isEmpty(coins.getSource()) &&
-                                                        coins.getCoinItems() != null &&
-                                                        coins.getCoinItems().size() < 1 &&
-                                                        NetworkUtils.isConnected(homeView.getActivity().getApplicationContext())
-                                                        && coinItemList.size() < 1) {
-                                                    // Our remote is empty
+                                                if (homeView.getCoinItems().size() < 1) {
                                                     homeView.setCoinItems(coinItemList, refresh);
-                                                    return;
-                                                }
-
-                                                if (coins.getCoinItems() != null && coins.getCoinItems().size() > 0) {
-                                                    homeView.setCoinItems(
-                                                            coins.getCoinItems(),
-                                                            refresh);
+                                                } else if (coins.getCoinItems() != null && coins.getCoinItems().size() > 0) {
+                                                    homeView.addCoinItems(
+                                                            coins.getCoinItems());
                                                 }
                                             }
                                         }
@@ -167,8 +160,9 @@ class HomePresenter extends BasePresenter implements HomeContract.Presenter {
                                                                     new GenericCallback() {
                                                                         @Override
                                                                         public void execute() {
-                                                                            fetchCoinItems(refresh,
-                                                                                           0);
+                                                                            fetchCoinItems(
+                                                                                    refresh,
+                                                                                    0);
                                                                         }
                                                                     });
                                                         }

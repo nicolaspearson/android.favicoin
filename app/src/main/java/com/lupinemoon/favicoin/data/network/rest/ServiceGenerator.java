@@ -177,12 +177,12 @@ public class ServiceGenerator {
      *
      * This is typically a utility method, and is called by any clients that need a call constructed.
      *
-     * @param context
-     * @param method
-     * @param url
-     * @param headers
-     * @param requestBody
-     * @return
+     * @param context The application context
+     * @param method The request method, i.e. GET, POST, PUT, DELETE, etc.
+     * @param url The request URL
+     * @param headers The request headers
+     * @param requestBody The request body
+     * @return The built request
      */
     public static Call retryRequest(Context context, String method, String url, Headers headers,
             RequestBody requestBody) {

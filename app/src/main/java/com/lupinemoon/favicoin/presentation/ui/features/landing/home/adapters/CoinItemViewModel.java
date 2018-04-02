@@ -13,6 +13,7 @@ import com.bumptech.glide.RequestBuilder;
 import com.bumptech.glide.request.target.SimpleTarget;
 import com.bumptech.glide.request.target.Target;
 import com.bumptech.glide.request.transition.Transition;
+import com.lupinemoon.favicoin.BuildConfig;
 import com.lupinemoon.favicoin.R;
 import com.lupinemoon.favicoin.data.models.CoinItem;
 import com.lupinemoon.favicoin.databinding.ListItemCoinBinding;
@@ -84,7 +85,16 @@ public class CoinItemViewModel extends BaseViewModel {
 
     @Bindable
     public String getRank() {
-        return coinItem.getRank();
+        return String.format(
+                homeView.getActivity().getString(R.string.rank),
+                coinItem.getRank());
+    }
+
+    @Bindable
+    public String getPriceUsd() {
+        return String.format(
+                homeView.getActivity().getString(R.string.dollar_format),
+                coinItem.getPriceUsd());
     }
 
     @Bindable
@@ -98,12 +108,17 @@ public class CoinItemViewModel extends BaseViewModel {
     }
 
     @Bindable
-    public String getImageUrl() {
+    public Long getPercentChange24hValue() {
+        return Long.parseLong(coinItem.getPercentChange24h());
+    }
+
+    @Bindable
+    private String getImageUrl() {
         return coinItem.getImageUrl();
     }
 
     @Bindable
-    public RequestBuilder getRequestBuilder() {
+    private RequestBuilder getRequestBuilder() {
         return requestBuilder;
     }
 
@@ -132,9 +147,6 @@ public class CoinItemViewModel extends BaseViewModel {
                                 @NonNull Bitmap resource,
                                 @Nullable Transition<? super Bitmap> transition) {
                             imageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
-                            Timber.d("Height: %d", resource.getHeight());
-                            Timber.d("Width: %d", resource.getWidth());
-
                             imageView.setImageBitmap(ImageUtils.getBitmapClippedCircle(resource));
                             coinItemViewModel.setImageBitmap(resource);
                         }
