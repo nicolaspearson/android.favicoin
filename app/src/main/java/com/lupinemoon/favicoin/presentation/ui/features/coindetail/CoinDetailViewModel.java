@@ -154,7 +154,6 @@ public class CoinDetailViewModel extends BaseViewModel implements CoinDetailCont
                                 @Nullable Transition<? super Bitmap> transition) {
                             imageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
                             imageView.setImageBitmap(resource);
-                            // imageView.setImageBitmap(ImageUtils.getBitmapClippedCircle(resource));
                         }
                     });
         } else {

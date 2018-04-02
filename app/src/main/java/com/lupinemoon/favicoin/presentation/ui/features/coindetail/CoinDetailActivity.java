@@ -175,8 +175,6 @@ public class CoinDetailActivity extends BaseVMPActivity<CoinDetailContract.ViewM
             if (coinImage != null) {
                 getBinding().coinImageView.setImageBitmap(
                         coinImage);
-                // getBinding().coinImageView.setImageBitmap(ImageUtils.getBitmapClippedCircle(
-                //        coinImage));
             } else {
                 getBinding().coinImageView.setImageResource(R.drawable.ic_placeholder);
             }

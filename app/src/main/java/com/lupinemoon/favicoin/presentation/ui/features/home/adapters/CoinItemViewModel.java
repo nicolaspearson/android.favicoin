@@ -159,7 +159,6 @@ public class CoinItemViewModel extends BaseViewModel {
                                 @Nullable Transition<? super Bitmap> transition) {
                             imageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
                             imageView.setImageBitmap(resource);
-                            // imageView.setImageBitmap(ImageUtils.getBitmapClippedCircle(resource));
                             coinItemViewModel.setImageBitmap(resource);
                         }
                     });
