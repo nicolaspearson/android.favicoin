@@ -323,6 +323,16 @@
         <item name="android:textColor">@color/text_label_grey</item>
     </style>
 
+    <style name="TextRegular.Field.ListItemLabel">
+        <item name="android:textSize">@dimen/text.size.m</item>
+        <item name="android:textColor">@color/text_label_grey</item>
+    </style>
+
+    <style name="TextRegular.Field.ListItemValue">
+        <item name="android:textSize">@dimen/text.size.m</item>
+        <item name="android:textColor">@color/text_label_grey</item>
+    </style>
+
     <style name="TextRegular.InputText">
         <item name="android:textSize">@dimen/text.size.m</item>
         <item name="android:textColor">@color/text_primary</item>

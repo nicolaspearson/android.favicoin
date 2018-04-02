@@ -8,8 +8,8 @@
     <string name="back_press_exit">"Press back again to exit"</string>
 
     <!-- Bug Fix for TextInputLayout -->
-    <item name="visible" type="id" />
-    <item name="masked" type="id" />
+    <item name="visible" type="id"/>
+    <item name="masked" type="id"/>
 
     <!-- Dialog -->
     <string name="cancel">Cancel</string>
@@ -107,11 +107,14 @@
     <string name="dollar_format">$ %1$s</string>
     <string name="percentage_format">%1$s %%</string>
     <string name="rank">Rank: %1$s</string>
+    <string name="rank_label">Rank:</string>
+    <string name="price_usd_label">Price:</string>
 
     <!-- Coin Detail -->
     <string name="title_coin_detail">Coin Detail</string>
     <string name="title_no_coin_item">Coin Details Not Found</string>
     <string name="message_no_coin_item">Unfortunately we were unable to retrieve the selected coin\'s details, please try again.</string>
+    <string name="separator_name_symbol" translatable="false">, </string>
 
     <!-- Shared Element Transition -->
     <string name="shared_image" translatable="false">sharedImage</string>

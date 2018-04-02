@@ -8,7 +8,6 @@ import com.lupinemoon.favicoin.data.storage.AppRepository;
 import com.lupinemoon.favicoin.presentation.ui.base.BasePresenter;
 import com.lupinemoon.favicoin.presentation.utils.ActivityUtils;
 
-import io.reactivex.Completable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.functions.Action;
 import io.reactivex.schedulers.Schedulers;

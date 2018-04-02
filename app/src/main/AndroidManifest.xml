@@ -32,13 +32,13 @@
         <activity
             android:name="com.lupinemoon.favicoin.presentation.ui.features.splash.SplashActivity"
             android:label="@string/title_splash"
-            android:screenOrientation="sensor"
+            android:screenOrientation="portrait"
             android:theme="@style/AppTheme.Splash" />
         <activity
             android:name="com.lupinemoon.favicoin.presentation.ui.features.login.LoginActivity"
             android:label="@string/title_login"
             android:windowSoftInputMode="stateHidden"
-            android:screenOrientation="sensor"
+            android:screenOrientation="portrait"
             android:theme="@style/AppTheme.Translucent.Basic" />
         <activity
             android:name="com.lupinemoon.favicoin.presentation.ui.features.landing.LandingActivity"
@@ -49,14 +49,17 @@
             android:name="com.lupinemoon.favicoin.presentation.ui.features.coindetail.CoinDetailActivity"
             android:label="@string/title_coin_detail"
             android:screenOrientation="sensor"
+            android:launchMode="singleTask"
             android:theme="@style/AppTheme.Translucent.Basic" />
         <activity
             android:name="com.lupinemoon.favicoin.presentation.ui.features.offline.OfflineActivity"
             android:label="@string/title_offline"
             android:screenOrientation="sensor"
+            android:launchMode="singleTask"
             android:theme="@style/AppTheme.Translucent.Basic" />
         <activity
             android:name="com.lupinemoon.favicoin.presentation.ui.features.dev.DevActivity"
+            android:launchMode="singleTask"
             android:theme="@style/AppTheme.Translucent.Basic" />
     </application>
 

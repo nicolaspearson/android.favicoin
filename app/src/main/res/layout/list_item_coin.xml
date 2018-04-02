@@ -41,7 +41,7 @@
                     android:src="@drawable/ic_placeholder"
                     android:transitionName="@string/shared_image"
                     app:loadCoinImage="@{viewModel}"
-                    app:tiv_rounding="10"/>
+                    app:tiv_rounding="0"/>
 
             </RelativeLayout>
 

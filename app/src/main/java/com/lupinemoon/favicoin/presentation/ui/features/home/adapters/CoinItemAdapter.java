@@ -4,7 +4,6 @@ import android.databinding.DataBindingUtil;
 import android.graphics.Bitmap;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
-import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
 
@@ -19,8 +18,6 @@ import com.lupinemoon.favicoin.databinding.ListItemCoinBinding;
 import com.lupinemoon.favicoin.presentation.ui.features.home.HomeContract;
 
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 
 public class CoinItemAdapter extends RecyclerView.Adapter<CoinItemAdapter.CoinItemViewHolder> {

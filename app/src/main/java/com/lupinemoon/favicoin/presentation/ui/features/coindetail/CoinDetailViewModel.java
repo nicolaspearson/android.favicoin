@@ -8,32 +8,28 @@ import android.os.Parcel;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
-import android.view.View;
 import android.widget.ImageView;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.Priority;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
-import com.bumptech.glide.load.resource.bitmap.BitmapEncoder;
 import com.bumptech.glide.request.RequestOptions;
 import com.bumptech.glide.request.target.SimpleTarget;
 import com.bumptech.glide.request.target.Target;
 import com.bumptech.glide.request.transition.Transition;
-import com.lupinemoon.favicoin.BR;
 import com.lupinemoon.favicoin.R;
 import com.lupinemoon.favicoin.data.models.CoinItem;
 import com.lupinemoon.favicoin.presentation.ui.base.BaseViewModel;
-import com.lupinemoon.favicoin.presentation.ui.features.home.adapters.CoinItemViewModel;
 import com.lupinemoon.favicoin.presentation.utils.ActivityUtils;
 import com.lupinemoon.favicoin.presentation.utils.ImageUtils;
+
+import org.parceler.Parcels;
 
 import timber.log.Timber;
 
 public class CoinDetailViewModel extends BaseViewModel implements CoinDetailContract.ViewModel {
 
     private CoinDetailContract.View coinDetailView;
-
-    private String coinDetailString;
 
     private CoinItem coinItem;
 
@@ -44,7 +40,7 @@ public class CoinDetailViewModel extends BaseViewModel implements CoinDetailCont
         if (savedInstanceState != null && savedInstanceState instanceof CoinDetailState) {
             CoinDetailState coinDetailState = (CoinDetailState) savedInstanceState;
             // Restore local variable from saved state
-            coinDetailString = coinDetailState.coinDetailString;
+            coinItem = coinDetailState.coinItem;
         }
     }
 
@@ -58,27 +54,68 @@ public class CoinDetailViewModel extends BaseViewModel implements CoinDetailCont
         return new CoinDetailState(this);
     }
 
-    public void onCoinDetailClick(View view) {
-        if (validate(coinDetailString) && getError(coinDetailString, "Error") == null) {
-            coinDetailView.getPresenter().performAction(coinDetailString);
-        }
+    @Bindable
+    public String getName() {
+        return coinItem != null && coinItem.getName() != null ? coinItem.getName() : "";
     }
 
     @Bindable
-    public String getCoinDetailString() {
-        return coinDetailString;
+    public String getSymbol() {
+        return coinItem != null && coinItem.getSymbol() != null ? coinItem.getSymbol() : "";
     }
 
-    public void setCoinDetailString(String coinDetailString) {
-        this.coinDetailString = coinDetailString;
-        notifyPropertyChanged(BR.coinDetailString);
+    @Bindable
+    public String getRank() {
+        if (coinItem != null && coinItem.getRank() != null) {
+            return coinItem.getRank();
+        }
+        return "";
     }
 
+    @Bindable
+    public String getPriceUsd() {
+        if (coinItem != null && coinItem.getPriceUsd() != null) {
+            return String.format(
+                    coinDetailView.getActivity().getString(R.string.dollar_format),
+                    coinItem.getPriceUsd());
+        }
+        return "";
+    }
+
+    @Bindable
+    public String getMarketCapUsd() {
+        if (coinItem != null && coinItem.getMarketCapUsd() != null) {
+            return String.format(
+                    coinDetailView.getActivity().getString(R.string.dollar_format),
+                    coinItem.getMarketCapUsd());
+        }
+        return "";
+    }
+
+    @Bindable
+    public String getPercentChange24h() {
+        if (coinItem != null && coinItem.getPercentChange24h() != null) {
+            return String.format(
+                    coinDetailView.getActivity().getString(R.string.percentage_format),
+                    coinItem.getPercentChange24h());
+        }
+        return "";
+    }
+
+    @Bindable
+    public Double getPercentChange24hValue() {
+        if (coinItem != null && coinItem.getPercentChange24h() != null) {
+            try {
+                return Double.parseDouble(coinItem.getPercentChange24h());
+            } catch (NumberFormatException e) {
+                // Ignore
+            }
+        }
+        return 0D;
+    }
 
     public void onFavouriteClick() {
-        if (validate(coinDetailString) && getError(coinDetailString, "Error") == null) {
-            coinDetailView.getPresenter().performAction(coinDetailString);
-        }
+        Timber.d("Favourite Clicked");
     }
 
     @Bindable
@@ -131,16 +168,16 @@ public class CoinDetailViewModel extends BaseViewModel implements CoinDetailCont
 
     private static class CoinDetailState extends State {
 
-        final String coinDetailString;
+        final CoinItem coinItem;
 
         CoinDetailState(CoinDetailViewModel viewModel) {
             super(viewModel);
-            coinDetailString = viewModel.coinDetailString;
+            coinItem = viewModel.coinItem;
         }
 
         CoinDetailState(Parcel in) {
             super(in);
-            coinDetailString = in.readString();
+            coinItem = Parcels.unwrap(in.readParcelable(CoinItem.class.getClassLoader()));
         }
 
         @Override
@@ -150,7 +187,7 @@ public class CoinDetailViewModel extends BaseViewModel implements CoinDetailCont
 
         @Override
         public void writeToParcel(Parcel dest, int flags) {
-            dest.writeString(coinDetailString);
+            dest.writeParcelable(Parcels.wrap(coinItem), 0);
         }
 
         @SuppressWarnings("unused")

@@ -108,7 +108,7 @@ public class HomeFragment extends BaseVMPFragment<HomeContract.ViewModel, HomeCo
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setRetainInstance(true);
+        setRetainInstance(false);
     }
 
     @Override
@@ -257,6 +257,8 @@ public class HomeFragment extends BaseVMPFragment<HomeContract.ViewModel, HomeCo
         Timber.d("addCoinItems: %s", coinItems);
         if (coinItemAdapter != null) {
             coinItemAdapter.addCoinItems(coinItems);
+        } else {
+            setCoinItems(coinItems, true);
         }
     }
 }

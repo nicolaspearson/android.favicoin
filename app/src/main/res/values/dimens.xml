@@ -58,7 +58,7 @@
 
     <dimen name="coin_list_item_height">100dp</dimen>
 
-    <!-- Custom defined text size for headings -->
+    <!-- Custom defined text sizes -->
     <dimen name="text.size.list_item_title">16dp</dimen>
     <dimen name="text.size.list_item_subtitle">12dp</dimen>
 
@@ -66,6 +66,8 @@
 
     <dimen name="list_item_image_height">40dp</dimen>
 
-    <dimen name="coin_detail_image_size">150dp</dimen>
+    <dimen name="coin_detail_image_size">180dp</dimen>
+
+    <dimen name="coin_detail_name_max_width">220dp</dimen>
 
 </resources>

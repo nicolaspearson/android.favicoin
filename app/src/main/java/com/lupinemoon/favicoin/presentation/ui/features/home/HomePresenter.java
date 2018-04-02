@@ -181,6 +181,7 @@ class HomePresenter extends BasePresenter implements HomeContract.Presenter {
         if (homeView.isAttached()) {
             Intent intent = new Intent(homeView.getActivity(), CoinDetailActivity.class);
             intent.putExtra(Constants.INTENT_COIN_ITEM, Parcels.wrap(coinItem));
+            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
 
             // Do not make a scene transition if the user does not have a network connection
             // we do not know at this point if the profile to be loaded is available offline
