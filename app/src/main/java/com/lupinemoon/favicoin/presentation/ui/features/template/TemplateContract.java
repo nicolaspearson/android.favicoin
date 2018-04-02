@@ -9,7 +9,9 @@ class TemplateContract {
 
     interface View extends IBaseView {
         Presenter getPresenter();
+
         ViewModel getViewModel();
+
         ActivityTemplateBinding getBinding();
     }
 

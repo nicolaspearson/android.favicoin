@@ -3,6 +3,7 @@
 
     <dimen name="dialog.margin.xs">2dp</dimen>
     <dimen name="dialog.margin.s">4dp</dimen>
+    <dimen name="dialog.margin.sm">6dp</dimen>
     <dimen name="dialog.margin.m">8dp</dimen>
     <dimen name="dialog.margin.l">16dp</dimen>
     <dimen name="dialog.margin.xl">20dp</dimen>
@@ -64,5 +65,7 @@
     <dimen name="text_view_max_width">144dp</dimen>
 
     <dimen name="list_item_image_height">40dp</dimen>
+
+    <dimen name="coin_detail_image_size">150dp</dimen>
 
 </resources>

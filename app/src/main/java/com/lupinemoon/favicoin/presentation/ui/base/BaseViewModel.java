@@ -22,6 +22,7 @@ public abstract class BaseViewModel extends BaseObservable implements IBaseViewM
         return null;
     }
 
+    @SuppressWarnings("unused")
     public static class State implements Parcelable {
 
         protected State(BaseViewModel viewModel) {

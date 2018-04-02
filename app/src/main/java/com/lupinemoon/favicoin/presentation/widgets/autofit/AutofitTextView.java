@@ -138,7 +138,7 @@ public class AutofitTextView extends AppCompatTextView implements AutofitHelper.
      * Set the minimum text size to a given unit and value. See TypedValue for the possible
      * dimension units.
      *
-     * @param unit The desired dimension unit.
+     * @param unit    The desired dimension unit.
      * @param minSize The desired size in the given units.
      */
     public void setMinTextSize(int unit, float minSize) {

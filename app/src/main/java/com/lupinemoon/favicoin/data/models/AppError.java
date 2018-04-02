@@ -11,6 +11,7 @@ import java.util.List;
 import lombok.ToString;
 
 @ToString
+@SuppressWarnings("unused")
 public class AppError implements Parcelable {
 
     @SerializedName("message")
@@ -39,7 +40,7 @@ public class AppError implements Parcelable {
         this.statusCode = statusCode;
     }
 
-    protected AppError(Parcel in) {
+    private AppError(Parcel in) {
         if (in.readByte() == 0x01) {
             messages = new ArrayList<>();
             in.readList(messages, KeyValue.class.getClassLoader());

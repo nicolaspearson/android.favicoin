@@ -6,6 +6,7 @@ import io.reactivex.subjects.PublishSubject;
 import io.reactivex.subjects.ReplaySubject;
 import io.reactivex.subjects.Subject;
 
+@SuppressWarnings("unused")
 public class RxBus<T> {
 
     private final Subject<T> subject;

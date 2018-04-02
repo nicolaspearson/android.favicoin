@@ -92,7 +92,7 @@
     <string name="title_dev">Dev</string>
     <string name="analytics_dev">Dev</string>
     <string name="export_database">Export Database</string>
-    <string name="test_post_fail">Test POST Fail</string>
+    <string name="clear_database">Clear Database</string>
     <string name="export_failed">Export Failed</string>
     <string name="realm">Realm</string>
     <string name="email">Email</string>
@@ -105,10 +105,13 @@
     <!-- Home / Coin List -->
     <string name="title_coins_failed">Fetching Coins Failed</string>
     <string name="dollar_format">$ %1$s</string>
+    <string name="percentage_format">%1$s %%</string>
     <string name="rank">Rank: %1$s</string>
 
     <!-- Coin Detail -->
     <string name="title_coin_detail">Coin Detail</string>
+    <string name="title_no_coin_item">Coin Details Not Found</string>
+    <string name="message_no_coin_item">Unfortunately we were unable to retrieve the selected coin\'s details, please try again.</string>
 
     <!-- Shared Element Transition -->
     <string name="shared_image" translatable="false">sharedImage</string>

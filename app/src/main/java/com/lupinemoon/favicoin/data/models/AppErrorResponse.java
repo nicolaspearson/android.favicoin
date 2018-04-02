@@ -25,7 +25,7 @@ public class AppErrorResponse implements Parcelable {
         this.appError = appError;
     }
 
-    protected AppErrorResponse(Parcel in) {
+    private AppErrorResponse(Parcel in) {
         appError = (AppError) in.readValue(AppError.class.getClassLoader());
     }
 

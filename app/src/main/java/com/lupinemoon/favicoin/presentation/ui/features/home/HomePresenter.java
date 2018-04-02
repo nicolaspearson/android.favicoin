@@ -1,4 +1,4 @@
-package com.lupinemoon.favicoin.presentation.ui.features.landing.home;
+package com.lupinemoon.favicoin.presentation.ui.features.home;
 
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -27,7 +27,8 @@ import com.lupinemoon.favicoin.presentation.widgets.interfaces.GenericCallback;
 import org.parceler.Parcels;
 import org.reactivestreams.Publisher;
 
-import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.concurrent.TimeUnit;
 
 import io.reactivex.Flowable;
@@ -44,7 +45,7 @@ class HomePresenter extends BasePresenter implements HomeContract.Presenter {
 
     private AppRepository appRepository = AppRepository.getInstance();
 
-    private ArrayList<CoinItem> coinItemList = new ArrayList<>();
+    private RealmList<CoinItem> coinItemList = new RealmList<>();
 
     private int page = 1;
     private int maxPage = 1;
@@ -54,16 +55,6 @@ class HomePresenter extends BasePresenter implements HomeContract.Presenter {
     HomePresenter(@NonNull HomeContract.View view, @NonNull Bundle args) {
         // Set the view locally
         homeView = ActivityUtils.checkNotNull(view, "view cannot be null!");
-    }
-
-
-    @Override
-    public void updateCoinItems(Coins coins) {
-        if (coins != null) {
-            // coinItemList.clear();
-            coinItemList.addAll(coins.getCoinItems());
-            homeView.setCoinItems(coinItemList, true);
-        }
     }
 
     @Override
@@ -96,7 +87,9 @@ class HomePresenter extends BasePresenter implements HomeContract.Presenter {
                                     new Consumer<Coins>() {
                                         @Override
                                         public void accept(Coins coins) {
-                                            Timber.d("Observer Thread: %s", Thread.currentThread());
+                                            Timber.d(
+                                                    "Observer Thread: %s",
+                                                    Thread.currentThread());
                                             busyFetching = false;
                                             if (homeView.isAttached()) {
 
@@ -113,7 +106,9 @@ class HomePresenter extends BasePresenter implements HomeContract.Presenter {
                                                 homeView.hideLoading();
 
                                                 if (homeView.getCoinItems().size() < 1) {
-                                                    homeView.setCoinItems(coinItemList, refresh);
+                                                    homeView.setCoinItems(
+                                                            coinItemList,
+                                                            refresh);
                                                 } else if (coins.getCoinItems() != null && coins.getCoinItems().size() > 0) {
                                                     homeView.addCoinItems(
                                                             coins.getCoinItems());
@@ -148,13 +143,17 @@ class HomePresenter extends BasePresenter implements HomeContract.Presenter {
                                                                 new View.OnClickListener() {
                                                                     @Override
                                                                     public void onClick(View view) {
-                                                                        fetchCoinItems(refresh, 0);
+                                                                        fetchCoinItems(
+                                                                                refresh,
+                                                                                0);
                                                                     }
                                                                 },
                                                                 DialogUtils.AlertType.NONE);
                                                     } else {
                                                         boolean offlineData = homeView.getCoinItems() != null && homeView.getCoinItems().size() > 0;
-                                                        Timber.d("offlineData: %b", offlineData);
+                                                        Timber.d(
+                                                                "offlineData: %b",
+                                                                offlineData);
                                                         if (!offlineData) {
                                                             homeView.showNetworkErrorLayout(
                                                                     new GenericCallback() {
@@ -171,7 +170,9 @@ class HomePresenter extends BasePresenter implements HomeContract.Presenter {
                                             }
                                         }
                                     }));
+
         }
+
     }
 
     @Override
@@ -191,7 +192,6 @@ class HomePresenter extends BasePresenter implements HomeContract.Presenter {
                         homeView.getActivity(),
                         transitionView,
                         homeView.getActivity().getResources().getString(R.string.shared_image));
-                intent.putExtra(Constants.KEY_SHOULD_USE_CIRCLE, true);
                 MainApplication.getBitmapCache().delBitmap();
                 MainApplication.getBitmapCache().putBitmap(imageBitmap);
                 homeView.getActivity().startActivity(intent, options.toBundle());
@@ -226,6 +226,7 @@ class HomePresenter extends BasePresenter implements HomeContract.Presenter {
                 maxPage,
                 totalCount);
 
+
         // Remove any duplicates
         if (homeView.getCoinItems() != null && homeView.getCoinItems().size() > 0) {
             RealmList<CoinItem> results = new RealmList<>();
@@ -244,12 +245,31 @@ class HomePresenter extends BasePresenter implements HomeContract.Presenter {
                 }
             }
             Timber.d("coinItems: %s", results);
-            coins.setCoinItems(results);
-            coinItemList.addAll(results);
+            RealmList<CoinItem> sortedList = sortCoinItems(results);
+            coins.setCoinItems(sortedList);
+            coinItemList.addAll(sortedList);
         } else {
-            coinItemList = coins.getCoinItems() != null ? new ArrayList<>(coins.getCoinItems()) : new ArrayList<CoinItem>();
+            coinItemList = coins.getCoinItems() != null ? sortCoinItems(coins.getCoinItems()) : new RealmList<CoinItem>();
         }
-
         return coins;
+    }
+
+    private RealmList<CoinItem> sortCoinItems(RealmList<CoinItem> originalList) {
+        // Sort the list by rank
+        Collections.sort(originalList, new Comparator<CoinItem>() {
+            @Override
+            public int compare(CoinItem coinItem1, CoinItem coinItem2) {
+                if (coinItem1 == null || coinItem2 == null) {
+                    return 0;
+                }
+
+                if (TextUtils.isEmpty(coinItem1.getRank()) || TextUtils.isEmpty(coinItem2.getRank())) {
+                    return 0;
+                }
+
+                return Integer.parseInt(coinItem1.getRank()) > Integer.parseInt(coinItem2.getRank()) ? 1 : -1;
+            }
+        });
+        return originalList;
     }
 }

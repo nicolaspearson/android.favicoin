@@ -5,7 +5,6 @@ import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
 
 import com.lupinemoon.favicoin.R;
-import com.lupinemoon.favicoin.data.models.KeyValue;
 import com.lupinemoon.favicoin.data.storage.AppRepository;
 import com.lupinemoon.favicoin.presentation.ui.base.BasePresenter;
 import com.lupinemoon.favicoin.presentation.utils.ActivityUtils;
@@ -30,7 +29,6 @@ class DevPresenter extends BasePresenter implements DevContract.Presenter {
 
     @Override
     public void performExportDatabase() {
-
         devView.showSnackbarMsg(
                 devView.getActivity().getString(R.string.export_database),
                 Snackbar.LENGTH_SHORT);
@@ -61,25 +59,7 @@ class DevPresenter extends BasePresenter implements DevContract.Presenter {
     }
 
     @Override
-    public void testPostFail() {
-
-        KeyValue kv = new KeyValue("Key", "Value");
-
-        nonViewDisposables.add(
-        appRepository.saveKeyValue(devView.getActivity(),kv)
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Consumer<KeyValue>() {
-                    @Override
-                    public void accept(@io.reactivex.annotations.NonNull KeyValue keyValue) throws Exception {
-                        // Pass through, faux handling
-                    }
-                }, new Consumer<Throwable>() {
-                    @Override
-                    public void accept(@io.reactivex.annotations.NonNull Throwable throwable) throws Exception {
-                        // Pass through, faux handling
-                    }
-                }));
-
+    public void clearRealmDatabase() {
+        appRepository.clearRealmDatabase();
     }
 }

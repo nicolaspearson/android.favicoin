@@ -30,6 +30,8 @@ public class SplashActivity extends BaseActivity<ActivitySplashBinding> implemen
 
     Boolean autoLogin = false;
 
+    Boolean cryptoCompareCoinsLoaded = false;
+
     private SplashContract.Presenter presenter;
 
     @Override
@@ -81,6 +83,8 @@ public class SplashActivity extends BaseActivity<ActivitySplashBinding> implemen
                 BuildConfig.VERSION_CODE);
         getBinding().versionTextView.setText(versionText);
 
+        getPresenter().loadCryptoCompareCoins();
+
         if (BuildConfig.SPLASH_ANIMATION_ENABLED) {
             startAnimations();
         } else {
@@ -92,6 +96,11 @@ public class SplashActivity extends BaseActivity<ActivitySplashBinding> implemen
     protected void onNewIntent(Intent intent) {
         super.onNewIntent(intent);
         Timber.d("onNewIntent: %s", intent);
+    }
+
+    @Override
+    public void cryptoCompareCoinsLoaded() {
+        cryptoCompareCoinsLoaded = true;
     }
 
     private void startAnimations() {
@@ -113,7 +122,7 @@ public class SplashActivity extends BaseActivity<ActivitySplashBinding> implemen
                 new ArgbEvaluator(),
                 colorFrom,
                 colorTo);
-        colorAnimation.setDuration(2000);
+        colorAnimation.setDuration(2500);
         colorAnimation.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
             @Override
             public void onAnimationUpdate(ValueAnimator animator) {
@@ -129,7 +138,7 @@ public class SplashActivity extends BaseActivity<ActivitySplashBinding> implemen
                 try {
                     int waited = 0;
                     // Splash screen pause time
-                    while (waited < 1900) {
+                    while (waited < 2400 || !cryptoCompareCoinsLoaded) {
                         sleep(100);
                         waited += 100;
                     }

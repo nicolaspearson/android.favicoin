@@ -34,13 +34,16 @@ android {
         buildConfigField("Boolean", "SPLASH_ANIMATION_ENABLED", "true")
         buildConfigField("Boolean", "STAGING", "false")
 
-        buildConfigField("Boolean", "LOCAL_REPO_COMBINE_SOURCES", "false")
+        buildConfigField("Boolean", "LOCAL_REPO_COMBINE_SOURCES", "true")
         buildConfigField("Boolean", "LOCAL_REPO_OFFLINE_FIRST", "false")
         buildConfigField("Integer", "LOCAL_REPO_SOURCE_DELAY", "300")
 
         // The API does not provide a nice way to perform pagination
         buildConfigField("Integer", "MAX_NUM_COINS", "1600")
-        buildConfigField("Integer", "COIN_PAGE_SIZE", "50")
+        buildConfigField("Integer", "COIN_PAGE_SIZE", "75")
+        buildConfigField("Integer", "COIN_PAGE_LOAD_THRESHOLD", "25")
+
+        buildConfigField("String", "CRYPTO_COMPARE_FILENAME", "\"cryptocompare.json\"")
 
         resValue("integer", "username_min_length", "10")
         resValue("integer", "password_min_length", "6")

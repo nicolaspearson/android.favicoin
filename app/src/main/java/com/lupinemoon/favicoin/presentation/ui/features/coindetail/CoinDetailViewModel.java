@@ -1,20 +1,41 @@
 package com.lupinemoon.favicoin.presentation.ui.features.coindetail;
 
 import android.databinding.Bindable;
+import android.databinding.BindingAdapter;
+import android.graphics.Bitmap;
+import android.os.Build;
 import android.os.Parcel;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.text.TextUtils;
 import android.view.View;
+import android.widget.ImageView;
 
-import com.android.databinding.library.baseAdapters.BR;
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.Priority;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
+import com.bumptech.glide.load.resource.bitmap.BitmapEncoder;
+import com.bumptech.glide.request.RequestOptions;
+import com.bumptech.glide.request.target.SimpleTarget;
+import com.bumptech.glide.request.target.Target;
+import com.bumptech.glide.request.transition.Transition;
+import com.lupinemoon.favicoin.BR;
+import com.lupinemoon.favicoin.R;
+import com.lupinemoon.favicoin.data.models.CoinItem;
 import com.lupinemoon.favicoin.presentation.ui.base.BaseViewModel;
+import com.lupinemoon.favicoin.presentation.ui.features.home.adapters.CoinItemViewModel;
 import com.lupinemoon.favicoin.presentation.utils.ActivityUtils;
+import com.lupinemoon.favicoin.presentation.utils.ImageUtils;
+
+import timber.log.Timber;
 
 public class CoinDetailViewModel extends BaseViewModel implements CoinDetailContract.ViewModel {
 
     private CoinDetailContract.View coinDetailView;
 
     private String coinDetailString;
+
+    private CoinItem coinItem;
 
     CoinDetailViewModel(@NonNull CoinDetailContract.View view, @Nullable State savedInstanceState) {
         // Set the view locally
@@ -25,6 +46,11 @@ public class CoinDetailViewModel extends BaseViewModel implements CoinDetailCont
             // Restore local variable from saved state
             coinDetailString = coinDetailState.coinDetailString;
         }
+    }
+
+    public void setCoinItem(CoinItem coinItem) {
+        this.coinItem = coinItem;
+        notifyChange();
     }
 
     @Override
@@ -46,6 +72,61 @@ public class CoinDetailViewModel extends BaseViewModel implements CoinDetailCont
     public void setCoinDetailString(String coinDetailString) {
         this.coinDetailString = coinDetailString;
         notifyPropertyChanged(BR.coinDetailString);
+    }
+
+
+    public void onFavouriteClick() {
+        if (validate(coinDetailString) && getError(coinDetailString, "Error") == null) {
+            coinDetailView.getPresenter().performAction(coinDetailString);
+        }
+    }
+
+    @Bindable
+    private String getImageUrl() {
+        return coinItem != null && coinItem.getImageUrl() != null ? coinItem.getImageUrl() : "";
+    }
+
+    @BindingAdapter({"loadCoinImage"})
+    public static void loadCoinImage(
+            final ImageView imageView,
+            final CoinDetailViewModel coinDetailViewModel) {
+
+        // ScaleType needs to be set when not using shared element transition
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
+            imageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
+        }
+
+        if (!TextUtils.isEmpty(coinDetailViewModel.getImageUrl())) {
+            RequestOptions options = new RequestOptions()
+                    .placeholder(R.drawable.ic_placeholder)
+                    .dontAnimate()
+                    .encodeFormat(Bitmap.CompressFormat.PNG)
+                    .encodeQuality(100)
+                    .diskCacheStrategy(DiskCacheStrategy.ALL)
+                    .priority(Priority.HIGH);
+
+            Glide.with(imageView.getContext())
+                    .applyDefaultRequestOptions(options)
+                    .asBitmap()
+                    .load(ImageUtils.getFullCoinUrl(
+                            coinDetailViewModel.getImageUrl()))
+                    .into(new SimpleTarget<Bitmap>(Target.SIZE_ORIGINAL, Target.SIZE_ORIGINAL) {
+                        @Override
+                        public void onResourceReady(
+                                @NonNull Bitmap resource,
+                                @Nullable Transition<? super Bitmap> transition) {
+                            imageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
+                            imageView.setImageBitmap(resource);
+                            // imageView.setImageBitmap(ImageUtils.getBitmapClippedCircle(resource));
+                        }
+                    });
+        } else {
+            // Fail over
+            if (!ImageUtils.hasImage(imageView)) {
+                imageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
+                imageView.setImageResource(R.drawable.ic_placeholder);
+            }
+        }
     }
 
     private static class CoinDetailState extends State {

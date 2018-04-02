@@ -1,6 +1,5 @@
 package com.lupinemoon.favicoin.presentation.widgets;
 
-
 import android.app.Activity;
 import android.app.Application;
 import android.os.Bundle;
@@ -11,6 +10,7 @@ import timber.log.Timber;
  * Class to track the application lifecycle state
  * Within MainApplication call the register method passing in this class.
  */
+@SuppressWarnings("unused")
 public class AppLifecycleHandler implements Application.ActivityLifecycleCallbacks {
 
     private static int resumed;
@@ -22,6 +22,7 @@ public class AppLifecycleHandler implements Application.ActivityLifecycleCallbac
 
     /**
      * Returns data about the started/stopped state of the application.
+     *
      * @return boolean is application started or stopped
      */
     public static boolean isApplicationVisible() {
@@ -30,6 +31,7 @@ public class AppLifecycleHandler implements Application.ActivityLifecycleCallbac
 
     /**
      * Returns data about the resumes/paused state of the application.
+     *
      * @return boolean is application started or stopped
      */
     public static boolean isApplicationInForeground() {
@@ -38,6 +40,7 @@ public class AppLifecycleHandler implements Application.ActivityLifecycleCallbac
 
     /**
      * Returns the name of the last resumed activity
+     *
      * @return String name of last resumed activity
      */
     public static String getVisibleActivity() {

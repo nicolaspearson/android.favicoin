@@ -27,7 +27,6 @@ import com.lupinemoon.favicoin.presentation.services.rxbus.RxBus;
 import com.lupinemoon.favicoin.presentation.services.rxbus.events.NetworkRestoredEvent;
 import com.lupinemoon.favicoin.presentation.services.rxbus.events.QueueProcessingComplete;
 import com.lupinemoon.favicoin.presentation.services.rxbus.events.QueueProcessingStarted;
-import com.lupinemoon.favicoin.presentation.ui.features.login.LoginActivity;
 import com.lupinemoon.favicoin.presentation.ui.features.offline.OfflineActivity;
 import com.lupinemoon.favicoin.presentation.utils.Constants;
 import com.lupinemoon.favicoin.presentation.utils.DialogUtils;
@@ -68,8 +67,6 @@ public abstract class BaseActivity<B extends ViewDataBinding> extends AppCompatA
 
     private boolean loading = false;
 
-    private AlertDialog subscribeDialog = null;
-
     private AlertDialog customAlertDialog = null;
 
     protected abstract int getContentViewResource();
@@ -89,13 +86,6 @@ public abstract class BaseActivity<B extends ViewDataBinding> extends AppCompatA
         this.binding = binding;
     }
 
-    // To avoid memory leaks we dismiss any visible dialogs
-    public void dismissCustomAlertDialog() {
-        if (customAlertDialog != null) {
-            customAlertDialog.dismiss();
-        }
-    }
-
     @Override
     protected void attachBaseContext(Context newBase) {
         super.attachBaseContext(CalligraphyContextWrapper.wrap(newBase));
@@ -112,7 +102,7 @@ public abstract class BaseActivity<B extends ViewDataBinding> extends AppCompatA
         setBinding(createBinding(this, getContentViewResource()));
 
         // Set up the toolbar.
-        toolbar = (Toolbar) findViewById(R.id.toolbar);
+        toolbar = findViewById(R.id.toolbar);
         if (toolbar != null) {
             setSupportActionBar(toolbar);
             configureOfflineLayout();
@@ -154,6 +144,7 @@ public abstract class BaseActivity<B extends ViewDataBinding> extends AppCompatA
         if (networkStateReceiver != null) {
             unregisterReceiver(networkStateReceiver);
         }
+        dismissCustomAlertDialog();
         super.onDestroy();
     }
 
@@ -425,17 +416,26 @@ public abstract class BaseActivity<B extends ViewDataBinding> extends AppCompatA
         return RetrofitUtils.isHttp401Error(throwable) || RetrofitUtils.isHttp440Error(throwable);
     }
 
+
+    // To avoid memory leaks we dismiss any visible dialogs
+    public void dismissCustomAlertDialog() {
+        if (customAlertDialog != null) {
+            customAlertDialog.dismiss();
+        }
+    }
+
     private void createRxBusSubscriptions() {
         // Queue processing has completed with or without errors, clear banner.
         rxBusEvents.add(
-                RxBus.getDefault().observeEvents( QueueProcessingComplete.class)
+                RxBus.getDefault().observeEvents(QueueProcessingComplete.class)
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe(new Consumer<QueueProcessingComplete>() {
                             @Override
-                            public void accept(@io.reactivex.annotations.NonNull QueueProcessingComplete queueProcessingComplete) throws Exception {
-                                ViewGroup offlineLayout = (ViewGroup) getRootView().findViewById(R.id.offline_banner_layout);
+                            public void accept(@io.reactivex.annotations.NonNull QueueProcessingComplete queueProcessingComplete) {
+                                ViewGroup offlineLayout = getRootView().findViewById(R.id.offline_banner_layout);
                                 final Context context = getActivity();
-                                if (offlineLayout != null && NetworkUtils.hasActiveNetworkConnection(context)) {
+                                if (offlineLayout != null && NetworkUtils.hasActiveNetworkConnection(
+                                        context)) {
                                     if (offlineLayout.findViewById(R.id.offline_banner_offline_container).getVisibility() != View.VISIBLE) {
                                         resetOfflineBanner(offlineLayout);
                                     }
@@ -449,12 +449,14 @@ public abstract class BaseActivity<B extends ViewDataBinding> extends AppCompatA
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe(new Consumer<QueueProcessingStarted>() {
                             @Override
-                            public void accept(@io.reactivex.annotations.NonNull QueueProcessingStarted queueProcessingStarted) throws Exception {
+                            public void accept(@io.reactivex.annotations.NonNull QueueProcessingStarted queueProcessingStarted) {
                                 if (NetworkUtils.hasActiveNetworkConnection(getActivity())) {
                                     final View offlineLayout = rootView.findViewById(R.id.offline_banner_layout);
                                     if (offlineLayout != null && getActivity() != null && isAttached()) {
-                                        offlineLayout.findViewById(R.id.offline_banner_offline_container).setVisibility(View.GONE);
-                                        offlineLayout.findViewById(R.id.offline_banner_connected_container).setVisibility(View.VISIBLE);
+                                        offlineLayout.findViewById(R.id.offline_banner_offline_container).setVisibility(
+                                                View.GONE);
+                                        offlineLayout.findViewById(R.id.offline_banner_connected_container).setVisibility(
+                                                View.VISIBLE);
                                         if (offlineLayout.getVisibility() == View.GONE) {
                                             offlineLayout.setVisibility(View.VISIBLE);
                                         }
@@ -469,18 +471,6 @@ public abstract class BaseActivity<B extends ViewDataBinding> extends AppCompatA
         for (int i = 0; i < viewGroup.getChildCount(); i++) {
             viewGroup.getChildAt(i).setVisibility(View.GONE);
         }
-    }
-
-    private void onDismissSubscribeDialog(boolean goToSubscribe) {
-        subscribeDialog.dismiss();
-        subscribeDialog = null;
-        // TODO: Add your own logic if you need to redirect the user to the subscription view
-        Intent intent = new Intent(
-                getActivity(),
-                LoginActivity.class);
-        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-        supportFinishAfterTransition();
-        startActivity(intent);
     }
 
     private void configureOfflineLayout() {
@@ -522,18 +512,21 @@ public abstract class BaseActivity<B extends ViewDataBinding> extends AppCompatA
                     if (getActivity() != null && isAttached()) {
                         Timber.d("Offline Banner: Hide");
                         if (offlineLayout.findViewById(R.id.offline_banner_offline_container).getVisibility() == View.VISIBLE) {
-                            offlineLayout.findViewById(R.id.offline_banner_offline_container).setVisibility(View.GONE);
-                                                   }
+                            offlineLayout.findViewById(R.id.offline_banner_offline_container).setVisibility(
+                                    View.GONE);
+                        }
                     }
                 } else {
                     Timber.d("evaluateConnectionState: Disconnected");
                     if (getActivity() != null && isAttached()) {
                         Timber.d("Offline Banner: Show");
                         if (offlineLayout.findViewById(R.id.offline_banner_connected_container).getVisibility() == View.VISIBLE) {
-                            offlineLayout.findViewById(R.id.offline_banner_connected_container).setVisibility(View.GONE);
+                            offlineLayout.findViewById(R.id.offline_banner_connected_container).setVisibility(
+                                    View.GONE);
                         }
                         offlineLayout.setVisibility(View.VISIBLE);
-                        offlineLayout.findViewById(R.id.offline_banner_offline_container).setVisibility(View.VISIBLE);
+                        offlineLayout.findViewById(R.id.offline_banner_offline_container).setVisibility(
+                                View.VISIBLE);
                     }
                 }
             }

@@ -42,14 +42,14 @@ public class PopupLoader {
         return ((v != null) && (v.getWindowToken() != null));
     }
 
-    public static PopupWindow showPopupLoader(final Context context, final View parentView) {
+    public static void showPopupLoader(final Context context, final View parentView) {
         final PopupWindow popupWindow = PopupLoader.getInstance(context);
 
         Timber.d("showPopupLoader");
 
         LayoutInflater inflater = LayoutInflater.from(context);
         View rootView = inflater.inflate(R.layout.progress_bar, null);
-        final ProgressBar progressBar = (ProgressBar) rootView.findViewById(R.id.progress_bar);
+        final ProgressBar progressBar = rootView.findViewById(R.id.progress_bar);
 
         popupWindow.setContentView(rootView);
         popupWindow.setAnimationStyle(android.R.anim.fade_in);
@@ -78,8 +78,6 @@ public class PopupLoader {
                 dismissPopupLoader(context);
             }
         }, BuildConfig.HTTP_TIMEOUT * 1000 * 2);
-
-        return popupWindow;
     }
 
     public static void dismissPopupLoader(Context context) {

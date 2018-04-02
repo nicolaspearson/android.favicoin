@@ -52,7 +52,6 @@ public abstract class BaseFragment<B extends ViewDataBinding> extends DialogFrag
 
     protected CompositeDisposable rxBusEvents;
 
-
     @Nullable
     public abstract B createBinding(
             @NonNull LayoutInflater inflater,
@@ -77,7 +76,7 @@ public abstract class BaseFragment<B extends ViewDataBinding> extends DialogFrag
         createRxBusSubscriptions();
 
         Timber.d("onCreate: %s", getFragmentTag());
-        if (getOnBackPressedListener() != null) {
+        if (getOnBackPressedListener() != null && getActivity() != null) {
             ((BaseActivity) getActivity()).setOnBackPressedListener(getOnBackPressedListener());
         }
 
@@ -86,7 +85,7 @@ public abstract class BaseFragment<B extends ViewDataBinding> extends DialogFrag
 
     @Override
     public View onCreateView(
-            LayoutInflater inflater,
+            @NonNull LayoutInflater inflater,
             @Nullable ViewGroup container,
             @Nullable Bundle savedInstanceState) {
         super.onCreateView(inflater, container, savedInstanceState);
@@ -102,7 +101,9 @@ public abstract class BaseFragment<B extends ViewDataBinding> extends DialogFrag
         if (monitorOfflineMode() && networkStateReceiver != null) {
             Timber.d("Register Network State Receiver");
             IntentFilter filter = new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION);
-            getActivity().registerReceiver(networkStateReceiver, filter);
+            if (getActivity() != null) {
+                getActivity().registerReceiver(networkStateReceiver, filter);
+            }
         }
 
         return rootView;
@@ -123,7 +124,7 @@ public abstract class BaseFragment<B extends ViewDataBinding> extends DialogFrag
     @Override
     public void onDestroy() {
         togglePopupLoader(false);
-        if (networkStateReceiver != null) {
+        if (networkStateReceiver != null && getActivity() != null) {
             Timber.d("Unregister Network State Receiver");
             getActivity().unregisterReceiver(networkStateReceiver);
         }
@@ -153,7 +154,9 @@ public abstract class BaseFragment<B extends ViewDataBinding> extends DialogFrag
 
     @Override
     public void animateOnBackPressed(GenericCallback onBackPressedCallback) {
-        ((BaseActivity) getActivity()).animateOnBackPressed(onBackPressedCallback);
+        if (getActivity() != null) {
+            ((BaseActivity) getActivity()).animateOnBackPressed(onBackPressedCallback);
+        }
     }
 
     public View getRootView() {
@@ -176,21 +179,27 @@ public abstract class BaseFragment<B extends ViewDataBinding> extends DialogFrag
 
     @Override
     public boolean isLoading() {
-        return ((BaseActivity) getActivity()).isLoading();
+        return getActivity() != null && ((BaseActivity) getActivity()).isLoading();
     }
 
     public void togglePopupLoader(final boolean show) {
-        ((BaseActivity) getActivity()).togglePopupLoader(show);
+        if (getActivity() != null) {
+            ((BaseActivity) getActivity()).togglePopupLoader(show);
+        }
     }
 
     @Override
     public void showToastMsg(String msg, Toasty.ToastType toastType) {
-        ((BaseActivity) getActivity()).showToastMsg(msg, toastType);
+        if (getActivity() != null) {
+            ((BaseActivity) getActivity()).showToastMsg(msg, toastType);
+        }
     }
 
     @Override
     public void showSnackbarMsg(String msg, int duration) {
-        ((BaseActivity) getActivity()).showSnackbarMsg(msg, duration);
+        if (getActivity() != null) {
+            ((BaseActivity) getActivity()).showSnackbarMsg(msg, duration);
+        }
     }
 
     @Override
@@ -198,19 +207,30 @@ public abstract class BaseFragment<B extends ViewDataBinding> extends DialogFrag
             Throwable throwable,
             final GenericCallback retryCallback,
             String title) {
-        ((BaseActivity) getActivity()).showCustomRetryErrorDialog(throwable, retryCallback, title);
+        if (getActivity() != null) {
+            ((BaseActivity) getActivity()).showCustomRetryErrorDialog(
+                    throwable,
+                    retryCallback,
+                    title);
+        }
     }
 
     @Override
     public void showCustomNetworkErrorDialog(GenericCallback retryCallback) {
-        ((BaseActivity) getActivity()).showCustomNetworkErrorDialog(retryCallback);
+        if (getActivity() != null) {
+            ((BaseActivity) getActivity()).showCustomNetworkErrorDialog(retryCallback);
+        }
     }
 
     @Override
     public void showCustomNetworkErrorDialog(
             GenericCallback retryCallback,
             GenericCallback cancelCallback) {
-        ((BaseActivity) getActivity()).showCustomNetworkErrorDialog(retryCallback, cancelCallback);
+        if (getActivity() != null) {
+            ((BaseActivity) getActivity()).showCustomNetworkErrorDialog(
+                    retryCallback,
+                    cancelCallback);
+        }
     }
 
     @Override
@@ -222,14 +242,17 @@ public abstract class BaseFragment<B extends ViewDataBinding> extends DialogFrag
             View.OnClickListener posButtonClick,
             View.OnClickListener negButtonClick,
             DialogUtils.AlertType alertType) {
-        return ((BaseActivity) getActivity()).showCustomAlertDialogSimple(
-                title,
-                message,
-                posButton,
-                negButton,
-                posButtonClick,
-                negButtonClick,
-                alertType);
+        if (getActivity() != null) {
+            return ((BaseActivity) getActivity()).showCustomAlertDialogSimple(
+                    title,
+                    message,
+                    posButton,
+                    negButton,
+                    posButtonClick,
+                    negButtonClick,
+                    alertType);
+        }
+        return null;
     }
 
     @Override
@@ -241,19 +264,22 @@ public abstract class BaseFragment<B extends ViewDataBinding> extends DialogFrag
             View.OnClickListener posButtonClick,
             View.OnClickListener negButtonClick,
             DialogUtils.AlertType alertType) {
-        return ((BaseActivity) getActivity()).showCustomAlertDialogSimple(
-                title,
-                message,
-                posButton,
-                negButton,
-                posButtonClick,
-                negButtonClick,
-                alertType);
+        if (getActivity() != null) {
+            return ((BaseActivity) getActivity()).showCustomAlertDialogSimple(
+                    title,
+                    message,
+                    posButton,
+                    negButton,
+                    posButtonClick,
+                    negButtonClick,
+                    alertType);
+        }
+        return null;
     }
 
     @Override
     public boolean notAuthorized(Throwable throwable) {
-        return ((BaseActivity) getActivity()).notAuthorized(throwable);
+        return getActivity() != null && ((BaseActivity) getActivity()).notAuthorized(throwable);
     }
 
     private void configureOfflineLayout() {
@@ -270,19 +296,21 @@ public abstract class BaseFragment<B extends ViewDataBinding> extends DialogFrag
 
     private void createRxBusSubscriptions() {
         rxBusEvents.add(RxBus.getDefault().observeEvents(QueueProcessingComplete.class)
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Consumer<QueueProcessingComplete>() {
-                    @Override
-                    public void accept(@io.reactivex.annotations.NonNull QueueProcessingComplete queueProcessingComplete) throws Exception {
-                        ViewGroup offlineLayout = (ViewGroup) getRootView().findViewById(R.id.offline_banner_layout);
-                        final Context context = getActivity();
-                        if (offlineLayout != null && NetworkUtils.hasActiveNetworkConnection(context)) {
-                            if (offlineLayout.findViewById(R.id.offline_banner_offline_container).getVisibility() != View.VISIBLE) {
-                                resetOfflineBanner(offlineLayout);
-                            }
-                        }
-                    }
-                }));
+                                .observeOn(AndroidSchedulers.mainThread())
+                                .subscribe(new Consumer<QueueProcessingComplete>() {
+                                    @Override
+                                    public void accept(@io.reactivex.annotations.NonNull QueueProcessingComplete queueProcessingComplete) {
+                                        ViewGroup offlineLayout = getRootView().findViewById(
+                                                R.id.offline_banner_layout);
+                                        final Context context = getActivity();
+                                        if (offlineLayout != null && NetworkUtils.hasActiveNetworkConnection(
+                                                context)) {
+                                            if (offlineLayout.findViewById(R.id.offline_banner_offline_container).getVisibility() != View.VISIBLE) {
+                                                resetOfflineBanner(offlineLayout);
+                                            }
+                                        }
+                                    }
+                                }));
 
         // Queue started, there are > 0 items. Show syncing banner.
         rxBusEvents.add(
@@ -290,12 +318,14 @@ public abstract class BaseFragment<B extends ViewDataBinding> extends DialogFrag
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe(new Consumer<QueueProcessingStarted>() {
                             @Override
-                            public void accept(@io.reactivex.annotations.NonNull QueueProcessingStarted queueProcessingStarted) throws Exception {
+                            public void accept(@io.reactivex.annotations.NonNull QueueProcessingStarted queueProcessingStarted) {
                                 if (NetworkUtils.hasActiveNetworkConnection(getActivity())) {
                                     final View offlineLayout = rootView.findViewById(R.id.offline_banner_layout);
                                     if (offlineLayout != null && getActivity() != null && isAttached()) {
-                                        offlineLayout.findViewById(R.id.offline_banner_offline_container).setVisibility(View.GONE);
-                                        offlineLayout.findViewById(R.id.offline_banner_connected_container).setVisibility(View.VISIBLE);
+                                        offlineLayout.findViewById(R.id.offline_banner_offline_container).setVisibility(
+                                                View.GONE);
+                                        offlineLayout.findViewById(R.id.offline_banner_connected_container).setVisibility(
+                                                View.VISIBLE);
                                         if (offlineLayout.getVisibility() == View.GONE) {
                                             offlineLayout.setVisibility(View.VISIBLE);
                                         }
@@ -305,7 +335,7 @@ public abstract class BaseFragment<B extends ViewDataBinding> extends DialogFrag
                         }));
     }
 
-    private void resetOfflineBanner(ViewGroup viewGroup){
+    private void resetOfflineBanner(ViewGroup viewGroup) {
         viewGroup.setVisibility(View.GONE);
         for (int i = 0; i < viewGroup.getChildCount(); i++) {
             viewGroup.getChildAt(i).setVisibility(View.GONE);
@@ -325,10 +355,12 @@ public abstract class BaseFragment<B extends ViewDataBinding> extends DialogFrag
                     offlineButton.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
-                            Intent offlineIntent = new Intent(
-                                    getActivity(),
-                                    OfflineActivity.class);
-                            getActivity().startActivity(offlineIntent);
+                            if (getActivity() != null) {
+                                Intent offlineIntent = new Intent(
+                                        getActivity(),
+                                        OfflineActivity.class);
+                                getActivity().startActivity(offlineIntent);
+                            }
                         }
                     });
                 }
@@ -339,7 +371,8 @@ public abstract class BaseFragment<B extends ViewDataBinding> extends DialogFrag
                     if (getActivity() != null && isAttached()) {
                         Timber.d("Offline Banner: Hide");
                         if (offlineLayout.findViewById(R.id.offline_banner_offline_container).getVisibility() == View.VISIBLE) {
-                            offlineLayout.findViewById(R.id.offline_banner_offline_container).setVisibility(View.GONE);
+                            offlineLayout.findViewById(R.id.offline_banner_offline_container).setVisibility(
+                                    View.GONE);
                         }
                     }
                 } else {
@@ -347,10 +380,12 @@ public abstract class BaseFragment<B extends ViewDataBinding> extends DialogFrag
                     if (getActivity() != null && isAttached()) {
                         Timber.d("Offline Banner: Show");
                         if (offlineLayout.findViewById(R.id.offline_banner_connected_container).getVisibility() == View.VISIBLE) {
-                            offlineLayout.findViewById(R.id.offline_banner_connected_container).setVisibility(View.GONE);
+                            offlineLayout.findViewById(R.id.offline_banner_connected_container).setVisibility(
+                                    View.GONE);
                         }
                         offlineLayout.setVisibility(View.VISIBLE);
-                        offlineLayout.findViewById(R.id.offline_banner_offline_container).setVisibility(View.VISIBLE);
+                        offlineLayout.findViewById(R.id.offline_banner_offline_container).setVisibility(
+                                View.VISIBLE);
                     }
                 }
             }

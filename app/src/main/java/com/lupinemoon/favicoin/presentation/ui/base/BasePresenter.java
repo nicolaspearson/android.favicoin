@@ -49,7 +49,10 @@ public abstract class BasePresenter implements IBasePresenter {
     }
 
     @Override
-    public void requestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+    public void requestPermissionsResult(
+            int requestCode,
+            String[] permissions,
+            int[] grantResults) {
 
     }
 

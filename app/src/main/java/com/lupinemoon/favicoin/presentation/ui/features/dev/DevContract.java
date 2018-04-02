@@ -18,7 +18,7 @@ class DevContract {
 
     interface Presenter extends IBasePresenter {
         void performExportDatabase();
-        void testPostFail();
+        void clearRealmDatabase();
     }
 
     interface ViewModel extends IBaseViewModel {

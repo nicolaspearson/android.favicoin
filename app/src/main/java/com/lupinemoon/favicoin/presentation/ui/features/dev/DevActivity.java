@@ -87,7 +87,7 @@ public class DevActivity extends BaseVMPActivity<DevContract.ViewModel, DevContr
         });
 
         // Set the view model variable
-        getBinding().setViewModel((DevViewModel)getViewModel());
+        getBinding().setViewModel((DevViewModel) getViewModel());
     }
 
     @Override
@@ -100,7 +100,10 @@ public class DevActivity extends BaseVMPActivity<DevContract.ViewModel, DevContr
 
     @Override
     public void emailFile(File file) {
-        String emailBody = String.format(Locale.getDefault(), "Attached is the realm file for %s, use the Realm Browser to view the contents.", getString(R.string.app_name));
+        String emailBody = String.format(
+                Locale.getDefault(),
+                "Attached is the realm file for %s, use the Realm Browser to view the contents.",
+                getString(R.string.app_name));
         Intent intent = new Intent(Intent.ACTION_SEND);
         intent.setType("plain/text");
         intent.putExtra(Intent.EXTRA_SUBJECT, getString(R.string.export_database));

@@ -6,7 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Custom view on click listener that enlables multiple click listeners to be
+ * Custom view on click listener that enables multiple click listeners to be
  * assigned and triggered on the same view.
  */
 public class DecoratorOnClickListener implements View.OnClickListener {

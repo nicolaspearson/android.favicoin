@@ -8,13 +8,20 @@ class SplashContract extends BaseContract {
 
     interface View extends IBaseView {
         Presenter getPresenter();
+
         void setPresenter(IBasePresenter presenter);
+
         void startLandingActivity();
+
         void startLoginActivity();
+
+        void cryptoCompareCoinsLoaded();
     }
 
     interface Presenter extends IBasePresenter {
         void performAutoLogin();
+
+        void loadCryptoCompareCoins();
     }
 
 }

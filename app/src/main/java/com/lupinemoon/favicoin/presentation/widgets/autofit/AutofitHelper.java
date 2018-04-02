@@ -13,7 +13,6 @@ import android.text.method.SingleLineTransformationMethod;
 import android.text.method.TransformationMethod;
 import android.util.AttributeSet;
 import android.util.DisplayMetrics;
-import android.util.Log;
 import android.util.TypedValue;
 import android.view.View;
 import android.widget.TextView;
@@ -24,11 +23,9 @@ import java.util.ArrayList;
 
 public class AutofitHelper {
 
-    private static final String TAG = "AutoFitTextHelper";
-    private static final boolean SPEW = false;
-
     // Minimum size of the text in pixels
-    private static final int DEFAULT_MIN_TEXT_SIZE = 8; //sp
+    private static final int DEFAULT_MIN_TEXT_SIZE = 8;
+
     // How precise we want to be when reaching the target textWidth size
     private static final float DEFAULT_PRECISION = 0.5f;
 
@@ -66,7 +63,8 @@ public class AutofitHelper {
                     defStyle,
                     0);
             sizeToFit = ta.getBoolean(R.styleable.AutofitTextView_sizeToFit, sizeToFit);
-            minTextSize = ta.getDimensionPixelSize(R.styleable.AutofitTextView_minTextSize,
+            minTextSize = ta.getDimensionPixelSize(
+                    R.styleable.AutofitTextView_minTextSize,
                     minTextSize);
             precision = ta.getFloat(R.styleable.AutofitTextView_precision, precision);
             ta.recycle();
@@ -82,8 +80,9 @@ public class AutofitHelper {
     /**
      * Re-sizes the textSize of the TextView so that the text fits within the bounds of the View.
      */
-    private static void autoFit(TextView view, TextPaint paint, float minTextSize, float maxTextSize,
-                                int maxLines, float precision) {
+    private static void autoFit(
+            TextView view, TextPaint paint, float minTextSize, float maxTextSize,
+            int maxLines, float precision) {
         if (maxLines <= 0 || maxLines == Integer.MAX_VALUE) {
             // Don't auto-size since there's no limit on lines.
             return;
@@ -119,7 +118,7 @@ public class AutofitHelper {
         if ((maxLines == 1 && paint.measureText(text, 0, text.length()) > targetWidth)
                 || getLineCount(text, paint, size, targetWidth, displayMetrics) > maxLines) {
             size = getAutoFitTextSize(text, paint, targetWidth, maxLines, low, high, precision,
-                    displayMetrics);
+                                      displayMetrics);
         }
 
         if (size < minTextSize) {
@@ -132,21 +131,27 @@ public class AutofitHelper {
     /**
      * Recursive binary search to find the best size for the text.
      */
-    private static float getAutoFitTextSize(CharSequence text, TextPaint paint, float targetWidth, int maxLines, float low, float high, float precision, DisplayMetrics displayMetrics) {
+    private static float getAutoFitTextSize(
+            CharSequence text,
+            TextPaint paint,
+            float targetWidth,
+            int maxLines,
+            float low,
+            float high,
+            float precision,
+            DisplayMetrics displayMetrics) {
         float mid = (low + high) / 2.0f;
         int lineCount = 1;
         StaticLayout layout = null;
 
         paint.setTextSize(TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_PX, mid,
-                displayMetrics));
+                                                    displayMetrics));
 
         if (maxLines != 1) {
             layout = new StaticLayout(text, paint, (int) targetWidth, Layout.Alignment.ALIGN_NORMAL,
-                    1.0f, 0.0f, true);
+                                      1.0f, 0.0f, true);
             lineCount = layout.getLineCount();
         }
-
-        if (SPEW) Log.d(TAG, "low=" + low + " high=" + high + " mid=" + mid + " target=" + targetWidth + " maxLines=" + maxLines + " lineCount=" + lineCount);
 
         if (lineCount > maxLines) {
             // For the case that `text` has more newline characters than `maxLines`.
@@ -154,10 +159,10 @@ public class AutofitHelper {
                 return low;
             }
             return getAutoFitTextSize(text, paint, targetWidth, maxLines, low, mid, precision,
-                    displayMetrics);
+                                      displayMetrics);
         } else if (lineCount < maxLines) {
             return getAutoFitTextSize(text, paint, targetWidth, maxLines, mid, high, precision,
-                    displayMetrics);
+                                      displayMetrics);
         } else {
             float maxLineWidth = 0;
             if (maxLines == 1) {
@@ -174,21 +179,26 @@ public class AutofitHelper {
                 return low;
             } else if (maxLineWidth > targetWidth) {
                 return getAutoFitTextSize(text, paint, targetWidth, maxLines, low, mid, precision,
-                        displayMetrics);
+                                          displayMetrics);
             } else if (maxLineWidth < targetWidth) {
                 return getAutoFitTextSize(text, paint, targetWidth, maxLines, mid, high, precision,
-                        displayMetrics);
+                                          displayMetrics);
             } else {
                 return mid;
             }
         }
     }
 
-    private static int getLineCount(CharSequence text, TextPaint paint, float size, float width, DisplayMetrics displayMetrics) {
+    private static int getLineCount(
+            CharSequence text,
+            TextPaint paint,
+            float size,
+            float width,
+            DisplayMetrics displayMetrics) {
         paint.setTextSize(TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_PX, size,
-                displayMetrics));
+                                                    displayMetrics));
         StaticLayout layout = new StaticLayout(text, paint, (int) width,
-                Layout.Alignment.ALIGN_NORMAL, 1.0f, 0.0f, true);
+                                               Layout.Alignment.ALIGN_NORMAL, 1.0f, 0.0f, true);
         return layout.getLineCount();
     }
 
@@ -511,7 +521,16 @@ public class AutofitHelper {
 
     private class AutoFitOnLayoutChangeListener implements View.OnLayoutChangeListener {
         @Override
-        public void onLayoutChange(View view, int left, int top, int right, int bottom, int oldLeft, int oldTop, int oldRight, int oldBottom) {
+        public void onLayoutChange(
+                View view,
+                int left,
+                int top,
+                int right,
+                int bottom,
+                int oldLeft,
+                int oldTop,
+                int oldRight,
+                int oldBottom) {
             autoFit();
         }
     }

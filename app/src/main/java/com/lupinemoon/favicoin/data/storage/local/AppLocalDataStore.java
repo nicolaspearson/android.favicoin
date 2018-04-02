@@ -3,11 +3,16 @@ package com.lupinemoon.favicoin.data.storage.local;
 import android.content.Context;
 import android.support.annotation.NonNull;
 
+import com.google.gson.Gson;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
+import com.google.gson.reflect.TypeToken;
 import com.lupinemoon.favicoin.BuildConfig;
 import com.lupinemoon.favicoin.data.models.AuthToken;
 import com.lupinemoon.favicoin.data.models.CoinItem;
 import com.lupinemoon.favicoin.data.models.Coins;
-import com.lupinemoon.favicoin.data.models.KeyValue;
+import com.lupinemoon.favicoin.data.models.CryptoCompareCoin;
 import com.lupinemoon.favicoin.data.models.NetworkHeader;
 import com.lupinemoon.favicoin.data.models.NetworkMediaType;
 import com.lupinemoon.favicoin.data.models.NetworkRequest;
@@ -16,8 +21,10 @@ import com.lupinemoon.favicoin.data.storage.interfaces.AppDataStore;
 import com.lupinemoon.favicoin.presentation.services.rxbus.RxBus;
 import com.lupinemoon.favicoin.presentation.services.rxbus.events.UpdatedCoinsEvent;
 import com.lupinemoon.favicoin.presentation.utils.Constants;
+import com.lupinemoon.favicoin.presentation.utils.FileUtils;
 
 import java.io.File;
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -25,6 +32,9 @@ import java.util.Locale;
 
 import io.reactivex.Completable;
 import io.reactivex.Flowable;
+import io.reactivex.disposables.Disposable;
+import io.reactivex.functions.Consumer;
+import io.reactivex.schedulers.Schedulers;
 import io.realm.Realm;
 import io.realm.RealmConfiguration;
 import io.realm.RealmList;
@@ -34,8 +44,6 @@ import timber.log.Timber;
 public class AppLocalDataStore implements AppDataStore {
 
     private static AppLocalDataStore appLocalDataStore = new AppLocalDataStore();
-
-    private static final String KEY_VALUE_RANDOM_CLASS = "RandomKeyValue.class";
 
     private AppLocalDataStore() {
         // Empty Constructor
@@ -79,8 +87,19 @@ public class AppLocalDataStore implements AppDataStore {
 
     public void clearRealmDatabase() {
         Timber.w("Clearing Realm...");
-        // Clear relevant realm data before logout
-        clearRandomKeyValues();
+        Realm iRealm = getRealm();
+        try {
+            iRealm.executeTransaction(new Realm.Transaction() {
+                @Override
+                public void execute(@NonNull Realm realm) {
+                    realm.deleteAll();
+                }
+            });
+        } catch (Exception e) {
+            Timber.e(e);
+        } finally {
+            closeRealm(iRealm);
+        }
     }
 
     @Override
@@ -90,89 +109,17 @@ public class AppLocalDataStore implements AppDataStore {
         return null;
     }
 
-    @Override
-    public Completable performNotifyApiCall(Context context) {
-        return Completable.complete();
-    }
-
-    @Override
-    public Flowable<KeyValue> fetchKeyValue(Context context, String key) {
-        Realm iRealm = getRealm();
-        try {
-            KeyValue keyValue = iRealm
-                    .where(KeyValue.class)
-                    .contains("dbClass", KEY_VALUE_RANDOM_CLASS)
-                    .equalTo("key", key)
-                    .findFirst();
-            if (keyValue != null) {
-                // Get detached object from realm
-                KeyValue detachedKeyValue = iRealm.copyFromRealm(keyValue);
-                Timber.d("fetchKeyValue: %s", detachedKeyValue);
-                if (detachedKeyValue != null) {
-                    return Flowable.just(detachedKeyValue);
-                }
-            }
-        } catch (Exception e) {
-            Timber.e(e);
-        } finally {
-            closeRealm(iRealm);
-        }
-        return Flowable.just(new KeyValue());
-    }
-
-    @Override
-    public Flowable<KeyValue> saveKeyValue(Context context, final KeyValue keyValue) {
-        Realm iRealm = getRealm();
-        Timber.d("saveKeyValue: %s", keyValue);
-        keyValue.setDbClass(KEY_VALUE_RANDOM_CLASS);
-        keyValue.compoundPrimaryKey();
-        try {
-            iRealm.executeTransaction(new Realm.Transaction() {
-                @Override
-                public void execute(@NonNull Realm realm) {
-                    realm.copyToRealmOrUpdate(keyValue);
-                }
-            });
-        } catch (Exception e) {
-            Timber.e(e);
-        } finally {
-            closeRealm(iRealm);
-        }
-        return Flowable.just(keyValue);
-    }
-
-    private void clearRandomKeyValues() {
-        Realm iRealm = getRealm();
-        Timber.d("clearRandomKeyValues");
-        try {
-            final RealmResults<KeyValue> result = iRealm.where(KeyValue.class).contains(
-                    "dbClass",
-                    KEY_VALUE_RANDOM_CLASS).findAll();
-            if (result != null) {
-                iRealm.executeTransaction(new Realm.Transaction() {
-                    @Override
-                    public void execute(@NonNull Realm realm) {
-                        result.deleteAllFromRealm();
-                    }
-                });
-            }
-        } catch (Exception e) {
-            Timber.e(e);
-        } finally {
-            closeRealm(iRealm);
-        }
-    }
-
     public Flowable<File> getRealmDatabaseFile(File tempDirectory) {
         Realm iRealm = getRealm();
         // Get or create an "export.realm" file
         File exportRealmFile = new File(tempDirectory, "export.realm");
         try {
             // If "export.realm" already exists, delete it
-            exportRealmFile.delete();
-
-            // Copy the current realm database to "export.realm"
-            iRealm.writeCopyTo(exportRealmFile);
+            boolean deleted = exportRealmFile.delete();
+            if (deleted) {
+                // Copy the current realm database to "export.realm"
+                iRealm.writeCopyTo(exportRealmFile);
+            }
         } catch (Exception e) {
             Timber.e(e);
         } finally {
@@ -200,19 +147,19 @@ public class AppLocalDataStore implements AppDataStore {
         return Flowable.just(networkRequests);
     }
 
-    public void saveNetworkRequest(final NetworkRequest networkRequest){
+    public void saveNetworkRequest(final NetworkRequest networkRequest) {
         Realm iRealm = getRealm();
         Timber.d("%s: saveNetworkRequest %s", this.getClass().getSimpleName(), networkRequest);
-        try{
-            iRealm.executeTransaction(new Realm.Transaction(){
+        try {
+            iRealm.executeTransaction(new Realm.Transaction() {
                 @Override
                 public void execute(@NonNull Realm realm) {
                     realm.copyToRealmOrUpdate(networkRequest);
                 }
             });
-        }catch (Exception e){
+        } catch (Exception e) {
             Timber.e(e);
-        }finally {
+        } finally {
             closeRealm(iRealm);
         }
     }
@@ -240,25 +187,6 @@ public class AppLocalDataStore implements AppDataStore {
         }
     }
 
-    private void clearNetworkHeader() {
-        Realm iRealm = getRealm();
-        try {
-            final RealmResults<NetworkHeader> result = iRealm.where(NetworkHeader.class).findAll();
-            if (result != null) {
-                iRealm.executeTransaction(new Realm.Transaction() {
-                    @Override
-                    public void execute(@NonNull Realm realm) {
-                        result.deleteAllFromRealm();
-                    }
-                });
-            }
-        } catch (Exception e) {
-            Timber.e(e);
-        } finally {
-            closeRealm(iRealm);
-        }
-    }
-
     private void removeNetworkMediaType(NetworkMediaType networkMediaType) {
         Realm iRealm = getRealm();
         Timber.d("removeNetworkMediaType");
@@ -267,25 +195,6 @@ public class AppLocalDataStore implements AppDataStore {
                     .where(NetworkMediaType.class)
                     .equalTo("primaryKey", networkMediaType.getPrimaryKey())
                     .findAll();
-            if (result != null) {
-                iRealm.executeTransaction(new Realm.Transaction() {
-                    @Override
-                    public void execute(@NonNull Realm realm) {
-                        result.deleteAllFromRealm();
-                    }
-                });
-            }
-        } catch (Exception e) {
-            Timber.e(e);
-        } finally {
-            closeRealm(iRealm);
-        }
-    }
-
-    private void clearNetworkMediaType() {
-        Realm iRealm = getRealm();
-        try {
-            final RealmResults<NetworkMediaType> result = iRealm.where(NetworkMediaType.class).findAll();
             if (result != null) {
                 iRealm.executeTransaction(new Realm.Transaction() {
                     @Override
@@ -327,25 +236,6 @@ public class AppLocalDataStore implements AppDataStore {
         }
     }
 
-    private void clearNetworkRequest() {
-        Realm iRealm = getRealm();
-        try {
-            final RealmResults<NetworkRequest> result = iRealm.where(NetworkRequest.class).findAll();
-            if (result != null) {
-                iRealm.executeTransaction(new Realm.Transaction() {
-                    @Override
-                    public void execute(@NonNull Realm realm) {
-                        result.deleteAllFromRealm();
-                    }
-                });
-            }
-        } catch (Exception e) {
-            Timber.e(e);
-        } finally {
-            closeRealm(iRealm);
-        }
-    }
-
     private void removeNetworkRequestBody(NetworkRequestBody networkRequestBody) {
         Realm iRealm = getRealm();
         Timber.d("removeNetworkRequestBody");
@@ -354,25 +244,6 @@ public class AppLocalDataStore implements AppDataStore {
                     .where(NetworkRequestBody.class)
                     .equalTo("primaryKey", networkRequestBody.getPrimaryKey())
                     .findAll();
-            if (result != null) {
-                iRealm.executeTransaction(new Realm.Transaction() {
-                    @Override
-                    public void execute(@NonNull Realm realm) {
-                        result.deleteAllFromRealm();
-                    }
-                });
-            }
-        } catch (Exception e) {
-            Timber.e(e);
-        } finally {
-            closeRealm(iRealm);
-        }
-    }
-
-    private void clearNetworkRequestBody() {
-        Realm iRealm = getRealm();
-        try {
-            final RealmResults<NetworkRequestBody> result = iRealm.where(NetworkRequestBody.class).findAll();
             if (result != null) {
                 iRealm.executeTransaction(new Realm.Transaction() {
                     @Override
@@ -400,8 +271,21 @@ public class AppLocalDataStore implements AppDataStore {
             if (result != null) {
                 // Get detached object from realm
                 Collection<CoinItem> detachedCoinItems = iRealm.copyFromRealm(result);
-                Timber.d("getCoins: %s", detachedCoinItems);
-                coinItems.addAll(detachedCoinItems);
+                List<CoinItem> paginated = new ArrayList<>();
+                try {
+                    coinItems.addAll(detachedCoinItems);
+                    if (start > 1) {
+                        paginated = coinItems.subList(start - 1, limit - 1);
+                    } else {
+                        paginated.addAll(detachedCoinItems);
+                    }
+                } catch (Exception e) {
+                    paginated.clear();
+                    paginated.addAll(detachedCoinItems);
+                }
+                Timber.d("getCoins: %s", paginated);
+                coinItems.clear();
+                coinItems.addAll(paginated);
             }
         } catch (Exception e) {
             Timber.e(e);
@@ -412,33 +296,13 @@ public class AppLocalDataStore implements AppDataStore {
         return Flowable.just(coins);
     }
 
-    private void refreshCoins() {
-        Realm iRealm = getRealm();
-        Coins coins = new Coins();
-        coins.setSource(Constants.SOURCE_REALM);
-        RealmList<CoinItem> coinItems = new RealmList<>();
-        try {
-            RealmResults<CoinItem> result = iRealm.where(CoinItem.class).findAll();
-            if (result != null) {
-                // Get detached object from realm
-                Collection<CoinItem> detachedCoinItems = iRealm.copyFromRealm(result);
-                Timber.d("getCoins: %s", detachedCoinItems);
-                coinItems.addAll(detachedCoinItems);
-            }
-        } catch (Exception e) {
-            Timber.e(e);
-        } finally {
-            closeRealm(iRealm);
-        }
-        coins.setCoinItems(coinItems);
-        RxBus.getDefault().post(new UpdatedCoinsEvent(coins));
-    }
-
-    public void saveCoins(final List<CoinItem> coinItems) {
+    public Coins saveCoins(final List<CoinItem> coinItems, boolean postEvent) {
         Realm iRealm = getRealm();
         Timber.d("saveCoins: %s", coinItems);
-        clearCoins();
         try {
+            for (final CoinItem item : coinItems) {
+                item.setCryptoCompareCoin(fetchCryptoCompareCoin(item.getSymbol(), item.getName()));
+            }
             iRealm.executeTransaction(new Realm.Transaction() {
                 @Override
                 public void execute(@NonNull Realm realm) {
@@ -456,30 +320,90 @@ public class AppLocalDataStore implements AppDataStore {
         RealmList<CoinItem> updatedCoinItems = new RealmList<>();
         updatedCoinItems.addAll(coinItems);
         coins.setCoinItems(updatedCoinItems);
-        RxBus.getDefault().post(new UpdatedCoinsEvent(coins));
+        if (postEvent) {
+            RxBus.getDefault().post(new UpdatedCoinsEvent(coins));
+        }
+        return coins;
+    }
+    //endregion
+
+    // region Crypto Compare API
+    @Override
+    public Completable loadCryptoCompareCoins(Context context) {
+        if (getCryptoCompareCoins().size() < 1) {
+            Realm iRealm = getRealm();
+            try {
+                JsonParser jsonParser = new JsonParser();
+                JsonObject jsonObject = (JsonObject) jsonParser.parse(FileUtils.getJsonFileFromAssets(
+                        context,
+                        BuildConfig.CRYPTO_COMPARE_FILENAME));
+                JsonArray jsonArray = jsonObject.getAsJsonArray("Data");
+                Type listType = new TypeToken<List<CryptoCompareCoin>>() {
+                }.getType();
+                final List<CryptoCompareCoin> cryptoCompareCoins = new Gson().fromJson(
+                        jsonArray,
+                        listType);
+                iRealm.executeTransaction(new Realm.Transaction() {
+                    @Override
+                    public void execute(@NonNull Realm realm) {
+                        realm.copyToRealmOrUpdate(cryptoCompareCoins);
+                    }
+                });
+            } catch (Exception e) {
+                Timber.e(e);
+                return Completable.error(e);
+            } finally {
+                closeRealm(iRealm);
+            }
+        }
+        return Completable.complete();
     }
 
-    private void clearCoins() {
+    private RealmList<CryptoCompareCoin> getCryptoCompareCoins() {
         Realm iRealm = getRealm();
-        Timber.d("clearCoins");
+        RealmList<CryptoCompareCoin> coins = new RealmList<>();
         try {
-            iRealm.executeTransaction(new Realm.Transaction() {
-                @Override
-                public void execute(@NonNull Realm realm) {
-                    realm.delete(CoinItem.class);
-                }
-            });
-            iRealm.executeTransaction(new Realm.Transaction() {
-                @Override
-                public void execute(@NonNull Realm realm) {
-
-                }
-            });
+            RealmResults<CryptoCompareCoin> result = iRealm.where(CryptoCompareCoin.class).findAll();
+            if (result != null) {
+                // Get detached object from realm
+                Collection<CryptoCompareCoin> detachedCoins = iRealm.copyFromRealm(result);
+                Timber.d("getCoins: %s", detachedCoins);
+                coins.addAll(detachedCoins);
+            }
         } catch (Exception e) {
             Timber.e(e);
         } finally {
             closeRealm(iRealm);
         }
+        return coins;
     }
-    //endregion
+
+    private CryptoCompareCoin fetchCryptoCompareCoin(String symbol, String name) {
+        Realm iRealm = getRealm();
+        try {
+            CryptoCompareCoin cryptoCompareCoin = iRealm
+                    .where(CryptoCompareCoin.class)
+                    .beginGroup()
+                    .equalTo("symbol", symbol)
+                    .or()
+                    .equalTo("coinName", name)
+                    .endGroup()
+                    .findFirst();
+            if (cryptoCompareCoin != null) {
+                // Get detached object from realm
+                CryptoCompareCoin detachedValue = iRealm.copyFromRealm(cryptoCompareCoin);
+                Timber.d("fetchCryptoCompareCoin: %s", detachedValue);
+                if (detachedValue != null) {
+                    return detachedValue;
+                }
+            }
+        } catch (Exception e) {
+            Timber.e(e);
+        } finally {
+            closeRealm(iRealm);
+        }
+        Timber.d("fetchCryptoCompareCoin: MISSED - SYM: %s | NAME: %s", symbol, name);
+        return new CryptoCompareCoin();
+    }
+    // endregion
 }

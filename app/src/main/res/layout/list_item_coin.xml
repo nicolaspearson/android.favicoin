@@ -7,7 +7,7 @@
 
         <variable
             name="viewModel"
-            type="com.lupinemoon.favicoin.presentation.ui.features.landing.home.adapters.CoinItemViewModel"/>
+            type="com.lupinemoon.favicoin.presentation.ui.features.home.adapters.CoinItemViewModel"/>
     </data>
 
     <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
@@ -41,7 +41,7 @@
                     android:src="@drawable/ic_placeholder"
                     android:transitionName="@string/shared_image"
                     app:loadCoinImage="@{viewModel}"
-                    app:tiv_rounding="1"/>
+                    app:tiv_rounding="10"/>
 
             </RelativeLayout>
 
@@ -123,9 +123,8 @@
                     android:text="@{viewModel.marketCapUsd}"
                     app:minTextSize="@dimen/text.size.xs"/>
 
-                <TextView
-                    android:id="@+id/percentage_change_24h"
-                    style="@style/TextRegular.Field.ListItemSubtitle"
+                <ImageView
+                    android:id="@+id/percentage_change_24h_image"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_alignParentEnd="true"
@@ -135,8 +134,24 @@
                     android:layout_marginTop="@dimen/dialog.margin.s"
                     android:layout_toLeftOf="@+id/price"
                     android:layout_toStartOf="@+id/price"
+                    app:loadTickerChangeImage="@{viewModel}"/>
+
+                <TextView
+                    android:id="@+id/percentage_change_24h"
+                    style="@style/TextRegular.Field.ListItemSubtitle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentEnd="true"
+                    android:layout_alignParentRight="true"
+                    android:layout_below="@+id/percentage_change_24h_image"
+                    android:layout_marginEnd="@dimen/dialog.margin.m"
+                    android:layout_marginRight="@dimen/dialog.margin.m"
+                    android:layout_marginTop="@dimen/dialog.margin.sm"
+                    android:layout_toLeftOf="@+id/market_cap"
+                    android:layout_toStartOf="@+id/market_cap"
                     android:text="@{viewModel.percentChange24h}"
-                    android:textColor="@{viewModel.percentChange24hValue > 0 ? @color/green : @color/red}"/>
+                    android:textColor="@{viewModel.percentChange24hValue > 0 ? @color/green : @color/red}"
+                    app:minTextSize="@dimen/text.size.xs"/>
 
             </RelativeLayout>
 

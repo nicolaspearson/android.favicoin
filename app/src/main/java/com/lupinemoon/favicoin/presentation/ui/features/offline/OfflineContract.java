@@ -9,8 +9,11 @@ class OfflineContract {
 
     interface View extends IBaseView {
         Presenter getPresenter();
+
         ViewModel getViewModel();
+
         ActivityOfflineBinding getBinding();
+
         void closeOfflineActivity();
     }
 

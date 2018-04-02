@@ -30,8 +30,6 @@ public class Constants {
 
     public static final int DEFAULT_SELECTOR_DELAY = 150;
 
-    public static final String KEY_SHOULD_USE_CIRCLE = "should_use_circle";
-
     public static final String INTENT_COIN_ITEM = "intent_coin_item";
 
     // REALM

@@ -27,9 +27,12 @@ public class OfflineViewModel extends BaseViewModel implements OfflineContract.V
 
     @Bindable
     public String getOfflineHeaderMessage() {
-        return String.format(Locale.getDefault(), offlineView.getActivity().getApplicationContext().getString(
-                R.string.offline_header_message), offlineView.getActivity().getApplicationContext().getString(
-                R.string.app_name));
+        return String.format(
+                Locale.getDefault(),
+                offlineView.getActivity().getApplicationContext().getString(
+                        R.string.offline_header_message),
+                offlineView.getActivity().getApplicationContext().getString(
+                        R.string.app_name));
     }
 
     public void onGotItClick() {

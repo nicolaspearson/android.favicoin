@@ -25,5 +25,10 @@ class LandingPresenter extends BasePresenter implements LandingContract.Presente
             appRepository.retryNetworkRequests(landingView.getActivity().getApplicationContext());
         }
     }
+
+    @Override
+    public void onLogout() {
+        appRepository.clearAuthString(landingView.getActivity().getApplicationContext());
+    }
 }
 

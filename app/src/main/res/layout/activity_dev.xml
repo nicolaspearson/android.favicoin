@@ -114,7 +114,7 @@
                         android:clickable="true"
                         android:focusable="true"
                         android:gravity="center"
-                        android:onClick="@{viewModel::testPostFail}"
+                        android:onClick="@{viewModel::clearRealmDatabase}"
                         android:orientation="horizontal"
                         android:paddingBottom="@dimen/dialog.margin.m"
                         android:paddingTop="@dimen/dialog.margin.m">
@@ -126,7 +126,7 @@
                             android:layout_gravity="center"
                             android:gravity="center_vertical|start|left"
                             android:padding="@dimen/dialog.margin.xs"
-                            android:text="@string/test_post_fail"
+                            android:text="@string/clear_database"
                             android:textAllCaps="true"
                             android:textColor="@color/grey_33"/>
 

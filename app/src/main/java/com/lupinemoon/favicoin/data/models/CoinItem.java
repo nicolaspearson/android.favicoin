@@ -66,7 +66,7 @@ public class CoinItem extends RealmObject {
     @SerializedName("last_updated")
     String lastUpdated;
 
-    String imageUrl;
+    CryptoCompareCoin cryptoCompareCoin;
 
     public String getId() {
         return id;
@@ -189,10 +189,14 @@ public class CoinItem extends RealmObject {
     }
 
     public String getImageUrl() {
-        return imageUrl;
+        return cryptoCompareCoin != null ? cryptoCompareCoin.getImageUrl() : "";
     }
 
-    public void setImageUrl(String imageUrl) {
-        this.imageUrl = imageUrl;
+    public CryptoCompareCoin getCryptoCompareCoin() {
+        return cryptoCompareCoin;
+    }
+
+    public void setCryptoCompareCoin(CryptoCompareCoin cryptoCompareCoin) {
+        this.cryptoCompareCoin = cryptoCompareCoin;
     }
 }

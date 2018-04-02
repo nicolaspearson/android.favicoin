@@ -9,7 +9,6 @@ import com.lupinemoon.favicoin.MainApplication;
 import com.lupinemoon.favicoin.data.models.AuthToken;
 import com.lupinemoon.favicoin.data.models.CoinItem;
 import com.lupinemoon.favicoin.data.models.Coins;
-import com.lupinemoon.favicoin.data.models.KeyValue;
 import com.lupinemoon.favicoin.data.models.NetworkRequest;
 import com.lupinemoon.favicoin.data.network.rest.ServiceGenerator;
 import com.lupinemoon.favicoin.data.storage.interfaces.AppDataStore;
@@ -30,7 +29,6 @@ import java.util.concurrent.TimeUnit;
 
 import io.reactivex.Completable;
 import io.reactivex.Flowable;
-import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.functions.Action;
 import io.reactivex.functions.BiFunction;
@@ -54,7 +52,6 @@ public class AppRepository implements AppDataStore {
     private AppLocalDataStore appLocalDataStore;
     private AppRemoteDataStore appRemoteDataStore;
 
-    private boolean networkFinished = false;
     private boolean processingQueue;
 
     private final long queueInterval = 5000;
@@ -115,6 +112,10 @@ public class AppRepository implements AppDataStore {
         return appLocalDataStore.getRealmDatabaseFile(tempDirectory);
     }
 
+    public void clearRealmDatabase() {
+        appLocalDataStore.clearRealmDatabase();
+    }
+
     public void retryNetworkRequests(final Context context) {
         if (!processingQueue) {
             processingQueue = true;
@@ -143,11 +144,8 @@ public class AppRepository implements AppDataStore {
                                                 "%s: Retrying request queue.",
                                                 this.getClass().getSimpleName());
 
-                                        // If the queue is empty on Complete is called and nothing is emitted.
-                                        if (networkRequest != null) {
-                                            Timber.d("Queue Exists: Posting Queue Started Event");
-                                            RxBus.getDefault().post(new QueueProcessingStarted());
-                                        }
+                                        Timber.d("Queue Exists: Posting Queue Started Event");
+                                        RxBus.getDefault().post(new QueueProcessingStarted());
 
                                         Call call = ServiceGenerator.retryRequest(
                                                 context,
@@ -236,7 +234,6 @@ public class AppRepository implements AppDataStore {
     }
 
     public void clearAuthString(Context context) {
-        appLocalDataStore.clearRealmDatabase();
         MainApplication.getStorage(context).del(com.lupinemoon.favicoin.presentation.utils.Constants.KEY_AUTH_TOKEN);
     }
 
@@ -245,79 +242,6 @@ public class AppRepository implements AppDataStore {
             Context context, String username, String password) {
         // Never done locally
         return appRemoteDataStore.doLogin(context, username, password);
-    }
-    // endregion
-
-    // region Template API
-    @Override
-    public Completable performNotifyApiCall(Context context) {
-        // Fire both calls simultaneously on separate threads, return
-        // the first result, perform update when the network returns
-        Completable localCompletable = appLocalDataStore.performNotifyApiCall(context).subscribeOn(
-                Schedulers.io());
-        Completable remoteCompletable = appRemoteDataStore.performNotifyApiCall(context).subscribeOn(
-                Schedulers.io());
-        return localCompletable.andThen(remoteCompletable);
-    }
-
-    @Override
-    public Flowable<KeyValue> fetchKeyValue(final Context context, String key) {
-        // Fire both calls simultaneously on separate threads, return
-        // the first result, perform update when the network returns
-        return Flowable.mergeDelayError(
-                appLocalDataStore.fetchKeyValue(context, key).subscribeOn(Schedulers.io()),
-                appRemoteDataStore.fetchKeyValue(context, key)
-                        .subscribeOn(Schedulers.io())
-                        .observeOn(Schedulers.io())
-                        .doOnNext(new Consumer<KeyValue>() {
-                            @Override
-                            public void accept(KeyValue newKeyValue) {
-                                networkFinished = true;
-                                appLocalDataStore.saveKeyValue(context, newKeyValue);
-                            }
-                        }))
-                .filter(new Predicate<KeyValue>() {
-                    @Override
-                    public boolean test(KeyValue newKeyValue) {
-                        // Return true if this result is returned from the network
-                        if (networkFinished) {
-                            networkFinished = false;
-                            return true;
-                        }
-                        // Only return offline data if the user is offline or offline first strategy is required
-                        return (!NetworkUtils.hasActiveNetworkConnection(context) || BuildConfig.LOCAL_REPO_OFFLINE_FIRST) && newKeyValue != null;
-                    }
-                });
-    }
-
-    @Override
-    public Flowable<KeyValue> saveKeyValue(final Context context, final KeyValue keyValue) {
-        Timber.d("Saving Key value");
-        // Fire both calls simultaneously on separate threads, return
-        // the first result, perform update when the network returns
-        return Flowable.mergeDelayError(
-                appLocalDataStore.saveKeyValue(context, keyValue).subscribeOn(Schedulers.io()),
-                appRemoteDataStore.saveKeyValue(context, keyValue)
-                        .subscribeOn(Schedulers.io())
-                        .observeOn(AndroidSchedulers.mainThread())
-                        .doOnNext(new Consumer<KeyValue>() {
-                            @Override
-                            public void accept(KeyValue newKeyValue) {
-                                networkFinished = true;
-                            }
-                        }))
-                .filter(new Predicate<KeyValue>() {
-                    @Override
-                    public boolean test(KeyValue newKeyValue) {
-                        // Return true if this result is returned from the network
-                        if (networkFinished) {
-                            networkFinished = false;
-                            return true;
-                        }
-                        // Only return offline data if the user is offline or offline first strategy is required
-                        return (!NetworkUtils.hasActiveNetworkConnection(context) || BuildConfig.LOCAL_REPO_OFFLINE_FIRST) && newKeyValue != null;
-                    }
-                });
     }
     // endregion
 
@@ -348,60 +272,29 @@ public class AppRepository implements AppDataStore {
                     appLocalDataStore.getCoins(context, start, limit)
                             .subscribeOn(Schedulers.io()),
                     appRemoteDataStore.getCoins(context, start, limit)
-                            .subscribeOn(Schedulers.io())
-                            .observeOn(Schedulers.io())
-                            .doOnNext(new Consumer<Coins>() {
-                                @Override
-                                public void accept(Coins coins) {
-                                    // Save locally
-                                    appLocalDataStore.saveCoins(coins.getCoinItems());
-                                }
-                            }),
+                            .subscribeOn(Schedulers.io()),
                     new BiFunction<Coins, Coins, Coins>() {
                         @Override
                         public Coins apply(
                                 @NonNull Coins localCoins,
                                 @NonNull Coins networkCoins) {
                             RealmList<CoinItem> resultCoinItemList = new RealmList<>();
-
+                            Coins savedCoins = appLocalDataStore.saveCoins(networkCoins.getCoinItems(), false);
                             try {
-                                if (localCoins.getCoinItems() != null && localCoins.getCoinItems().size() > 0) {
+                                if (savedCoins.getCoinItems() != null && savedCoins.getCoinItems().size() > 0) {
+                                    Timber.d("savedCoinItems: %s", savedCoins.getCoinItems());
+                                    // Prefer saved coins
+                                    return savedCoins;
+                                } else if (localCoins.getCoinItems() != null && localCoins.getCoinItems().size() > 0) {
+                                    // Fail over to local coins
                                     Timber.d("localCoinItems: %s", localCoins.getCoinItems());
-                                    if (networkCoins.getCoinItems() != null && networkCoins.getCoinItems().size() > 0) {
-                                        Timber.d(
-                                                "networkCoinItems: %s",
-                                                networkCoins.getCoinItems());
-                                        resultCoinItemList.addAll(localCoins.getCoinItems());
-                                        // Combine lists using local first
-                                        for (CoinItem coinItem2 : networkCoins.getCoinItems()) {
-                                            boolean found = false;
-                                            for (CoinItem coinItem1 : resultCoinItemList) {
-                                                if (coinItem2.getId().equals(coinItem1.getId())) {
-                                                    found = true;
-                                                }
-                                            }
-                                            if (!found) {
-                                                resultCoinItemList.add(coinItem2);
-                                            }
-                                        }
-                                        Timber.d("Combined coin items: %s", resultCoinItemList);
-                                        if (resultCoinItemList.size() > 0) {
-                                            Coins coins = new Coins();
-                                            coins.setCoinItems(resultCoinItemList);
-                                            return coins;
-                                        }
-                                    } else {
-                                        // No network coins
-                                        return localCoins;
-                                    }
-                                } else if (networkCoins.getCoinItems() != null && networkCoins.getCoinItems().size() > 0) {
-                                    // No local coins
-                                    return networkCoins;
+                                    return localCoins;
                                 }
                             } catch (Exception e) {
                                 Timber.e(e, "Coin List Combine Latest Failed");
                             }
 
+                            // No result
                             Coins coins = new Coins();
                             coins.setCoinItems(resultCoinItemList);
                             return coins;
@@ -421,10 +314,18 @@ public class AppRepository implements AppDataStore {
                                 @Override
                                 public void accept(Coins coins) {
                                     // Save locally
-                                    appLocalDataStore.saveCoins(coins.getCoinItems());
+                                    appLocalDataStore.saveCoins(coins.getCoinItems(), true);
                                 }
                             }));
         }
+    }
+    // endregion
+
+    // region Crypto Compare API
+    @Override
+    public Completable loadCryptoCompareCoins(Context context) {
+        return appLocalDataStore.loadCryptoCompareCoins(context).subscribeOn(
+                Schedulers.io());
     }
     // endregion
 

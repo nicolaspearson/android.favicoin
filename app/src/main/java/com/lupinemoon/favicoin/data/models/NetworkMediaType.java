@@ -11,7 +11,7 @@ import okhttp3.MediaType;
  * the content type of an HTTP request or response body.
  */
 @ToString
-@SuppressWarnings("WeakerAccess")
+@SuppressWarnings("WeakerAccess, unused")
 public class NetworkMediaType extends RealmObject {
 
     String mediaType;

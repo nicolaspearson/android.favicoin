@@ -22,6 +22,7 @@
 
         <item name="android:alertDialogTheme">@style/DialogStyle</item>
         <item name="alertDialogTheme">@style/DialogStyle</item>
+        <item name="coordinatorLayoutStyle">@style/Widget.Design.CoordinatorLayout</item>
     </style>
 
     <!-- Added this style to prevent black backgrounds through transitions -->

@@ -1,4 +1,4 @@
-package com.lupinemoon.favicoin.presentation.ui.features.landing.home.adapters;
+package com.lupinemoon.favicoin.presentation.ui.features.home.adapters;
 
 import android.databinding.Bindable;
 import android.databinding.BindingAdapter;
@@ -13,16 +13,13 @@ import com.bumptech.glide.RequestBuilder;
 import com.bumptech.glide.request.target.SimpleTarget;
 import com.bumptech.glide.request.target.Target;
 import com.bumptech.glide.request.transition.Transition;
-import com.lupinemoon.favicoin.BuildConfig;
 import com.lupinemoon.favicoin.R;
 import com.lupinemoon.favicoin.data.models.CoinItem;
 import com.lupinemoon.favicoin.databinding.ListItemCoinBinding;
 import com.lupinemoon.favicoin.presentation.ui.base.BaseViewModel;
-import com.lupinemoon.favicoin.presentation.ui.features.landing.home.HomeContract;
+import com.lupinemoon.favicoin.presentation.ui.features.home.HomeContract;
 import com.lupinemoon.favicoin.presentation.utils.ActivityUtils;
 import com.lupinemoon.favicoin.presentation.utils.ImageUtils;
-
-import timber.log.Timber;
 
 public class CoinItemViewModel extends BaseViewModel {
 
@@ -99,17 +96,25 @@ public class CoinItemViewModel extends BaseViewModel {
 
     @Bindable
     public String getMarketCapUsd() {
-        return coinItem.getMarketCapUsd();
+        return String.format(
+                homeView.getActivity().getString(R.string.dollar_format),
+                coinItem.getMarketCapUsd());
     }
 
     @Bindable
     public String getPercentChange24h() {
-        return coinItem.getPercentChange24h();
+        return String.format(
+                homeView.getActivity().getString(R.string.percentage_format),
+                coinItem.getPercentChange24h());
     }
 
     @Bindable
-    public Long getPercentChange24hValue() {
-        return Long.parseLong(coinItem.getPercentChange24h());
+    public Double getPercentChange24hValue() {
+        try {
+            return Double.parseDouble(coinItem.getPercentChange24h());
+        } catch (NumberFormatException e) {
+            return 0D;
+        }
     }
 
     @Bindable
@@ -130,32 +135,38 @@ public class CoinItemViewModel extends BaseViewModel {
         this.imageBitmap = imageBitmap;
     }
 
+    @BindingAdapter(value = {"loadTickerChangeImage"})
+    public static void loadTickerChangeImage(
+            final ImageView imageView,
+            final CoinItemViewModel coinItemViewModel) {
+        imageView.setImageResource(coinItemViewModel.getPercentChange24hValue() > 0 ? R.drawable.vd_ticker_up : R.drawable.vd_ticker_down);
+    }
+
     @BindingAdapter(value = {"loadCoinImage"})
     public static void loadCoinImage(
             final ImageView imageView,
             final CoinItemViewModel coinItemViewModel) {
-
         // Reset the coin bitmap
         coinItemViewModel.setImageBitmap(null);
 
         if (!TextUtils.isEmpty(coinItemViewModel.getImageUrl())) {
-            coinItemViewModel.getRequestBuilder().load(ImageUtils.getFullCoinUrl(coinItemViewModel.getImageUrl()))
+            coinItemViewModel.getRequestBuilder().load(ImageUtils.getFullCoinUrl(
+                    coinItemViewModel.getImageUrl()))
                     .into(new SimpleTarget<Bitmap>(Target.SIZE_ORIGINAL, Target.SIZE_ORIGINAL) {
-
                         @Override
                         public void onResourceReady(
                                 @NonNull Bitmap resource,
                                 @Nullable Transition<? super Bitmap> transition) {
                             imageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
-                            imageView.setImageBitmap(ImageUtils.getBitmapClippedCircle(resource));
+                            imageView.setImageBitmap(resource);
+                            // imageView.setImageBitmap(ImageUtils.getBitmapClippedCircle(resource));
                             coinItemViewModel.setImageBitmap(resource);
                         }
                     });
-        }
-
-        if (!ImageUtils.hasImage(imageView) || TextUtils.isEmpty(coinItemViewModel.getImageUrl())) {
+        } else {
             imageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
             imageView.setImageResource(R.drawable.ic_placeholder);
         }
     }
+
 }

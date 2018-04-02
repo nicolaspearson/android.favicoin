@@ -50,7 +50,7 @@ public abstract class BaseVMPActivity<VM extends IBaseViewModel, P extends IBase
         }
 
         setViewModel(createViewModel(savedViewModelState));
-        setPresenter(createPresenter(getIntent().getExtras()));
+        setPresenter(createPresenter(getIntent() != null && getIntent().getExtras() != null ? getIntent().getExtras() : new Bundle()));
     }
 
     @Override
@@ -131,7 +131,10 @@ public abstract class BaseVMPActivity<VM extends IBaseViewModel, P extends IBase
     }
 
     @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+    public void onRequestPermissionsResult(
+            int requestCode,
+            @NonNull String[] permissions,
+            @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         if (getPresenter() != null) {
             getPresenter().requestPermissionsResult(requestCode, permissions, grantResults);

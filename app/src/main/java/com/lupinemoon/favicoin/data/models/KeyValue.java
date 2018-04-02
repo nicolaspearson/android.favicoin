@@ -13,10 +13,10 @@ import io.realm.annotations.PrimaryKey;
 import lombok.ToString;
 
 @ToString
-@Parcel(implementations = { KeyValueRealmProxy.class },
+@Parcel(implementations = {KeyValueRealmProxy.class},
         value = Parcel.Serialization.BEAN,
-        analyze = { KeyValue.class })
-@SuppressWarnings("WeakerAccess")
+        analyze = {KeyValue.class})
+@SuppressWarnings("WeakerAccess, unused")
 public class KeyValue extends RealmObject {
 
     // Fields must be public
@@ -33,7 +33,7 @@ public class KeyValue extends RealmObject {
     String dbClass;
 
     public void compoundPrimaryKey() {
-        if(!isManaged()) {
+        if (!isManaged()) {
             String newPrimaryKey = String.format(
                     "%s",
                     (this.key != null ? this.key : ""));

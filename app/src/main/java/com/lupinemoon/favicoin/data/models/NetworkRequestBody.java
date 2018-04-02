@@ -9,7 +9,7 @@ import okio.Buffer;
 import timber.log.Timber;
 
 @ToString
-@SuppressWarnings("WeakerAccess")
+@SuppressWarnings("WeakerAccess, unused")
 public class NetworkRequestBody extends RealmObject {
 
     NetworkMediaType networkMediaType;

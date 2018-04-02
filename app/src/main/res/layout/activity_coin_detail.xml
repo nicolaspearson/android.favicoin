@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<layout xmlns:app="http://schemas.android.com/apk/res-auto">
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <data>
 
@@ -9,51 +10,127 @@
 
     </data>
 
-    <LinearLayout
-        xmlns:android="http://schemas.android.com/apk/res/android"
-        android:id="@+id/parent_container"
+    <android.support.design.widget.CoordinatorLayout
+        android:id="@+id/coordinator_layout"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_gravity="center"
-        android:background="@color/white"
-        android:fitsSystemWindows="false"
-        android:orientation="vertical">
+        android:layout_height="match_parent">
 
-        <TextView
-            android:id="@+id/coin_detail_button"
-            style="@style/TextBold.Button"
-            android:layout_width="match_parent"
-            android:layout_height="@dimen/default_button_height"
-            android:layout_margin="@dimen/default_button_margin"
-            android:background="@drawable/selector_button_primary"
-            android:clickable="true"
-            android:focusable="true"
-            android:gravity="center"
-            android:onClick="@{viewModel::onCoinDetailClick}"
-            android:text="Coin Detail"
-            android:textColor="@color/white"/>
-
-        <android.support.design.widget.TextInputLayout
-            style="@style/TextInputLayoutStyle"
+        <android.support.design.widget.AppBarLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_gravity="bottom"
-            app:error="@{viewModel.getCoinDetailString()}"
-            app:errorEnabled="true"
-            app:errorTextAppearance="@style/TextRegular.ErrorText"
-            app:hintTextAppearance="@style/TextRegular.HintText">
+            android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar">
 
-            <android.support.design.widget.TextInputEditText
-                android:id="@+id/coin_detail_string"
-                style="@style/TextRegular.InputText"
+            <include layout="@layout/toolbar"/>
+
+        </android.support.design.widget.AppBarLayout>
+
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            app:layout_behavior="@string/appbar_scrolling_view_behavior">
+
+            <android.support.v4.widget.NestedScrollView
+                android:id="@+id/coin_detail_scroll_view"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:hint="HINT"
-                android:inputType="number"
-                android:text="@={viewModel.coinDetailString}"/>
+                android:layout_height="match_parent"
+                android:background="@color/white"
+                android:fillViewport="true"
+                android:scrollbars="vertical"
+                android:visibility="visible">
 
-        </android.support.design.widget.TextInputLayout>
+                <android.support.design.widget.CoordinatorLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent">
 
-    </LinearLayout>
+                    <LinearLayout
+                        android:id="@+id/coin_detail_parent_container"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:orientation="vertical"
+                        android:visibility="visible">
+
+                        <FrameLayout
+                            android:id="@+id/coin_detail_image_container"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginBottom="@dimen/dialog.margin.xl"
+                            android:background="@color/color_primary_dark">
+
+                            <com.lupinemoon.favicoin.presentation.widgets.transitionimageview.TransitionImageView
+                                android:id="@+id/coin_image_view"
+                                android:layout_width="@dimen/coin_detail_image_size"
+                                android:layout_height="@dimen/coin_detail_image_size"
+                                android:layout_gravity="center"
+                                android:layout_margin="@dimen/dialog.margin.l"
+                                android:background="@color/transparent"
+                                android:scaleType="centerCrop"
+                                android:src="@drawable/ic_placeholder"
+                                android:transitionName="@string/shared_image"
+                                app:loadCoinImage="@{viewModel}"
+                                app:tiv_rounding="10"/>
+
+                        </FrameLayout>
+
+                        <LinearLayout
+                            android:id="@+id/coin_detail_body_container"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:layout_marginTop="@dimen/dialog.margin.l"
+                            android:orientation="vertical"
+                            android:visibility="visible">
+
+                            <LinearLayout
+                                android:id="@+id/parent_container"
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                android:layout_gravity="center"
+                                android:background="@color/white"
+                                android:fitsSystemWindows="false"
+                                android:orientation="vertical">
+
+                                <TextView
+                                    android:id="@+id/coin_detail_button"
+                                    style="@style/TextBold.Button"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="@dimen/default_button_height"
+                                    android:layout_margin="@dimen/default_button_margin"
+                                    android:background="@drawable/selector_button_primary"
+                                    android:clickable="true"
+                                    android:focusable="true"
+                                    android:gravity="center"
+                                    android:onClick="@{viewModel::onCoinDetailClick}"
+                                    android:text="Coin Detail"
+                                    android:textColor="@color/white"/>
+
+                            </LinearLayout>
+
+                        </LinearLayout>
+
+                    </LinearLayout>
+
+                    <android.support.design.widget.FloatingActionButton
+                        android:id="@+id/coin_detail_favourite_fab"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_margin="16dp"
+                        android:clickable="true"
+                        android:focusable="true"
+                        android:onClick="@{() -> viewModel.onFavouriteClick()}"
+                        app:layout_anchor="@id/coin_detail_image_container"
+                        app:layout_anchorGravity="bottom|right|end"
+                        app:srcCompat="@drawable/vd_star"/>
+
+                </android.support.design.widget.CoordinatorLayout>
+
+            </android.support.v4.widget.NestedScrollView>
+
+            <include
+                android:id="@+id/no_network_layout"
+                layout="@layout/fragment_no_network"
+                android:visibility="gone"/>
+
+        </FrameLayout>
+
+    </android.support.design.widget.CoordinatorLayout>
 
 </layout>

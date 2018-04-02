@@ -26,7 +26,7 @@ public class DevViewModel extends BaseViewModel implements DevContract.ViewModel
         devView.getPresenter().performExportDatabase();
     }
 
-    public void testPostFail(View view) {
-        devView.getPresenter().testPostFail();
+    public void clearRealmDatabase(View view) {
+        devView.getPresenter().clearRealmDatabase();
     }
 }

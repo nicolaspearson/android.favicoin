@@ -1,4 +1,4 @@
-package com.lupinemoon.favicoin.presentation.ui.features.landing.home;
+package com.lupinemoon.favicoin.presentation.ui.features.home;
 
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
@@ -13,14 +13,13 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.lupinemoon.favicoin.BuildConfig;
 import com.lupinemoon.favicoin.R;
 import com.lupinemoon.favicoin.data.models.CoinItem;
 import com.lupinemoon.favicoin.databinding.FragmentHomeBinding;
-import com.lupinemoon.favicoin.presentation.services.rxbus.RxBus;
-import com.lupinemoon.favicoin.presentation.services.rxbus.events.UpdatedCoinsEvent;
 import com.lupinemoon.favicoin.presentation.ui.base.BaseVMPFragment;
 import com.lupinemoon.favicoin.presentation.ui.base.BaseViewModel;
-import com.lupinemoon.favicoin.presentation.ui.features.landing.home.adapters.CoinItemAdapter;
+import com.lupinemoon.favicoin.presentation.ui.features.home.adapters.CoinItemAdapter;
 import com.lupinemoon.favicoin.presentation.utils.Constants;
 import com.lupinemoon.favicoin.presentation.widgets.OnBackPressedListener;
 import com.lupinemoon.favicoin.presentation.widgets.interfaces.GenericCallback;
@@ -28,8 +27,6 @@ import com.lupinemoon.favicoin.presentation.widgets.interfaces.GenericCallback;
 import java.util.ArrayList;
 import java.util.List;
 
-import io.reactivex.android.schedulers.AndroidSchedulers;
-import io.reactivex.functions.Consumer;
 import timber.log.Timber;
 
 public class HomeFragment extends BaseVMPFragment<HomeContract.ViewModel, HomeContract.Presenter, FragmentHomeBinding> implements HomeContract.View {
@@ -37,6 +34,8 @@ public class HomeFragment extends BaseVMPFragment<HomeContract.ViewModel, HomeCo
     public static final String TAG = HomeFragment.class.getSimpleName();
 
     private CoinItemAdapter coinItemAdapter;
+
+    private boolean loading = false;
 
     public static HomeFragment instance(AppCompatActivity activity, Bundle args) {
         HomeFragment homeFragment = (HomeFragment) activity.getSupportFragmentManager().findFragmentByTag(
@@ -119,9 +118,6 @@ public class HomeFragment extends BaseVMPFragment<HomeContract.ViewModel, HomeCo
             Bundle savedInstanceState) {
         super.onCreateView(inflater, container, savedInstanceState);
 
-        // Subscribe to RxBus events
-        createRxBusSubscriptions();
-
         // Disable animations to avoid view flicker when we modify list items
         if (getBinding().homeRecyclerView.getItemAnimator() != null) {
             getBinding().homeRecyclerView.getItemAnimator().setAddDuration(0);
@@ -129,7 +125,8 @@ public class HomeFragment extends BaseVMPFragment<HomeContract.ViewModel, HomeCo
             getBinding().homeRecyclerView.getItemAnimator().setMoveDuration(0);
             getBinding().homeRecyclerView.getItemAnimator().setChangeDuration(0);
 
-            ((SimpleItemAnimator) getBinding().homeRecyclerView.getItemAnimator()).setSupportsChangeAnimations(false);
+            ((SimpleItemAnimator) getBinding().homeRecyclerView.getItemAnimator()).setSupportsChangeAnimations(
+                    false);
         }
 
         getBinding().homeRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
@@ -142,18 +139,21 @@ public class HomeFragment extends BaseVMPFragment<HomeContract.ViewModel, HomeCo
             public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
                 super.onScrolled(recyclerView, dx, dy);
 
-                RecyclerView.LayoutManager layoutManager = recyclerView.getLayoutManager();
-                int visibleItemCount = layoutManager.getChildCount();
+                LinearLayoutManager layoutManager = (LinearLayoutManager) recyclerView.getLayoutManager();
+                int lastVisibleItem = layoutManager.findLastVisibleItemPosition();
                 int totalItemCount = layoutManager.getItemCount();
-                int pastVisibleItems = ((LinearLayoutManager) layoutManager).findFirstVisibleItemPosition();
 
-                if ((visibleItemCount + pastVisibleItems) >= totalItemCount) {
+                if (!loading && totalItemCount <= (lastVisibleItem + BuildConfig.COIN_PAGE_LOAD_THRESHOLD)) {
+                    loading = true;
                     getPresenter().loadMore(totalItemCount);
                 }
             }
         });
 
-        getBinding().homeRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity(), LinearLayoutManager.VERTICAL, false));
+        getBinding().homeRecyclerView.setLayoutManager(new LinearLayoutManager(
+                getActivity(),
+                LinearLayoutManager.VERTICAL,
+                false));
 
         getBinding().homeSwipeRefreshLayout.setColorSchemeResources(R.color.color_accent);
         getBinding().homeSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
@@ -177,6 +177,7 @@ public class HomeFragment extends BaseVMPFragment<HomeContract.ViewModel, HomeCo
 
     @Override
     public void showLoading() {
+        loading = true;
         // We hide the recycler view, because initially we have no data
         // to display. All calls except fetchCoinItems() should be async
         // and performed in the background and therefore should not show
@@ -193,6 +194,7 @@ public class HomeFragment extends BaseVMPFragment<HomeContract.ViewModel, HomeCo
 
     @Override
     public void hideLoading() {
+        loading = false;
         getBinding().homeSwipeRefreshLayout.setVisibility(View.VISIBLE);
         if (!getBinding().homeSwipeRefreshLayout.isRefreshing()) {
             togglePopupLoader(false);
@@ -256,32 +258,5 @@ public class HomeFragment extends BaseVMPFragment<HomeContract.ViewModel, HomeCo
         if (coinItemAdapter != null) {
             coinItemAdapter.addCoinItems(coinItems);
         }
-    }
-
-    @Override
-    public void updateCoinItem(CoinItem coinItem) {
-        if (coinItemAdapter != null) {
-            coinItemAdapter.updateCoinItem(coinItem);
-        }
-    }
-
-    private void createRxBusSubscriptions() {
-        rxBusEvents.add(
-                RxBus.getDefault().observeEvents(UpdatedCoinsEvent.class)
-                        .observeOn(AndroidSchedulers.mainThread())
-                        .subscribe(
-                                new Consumer<UpdatedCoinsEvent>() {
-                                    @Override
-                                    public void accept(UpdatedCoinsEvent updatedCoinsEvent) {
-                                        Timber.d("Updated Coins Event");
-                                        if (getPresenter() != null &&
-                                                updatedCoinsEvent != null &&
-                                                updatedCoinsEvent.getCoins() != null &&
-                                                updatedCoinsEvent.getCoins().getCoinItems() != null) {
-                                            getPresenter().updateCoinItems(updatedCoinsEvent.getCoins());
-                                        }
-                                    }
-                                })
-                       );
     }
 }

@@ -12,8 +12,8 @@ import okhttp3.Headers;
 import okhttp3.RequestBody;
 
 /**
- *  Request object used to save the state of a network call.
- *  This will enable database persistence and reconstruction of the call later.
+ * Request object used to save the state of a network call.
+ * This will enable database persistence and reconstruction of the call later.
  */
 
 @ToString
@@ -50,7 +50,8 @@ public class NetworkRequest extends RealmObject {
         setNetworkRequestBody(new NetworkRequestBody(getPrimaryKey(), requestBody));
     }
 
-    public @NonNull String getMethod() {
+    public @NonNull
+    String getMethod() {
         return method;
     }
 

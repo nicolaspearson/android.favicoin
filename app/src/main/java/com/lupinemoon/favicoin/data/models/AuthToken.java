@@ -10,9 +10,9 @@ import io.realm.annotations.PrimaryKey;
 import lombok.ToString;
 
 @ToString
-@Parcel(implementations = { AuthTokenRealmProxy.class },
+@Parcel(implementations = {AuthTokenRealmProxy.class},
         value = Parcel.Serialization.BEAN,
-        analyze = { AuthToken.class })
+        analyze = {AuthToken.class})
 @SuppressWarnings("unused, WeakerAccess")
 public class AuthToken extends RealmObject {
 

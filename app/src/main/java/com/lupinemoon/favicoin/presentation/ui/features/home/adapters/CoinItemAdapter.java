@@ -1,4 +1,4 @@
-package com.lupinemoon.favicoin.presentation.ui.features.landing.home.adapters;
+package com.lupinemoon.favicoin.presentation.ui.features.home.adapters;
 
 import android.databinding.DataBindingUtil;
 import android.graphics.Bitmap;
@@ -16,7 +16,7 @@ import com.bumptech.glide.request.RequestOptions;
 import com.lupinemoon.favicoin.R;
 import com.lupinemoon.favicoin.data.models.CoinItem;
 import com.lupinemoon.favicoin.databinding.ListItemCoinBinding;
-import com.lupinemoon.favicoin.presentation.ui.features.landing.home.HomeContract;
+import com.lupinemoon.favicoin.presentation.ui.features.home.HomeContract;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -54,21 +54,6 @@ public class CoinItemAdapter extends RecyclerView.Adapter<CoinItemAdapter.CoinIt
     }
 
     public void setCoinItems(List<CoinItem> newCoinItems) {
-        // Sort the list by sent at timestamp
-        Collections.sort(newCoinItems, new Comparator<CoinItem>() {
-            @Override
-            public int compare(CoinItem coinItem1, CoinItem coinItem2) {
-                if (coinItem1 == null || coinItem2 == null) {
-                    return 1;
-                }
-
-                if (TextUtils.isEmpty(coinItem1.getRank()) || TextUtils.isEmpty(coinItem2.getRank())) {
-                    return 1;
-                }
-
-                return Integer.parseInt(coinItem1.getRank()) > Integer.parseInt(coinItem2.getRank()) ? 1 : 0;
-            }
-        });
         notifyItemRangeRemoved(0, this.coinItems.size());
         this.coinItems.clear();
         this.coinItems.addAll(newCoinItems);
@@ -79,11 +64,6 @@ public class CoinItemAdapter extends RecyclerView.Adapter<CoinItemAdapter.CoinIt
         int currentSize = this.coinItems.size();
         this.coinItems.addAll(newCoinItems);
         notifyItemRangeInserted(currentSize, newCoinItems.size());
-    }
-
-    public void updateCoinItem(CoinItem updatedCoinItem) {
-        int position = getCoinItems().indexOf(updatedCoinItem);
-        notifyItemChanged(position, updatedCoinItem);
     }
 
     @NonNull

@@ -24,7 +24,9 @@ public class SharedPreferencesStorage implements Storage {
 
     public SharedPreferencesStorage(Context context) {
         Timber.d("init SharedPreferencesStorage");
-        preferences = context.getSharedPreferences(BuildConfig.FLAVOR_STORAGE, Context.MODE_PRIVATE);
+        preferences = context.getSharedPreferences(
+                BuildConfig.FLAVOR_STORAGE,
+                Context.MODE_PRIVATE);
         cache = new LruCache<>(BuildConfig.STORAGE_MEM_CACHE_SIZE);
     }
 
@@ -64,7 +66,11 @@ public class SharedPreferencesStorage implements Storage {
                 throw new CacheMissException();
             }
         } catch (Exception e) {
-            Timber.w("cache miss: cache.get(%s), of type %s and value: %s", key, String.valueOf(aClass), value);
+            Timber.w(
+                    "cache miss: cache.get(%s), of type %s and value: %s",
+                    key,
+                    String.valueOf(aClass),
+                    value);
             if (value != null) {
                 cacheHit = cacheHit--;
             }

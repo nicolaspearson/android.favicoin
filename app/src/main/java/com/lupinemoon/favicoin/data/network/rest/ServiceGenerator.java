@@ -95,7 +95,9 @@ public class ServiceGenerator {
 
         // Set the timeout intervals
         clientBuilder = clientBuilder.connectTimeout(BuildConfig.HTTP_TIMEOUT, SECONDS)
-                .readTimeout(BuildConfig.HTTP_TIMEOUT, SECONDS).writeTimeout(BuildConfig.HTTP_TIMEOUT, SECONDS);
+                .readTimeout(
+                        BuildConfig.HTTP_TIMEOUT,
+                        SECONDS).writeTimeout(BuildConfig.HTTP_TIMEOUT, SECONDS);
 
         long DISK_CACHE_SIZE = 1024 * 1024 * 50; // 50 mb
 
@@ -105,13 +107,14 @@ public class ServiceGenerator {
         clientBuilder = clientBuilder.cache(cache);
 
         clientBuilder.addInterceptor(new Interceptor() {
-
             @Override
             public Response intercept(@NonNull Chain chain) throws IOException {
 
                 Request origRequest = chain.request();
                 Request.Builder builder = origRequest.newBuilder().addHeader("platform", "android")
-                        .addHeader("User-Agent", "Favicoin Android Version " + BuildConfig.VERSION_NAME)
+                        .addHeader(
+                                "User-Agent",
+                                "Favicoin Android Version " + BuildConfig.VERSION_NAME)
                         .addHeader("app-version", String.valueOf(BuildConfig.VERSION_CODE))
                         .addHeader("os_version", String.valueOf(Build.VERSION.SDK_INT));
 
@@ -135,31 +138,36 @@ public class ServiceGenerator {
                 Response response = origResponse;
                 if (!response.isSuccessful() || BuildConfig.DEBUG) {
                     ResponseBody body = origResponse.body();
-                    String responseString = body.string();
+                    if (body != null) {
+                        String responseString = body.string();
 
-                    // Recreate the response since responseString consumed it
-                    response = origResponse.newBuilder().body(ResponseBody.create(body.contentType(), responseString))
-                            .build();
+                        // Recreate the response since responseString consumed it
+                        response = origResponse.newBuilder().body(ResponseBody.create(
+                                body.contentType(),
+                                responseString))
+                                .build();
 
-                    if (!response.isSuccessful()) {
-                        if (response.code() == 440) {
-                            // User subscription has expired, show a dialog and
-                            // navigate the user to login screen or subscribe
-                            RxBus.getDefault().post(new SubscriptionExpiredEvent());
-                        } else {
-                            try {
-                                // And again, if we receive remote error responses
-                                // Let's notify and queue the request
-                                notifyRequestFailed(request);
-                                Gson gson = new GsonBuilder().create();
-                                AppErrorResponse appErrorResponse = gson.fromJson(responseString,
-                                                                                  AppErrorResponse.class);
-                                if (appErrorResponse != null && appErrorResponse.getAppError() != null) {
-                                    AppError error = appErrorResponse.getAppError();
-                                    Timber.d("Error, %s", error);
+                        if (!response.isSuccessful()) {
+                            if (response.code() == 440) {
+                                // User subscription has expired, show a dialog and
+                                // navigate the user to login screen or subscribe
+                                RxBus.getDefault().post(new SubscriptionExpiredEvent());
+                            } else {
+                                try {
+                                    // And again, if we receive remote error responses
+                                    // Let's notify and queue the request
+                                    notifyRequestFailed(request);
+                                    Gson gson = new GsonBuilder().create();
+                                    AppErrorResponse appErrorResponse = gson.fromJson(
+                                            responseString,
+                                            AppErrorResponse.class);
+                                    if (appErrorResponse != null && appErrorResponse.getAppError() != null) {
+                                        AppError error = appErrorResponse.getAppError();
+                                        Timber.d("Error, %s", error);
+                                    }
+                                } catch (Throwable throwable) {
+                                    Timber.d("Parse error-response error");
                                 }
-                            } catch (Throwable throwable) {
-                                Timber.d("Parse error-response error");
                             }
                         }
                     }
@@ -174,17 +182,18 @@ public class ServiceGenerator {
     /**
      * Method to receive all necessary properties of an OkHttpCall
      * to reconstruct it as such and return an object to manually invoke the call again.
-     *
+     * <p>
      * This is typically a utility method, and is called by any clients that need a call constructed.
      *
-     * @param context The application context
-     * @param method The request method, i.e. GET, POST, PUT, DELETE, etc.
-     * @param url The request URL
-     * @param headers The request headers
+     * @param context     The application context
+     * @param method      The request method, i.e. GET, POST, PUT, DELETE, etc.
+     * @param url         The request URL
+     * @param headers     The request headers
      * @param requestBody The request body
      * @return The built request
      */
-    public static Call retryRequest(Context context, String method, String url, Headers headers,
+    public static Call retryRequest(
+            Context context, String method, String url, Headers headers,
             RequestBody requestBody) {
         try {
             Request.Builder builder = new Request.Builder();
@@ -210,7 +219,7 @@ public class ServiceGenerator {
     /**
      * Is notified by OkHttp about a failed network request.
      * Will extract the request properties and post the event to the repo.
-     *
+     * <p>
      * A failed request can be due to an exception, OR if we receive certain response.
      *
      * @param request Ok http request object to be persisted via POJO's
@@ -219,7 +228,8 @@ public class ServiceGenerator {
 
         try {
             Timber.d("Request failed: %s", request);
-            if (request != null && !TextUtils.isEmpty(request.method()) && request.method().equalsIgnoreCase("POST")
+            if (request != null && !TextUtils.isEmpty(request.method()) && request.method().equalsIgnoreCase(
+                    "POST")
                     && request.headers() != null) {
                 String authHeader = request.header("Authorization");
                 String retryHeader = request.header("Retry");

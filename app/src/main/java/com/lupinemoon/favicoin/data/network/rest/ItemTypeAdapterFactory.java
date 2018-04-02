@@ -14,7 +14,7 @@ import java.io.IOException;
 /**
  * This is required in order to unwrap data responses, i.e. json responses wrapped with
  * {
- *   "data": { // Actual POJO }
+ * "data": { // Actual POJO }
  * }
  */
 class ItemTypeAdapterFactory implements TypeAdapterFactory {
@@ -34,7 +34,8 @@ class ItemTypeAdapterFactory implements TypeAdapterFactory {
                 JsonElement jsonElement = elementAdapter.read(in);
                 if (jsonElement.isJsonObject()) {
                     JsonObject jsonObject = jsonElement.getAsJsonObject();
-                    if (jsonObject.has("data") && (jsonObject.get("data").isJsonObject() || jsonObject.get("data").isJsonArray())) {
+                    if (jsonObject.has("data") && (jsonObject.get("data").isJsonObject() || jsonObject.get(
+                            "data").isJsonArray())) {
                         jsonElement = jsonObject.get("data");
                     }
                 }

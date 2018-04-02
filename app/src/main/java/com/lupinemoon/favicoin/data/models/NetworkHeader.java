@@ -7,8 +7,8 @@ import lombok.ToString;
 import okhttp3.Headers;
 
 /**
- *  Header class to encapsulate the header information regarding a network request.
- *  Is composed into a NetworkRequest object
+ * Header class to encapsulate the header information regarding a network request.
+ * Is composed into a NetworkRequest object
  */
 
 @ToString

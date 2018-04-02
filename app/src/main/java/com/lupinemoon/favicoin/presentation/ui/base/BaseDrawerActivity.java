@@ -35,7 +35,7 @@ public abstract class BaseDrawerActivity<B extends ViewDataBinding> extends Base
         setContentView(getContentViewResource());
 
         // Set up the toolbar.
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        Toolbar toolbar = findViewById(R.id.toolbar);
         if (toolbar != null) {
             setSupportActionBar(toolbar);
             ActionBar supportActionBar = getSupportActionBar();
@@ -46,10 +46,10 @@ public abstract class BaseDrawerActivity<B extends ViewDataBinding> extends Base
         }
 
         // Set up the navigation drawer.
-        drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
+        drawerLayout = findViewById(R.id.drawer_layout);
         if (drawerLayout != null) {
             drawerLayout.setStatusBarBackground(R.color.color_primary_dark);
-            navigationView = (NavigationView) findViewById(R.id.drawer_nav_view);
+            navigationView = findViewById(R.id.drawer_nav_view);
             if (navigationView != null) {
                 setupDrawerContent(navigationView);
             }

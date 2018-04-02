@@ -1,4 +1,4 @@
-package com.lupinemoon.favicoin.presentation.ui.features.landing.home;
+package com.lupinemoon.favicoin.presentation.ui.features.home;
 
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;

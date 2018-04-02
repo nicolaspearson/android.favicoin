@@ -25,7 +25,7 @@ import com.lupinemoon.favicoin.presentation.services.rxbus.events.NoNetworkEvent
 import com.lupinemoon.favicoin.presentation.ui.base.BaseDrawerActivity;
 import com.lupinemoon.favicoin.presentation.ui.base.BaseFragment;
 import com.lupinemoon.favicoin.presentation.ui.features.dev.DevActivity;
-import com.lupinemoon.favicoin.presentation.ui.features.landing.home.HomeFragment;
+import com.lupinemoon.favicoin.presentation.ui.features.home.HomeFragment;
 import com.lupinemoon.favicoin.presentation.ui.features.login.LoginActivity;
 import com.lupinemoon.favicoin.presentation.utils.ActivityUtils;
 import com.lupinemoon.favicoin.presentation.utils.AndroidUtils;
@@ -88,7 +88,9 @@ public class LandingActivity extends BaseDrawerActivity<ActivityLandingBinding> 
         AnimationUtils.animateTransitionStartActivity(this.getActivity(), R.anim.slide_up_fade_in);
 
         // Create the presenter
-        presenter = new com.lupinemoon.favicoin.presentation.ui.features.landing.LandingPresenter(this, getIntent().getExtras());
+        presenter = new com.lupinemoon.favicoin.presentation.ui.features.landing.LandingPresenter(
+                this,
+                getIntent().getExtras());
 
         // Subscribe to the RxBus
         createRxBusSubscriptions();
@@ -142,7 +144,7 @@ public class LandingActivity extends BaseDrawerActivity<ActivityLandingBinding> 
         }
     }
 
-    public void selectMenuItem(String fragmentTag, boolean performNavigation, Object... objects) {
+    public void selectMenuItem(String fragmentTag, boolean performNavigation) {
         // Check the item in the navigation drawer
         int menuItemId = 0;
         if (fragmentTag.equals(HomeFragment.TAG)) {
@@ -153,8 +155,7 @@ public class LandingActivity extends BaseDrawerActivity<ActivityLandingBinding> 
             if (performNavigation) {
                 performNavigationToSelectedItem(
                         navigationView.getMenu().findItem(menuItemId),
-                        true,
-                        objects);
+                        true);
             }
             navigationView.setCheckedItem(menuItemId);
         }
@@ -193,13 +194,12 @@ public class LandingActivity extends BaseDrawerActivity<ActivityLandingBinding> 
 
     private void performNavigationToSelectedItem(
             @NonNull MenuItem menuItem,
-            Boolean forceNavigation,
-            Object... objects) {
+            Boolean forceNavigation) {
         if (!menuItem.isChecked() || forceNavigation) {
             BaseFragment fragment = null;
 
+            // Add bundle extras to be used in fragments here
             Bundle bundle = new Bundle();
-            // TODO: Add bundle extras to be used in fragments
 
             switch (menuItem.getItemId()) {
                 case R.id.home_navigation_menu_item:
@@ -225,8 +225,7 @@ public class LandingActivity extends BaseDrawerActivity<ActivityLandingBinding> 
             navigateToFragment(fragment);
         }
 
-        // Added 50 millisecond delay to the closing navigation, this,
-        // with it's minimal complexity achieves quite a balanced result.
+        // Added 50 millisecond delay to the closing navigation, in order to avoid a stutter
         new Handler().postDelayed(new Runnable() {
             @Override
             public void run() {
@@ -260,6 +259,7 @@ public class LandingActivity extends BaseDrawerActivity<ActivityLandingBinding> 
 
     private void logout() {
         MainApplication.setLoggedIn(false);
+        getPresenter().onLogout();
         Intent intent = new Intent(this, LoginActivity.class);
         supportFinishAfterTransition();
         AnimationUtils.animateTransitionFinishActivity(
@@ -269,7 +269,6 @@ public class LandingActivity extends BaseDrawerActivity<ActivityLandingBinding> 
     }
 
     private void createRxBusSubscriptions() {
-
         rxBusEvents.add(
                 RxBus.getDefault().observeEvents(LogoutEvent.class)
                         .observeOn(AndroidSchedulers.mainThread())
@@ -293,14 +292,16 @@ public class LandingActivity extends BaseDrawerActivity<ActivityLandingBinding> 
 
         rxBusEvents.add(
                 RxBus.getDefault().observeEvents(NetworkRestoredEvent.class)
-                .observeOn(Schedulers.io())
-                .subscribe(new Consumer<NetworkRestoredEvent>() {
-                    @Override
-                    public void accept(NetworkRestoredEvent networkRestoredEvent) throws Exception {
-                        Timber.w("%s: Network restored event. Triggering queue processing.", this.getClass().getSimpleName());
-                        getPresenter().retryQueuedRequests();
-                    }
-                }));
+                        .observeOn(Schedulers.io())
+                        .subscribe(new Consumer<NetworkRestoredEvent>() {
+                            @Override
+                            public void accept(NetworkRestoredEvent networkRestoredEvent) throws Exception {
+                                Timber.w(
+                                        "%s: Network restored event. Triggering queue processing.",
+                                        this.getClass().getSimpleName());
+                                getPresenter().retryQueuedRequests();
+                            }
+                        }));
 
     }
 }
