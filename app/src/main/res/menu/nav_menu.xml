@@ -13,6 +13,7 @@
             android:title="@string/coins"/>
 
         <item
+            android:id="@+id/favourites_navigation_menu_item"
             android:enabled="true"
             android:icon="@drawable/vd_star"
             android:title="@string/favourites"

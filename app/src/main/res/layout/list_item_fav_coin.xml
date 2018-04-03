@@ -1,0 +1,173 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout>
+
+    <data>
+
+        <import type="android.view.View"/>
+
+        <variable
+            name="viewModel"
+            type="com.lupinemoon.favicoin.presentation.ui.features.favourites.adapters.FavCoinItemViewModel"/>
+    </data>
+
+    <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                    xmlns:app="http://schemas.android.com/apk/res-auto"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+        <RelativeLayout
+            android:id="@+id/coin_row_parent_container"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/coin_list_item_height"
+            android:background="@drawable/selector_button_secondary"
+            android:onClick="@{() -> viewModel.onCoinItemClicked()}">
+
+            <RelativeLayout
+                android:id="@+id/coin_image_container"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentStart="true"
+                android:layout_centerVertical="true"
+                android:layout_margin="@dimen/dialog.margin.m">
+
+                <com.lupinemoon.favicoin.presentation.widgets.transitionimageview.TransitionImageView
+                    android:id="@+id/coin_item_image_view"
+                    android:layout_width="@dimen/list_item_image_height"
+                    android:layout_height="@dimen/list_item_image_height"
+                    android:layout_centerInParent="true"
+                    android:onClick="@{() -> viewModel.onCoinItemClicked()}"
+                    android:scaleType="centerCrop"
+                    android:src="@drawable/ic_placeholder"
+                    android:transitionName="@string/shared_image"
+                    app:loadCoinImage="@{viewModel}"
+                    app:tiv_rounding="0"/>
+
+            </RelativeLayout>
+
+            <RelativeLayout
+                android:id="@+id/coin_details_first_container"
+                android:layout_width="@dimen/text_view_max_width"
+                android:layout_height="wrap_content"
+                android:layout_centerInParent="true"
+                android:layout_marginLeft="@dimen/dialog.margin.m"
+                android:layout_marginStart="@dimen/dialog.margin.m"
+                android:layout_toEndOf="@+id/coin_image_container"
+                android:layout_toRightOf="@+id/coin_image_container">
+
+                <TextView
+                    android:id="@+id/name"
+                    style="@style/TextRegular.Field.ListItemTitle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="@dimen/dialog.margin.s"
+                    android:layout_marginRight="@dimen/dialog.margin.s"
+                    android:layout_marginTop="@dimen/dialog.margin.s"
+                    android:ellipsize="end"
+                    android:maxLines="1"
+                    android:maxWidth="@dimen/text_view_max_width"
+                    android:text="@{viewModel.name}"/>
+
+                <TextView
+                    android:id="@+id/rank"
+                    style="@style/TextRegular.Field.ListItemSubtitle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentLeft="true"
+                    android:layout_alignParentStart="true"
+                    android:layout_below="@+id/name"
+                    android:layout_marginEnd="@dimen/dialog.margin.m"
+                    android:layout_marginRight="@dimen/dialog.margin.m"
+                    android:layout_marginTop="@dimen/dialog.margin.m"
+                    android:gravity="bottom"
+                    android:text="@{viewModel.rank}"
+                    app:minTextSize="@dimen/text.size.xs"/>
+
+                <ImageView
+                    android:id="@+id/percentage_change_24h_image"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentLeft="true"
+                    android:layout_alignParentStart="true"
+                    android:layout_below="@+id/rank"
+                    android:layout_marginEnd="@dimen/dialog.margin.m"
+                    android:layout_marginRight="@dimen/dialog.margin.m"
+                    android:layout_marginTop="@dimen/dialog.margin.m"
+                    app:loadTickerChangeImage="@{viewModel}"/>
+
+            </RelativeLayout>
+
+            <RelativeLayout
+                android:id="@+id/coin_details_second_container"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerInParent="true"
+                android:layout_marginEnd="@dimen/dialog.margin.m"
+                android:layout_marginLeft="@dimen/dialog.margin.m"
+                android:layout_marginRight="@dimen/dialog.margin.m"
+                android:layout_marginStart="@dimen/dialog.margin.m"
+                android:layout_toEndOf="@+id/coin_details_first_container"
+                android:layout_toRightOf="@+id/coin_details_first_container">
+
+                <TextView
+                    android:id="@+id/price"
+                    style="@style/TextRegular.Field.ListItemTitle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentEnd="true"
+                    android:layout_alignParentRight="true"
+                    android:layout_marginEnd="@dimen/dialog.margin.s"
+                    android:layout_marginRight="@dimen/dialog.margin.s"
+                    android:layout_marginTop="@dimen/dialog.margin.s"
+                    android:ellipsize="end"
+                    android:gravity="end"
+                    android:maxLines="1"
+                    android:maxWidth="@dimen/text_view_max_width"
+                    android:text="@{viewModel.priceUsd}"/>
+
+                <TextView
+                    android:id="@+id/market_cap"
+                    style="@style/TextRegular.Field.ListItemSubtitle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentEnd="true"
+                    android:layout_alignParentRight="true"
+                    android:layout_below="@+id/price"
+                    android:layout_marginEnd="@dimen/dialog.margin.m"
+                    android:layout_marginRight="@dimen/dialog.margin.m"
+                    android:layout_marginTop="@dimen/dialog.margin.m"
+                    android:ellipsize="end"
+                    android:gravity="end"
+                    android:text="@{viewModel.marketCapUsd}"
+                    app:minTextSize="@dimen/text.size.xs"/>
+
+                <TextView
+                    android:id="@+id/percentage_change_24h"
+                    style="@style/TextRegular.Field.ListItemSubtitle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentEnd="true"
+                    android:layout_alignParentRight="true"
+                    android:layout_below="@+id/market_cap"
+                    android:layout_marginEnd="@dimen/dialog.margin.m"
+                    android:layout_marginRight="@dimen/dialog.margin.m"
+                    android:layout_marginTop="@dimen/dialog.margin.m"
+                    android:ellipsize="end"
+                    android:gravity="end"
+                    android:text="@{viewModel.percentChange24h}"
+                    android:textColor="@{safeUnbox(viewModel.percentChange24hValue) > 0 ? @color/green : @color/red}"/>
+
+            </RelativeLayout>
+
+        </RelativeLayout>
+
+        <View
+            android:id="@+id/divider"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/dialog.margin.xs"
+            android:layout_below="@+id/coin_row_parent_container"
+            android:background="@color/grey_ee"/>
+
+    </RelativeLayout>
+
+</layout>

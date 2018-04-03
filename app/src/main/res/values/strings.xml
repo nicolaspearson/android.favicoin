@@ -88,6 +88,9 @@
     <string name="percentage_format">%1$s %%</string>
     <string name="rank">Rank: %1$s</string>
 
+    <!-- Favourites -->
+    <string name="toolbar_title_favourites">Favourites</string>
+
     <!-- Coin Detail -->
     <string name="title_coin_detail">Coin Detail</string>
     <string name="title_no_coin_item">Coin Details Not Found</string>

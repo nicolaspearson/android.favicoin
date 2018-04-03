@@ -25,6 +25,7 @@ import com.lupinemoon.favicoin.presentation.services.rxbus.events.NoNetworkEvent
 import com.lupinemoon.favicoin.presentation.ui.base.BaseDrawerActivity;
 import com.lupinemoon.favicoin.presentation.ui.base.BaseFragment;
 import com.lupinemoon.favicoin.presentation.ui.features.dev.DevActivity;
+import com.lupinemoon.favicoin.presentation.ui.features.favourites.FavouritesFragment;
 import com.lupinemoon.favicoin.presentation.ui.features.home.HomeFragment;
 import com.lupinemoon.favicoin.presentation.ui.features.login.LoginActivity;
 import com.lupinemoon.favicoin.presentation.utils.ActivityUtils;
@@ -143,6 +144,8 @@ public class LandingActivity extends BaseDrawerActivity<ActivityLandingBinding> 
         int menuItemId = 0;
         if (fragmentTag.equals(HomeFragment.TAG)) {
             menuItemId = R.id.home_navigation_menu_item;
+        } else if (fragmentTag.equals(FavouritesFragment.TAG)) {
+            menuItemId = R.id.favourites_navigation_menu_item;
         }
 
         if (menuItemId > 0) {
@@ -198,6 +201,12 @@ public class LandingActivity extends BaseDrawerActivity<ActivityLandingBinding> 
             switch (menuItem.getItemId()) {
                 case R.id.home_navigation_menu_item:
                     fragment = HomeFragment.instance((AppCompatActivity) getActivity(), bundle);
+                    break;
+
+                case R.id.favourites_navigation_menu_item:
+                    fragment = FavouritesFragment.instance(
+                            (AppCompatActivity) getActivity(),
+                            bundle);
                     break;
 
                 case R.id.logout_navigation_menu_item:

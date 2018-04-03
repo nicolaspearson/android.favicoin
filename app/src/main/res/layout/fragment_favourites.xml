@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout>
+
+    <data>
+
+        <variable
+            name="viewModel"
+            type="com.lupinemoon.favicoin.presentation.ui.features.favourites.FavouritesViewModel"/>
+
+    </data>
+
+    <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                 android:layout_width="match_parent"
+                 android:layout_height="match_parent"
+                 android:background="@color/grey_ee">
+
+        <RelativeLayout
+            android:id="@+id/content_layout"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@color/grey_ee">
+
+            <android.support.v4.widget.SwipeRefreshLayout
+                android:id="@+id/favourites_swipe_refresh_layout"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_below="@+id/offline_banner_layout"
+                android:visibility="gone">
+
+                <android.support.v7.widget.RecyclerView
+                    android:id="@+id/favourites_recycler_view"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"/>
+
+            </android.support.v4.widget.SwipeRefreshLayout>
+
+            <include
+                android:id="@+id/offline_banner_layout"
+                layout="@layout/offline_banner"
+                android:visibility="gone"/>
+
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:id="@+id/empty_layout"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@color/grey_ee"
+            android:gravity="center"
+            android:visibility="gone"/>
+
+        <include
+            android:id="@+id/no_network_layout"
+            layout="@layout/fragment_no_network"
+            android:visibility="gone"/>
+
+    </FrameLayout>
+
+</layout>
