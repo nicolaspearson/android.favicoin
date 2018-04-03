@@ -23,6 +23,7 @@ import com.lupinemoon.favicoin.presentation.ui.base.BaseViewModel;
 import com.lupinemoon.favicoin.presentation.utils.ActivityUtils;
 import com.lupinemoon.favicoin.presentation.utils.DateTimeUtils;
 import com.lupinemoon.favicoin.presentation.utils.ImageUtils;
+import com.lupinemoon.favicoin.presentation.utils.NumberUtils;
 import com.lupinemoon.favicoin.presentation.widgets.Toasty;
 
 import org.parceler.Parcels;
@@ -79,7 +80,7 @@ public class CoinDetailViewModel extends BaseViewModel implements CoinDetailCont
         if (coinItem != null && coinItem.getPriceUsd() != null) {
             return String.format(
                     coinDetailView.getActivity().getString(R.string.dollar_format),
-                    coinItem.getPriceUsd());
+                    NumberUtils.formatNumberWithSpaces(coinItem.getPriceUsd()));
         }
         return "N/A";
     }
@@ -91,7 +92,7 @@ public class CoinDetailViewModel extends BaseViewModel implements CoinDetailCont
 
     @Bindable
     public String getVolume24hUsd() {
-        return coinItem != null && coinItem.get24hVolumeUsd() != null ? coinItem.get24hVolumeUsd() : "N/A";
+        return coinItem != null && coinItem.get24hVolumeUsd() != null ? NumberUtils.formatNumberWithSpaces(coinItem.get24hVolumeUsd()) : "N/A";
     }
 
     @Bindable
@@ -99,24 +100,24 @@ public class CoinDetailViewModel extends BaseViewModel implements CoinDetailCont
         if (coinItem != null && coinItem.getMarketCapUsd() != null) {
             return String.format(
                     coinDetailView.getActivity().getString(R.string.dollar_format),
-                    coinItem.getMarketCapUsd());
+                    NumberUtils.formatNumberWithSpaces(coinItem.getMarketCapUsd()));
         }
         return "N/A";
     }
 
     @Bindable
     public String getAvailableSupply() {
-        return coinItem != null && coinItem.getAvailableSupply() != null ? coinItem.getAvailableSupply() : "N/A";
+        return coinItem != null && coinItem.getAvailableSupply() != null ? NumberUtils.formatNumberWithSpaces(coinItem.getAvailableSupply()) : "N/A";
     }
 
     @Bindable
     public String getTotalSupply() {
-        return coinItem != null && coinItem.getTotalSupply() != null ? coinItem.getTotalSupply() : "N/A";
+        return coinItem != null && coinItem.getTotalSupply() != null ? NumberUtils.formatNumberWithSpaces(coinItem.getTotalSupply()) : "N/A";
     }
 
     @Bindable
     public String getMaxSupply() {
-        return coinItem != null && coinItem.getMaxSupply() != null ? coinItem.getMaxSupply() : "N/A";
+        return coinItem != null && coinItem.getMaxSupply() != null ? NumberUtils.formatNumberWithSpaces(coinItem.getMaxSupply()) : "N/A";
     }
 
     @Bindable
@@ -222,7 +223,7 @@ public class CoinDetailViewModel extends BaseViewModel implements CoinDetailCont
         if (coinItem != null && !TextUtils.isEmpty(coinItem.getName())) {
             String message = String.format(
                     coinDetailView.getActivity().getString(R.string.adding_to_favourites),
-                    coinItem.getName());
+                    coinItem.getSymbol());
             coinDetailView.showToastMsg(message, Toasty.ToastType.INFO);
         }
     }

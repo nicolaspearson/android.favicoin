@@ -20,6 +20,7 @@ import com.lupinemoon.favicoin.presentation.ui.base.BaseViewModel;
 import com.lupinemoon.favicoin.presentation.ui.features.home.HomeContract;
 import com.lupinemoon.favicoin.presentation.utils.ActivityUtils;
 import com.lupinemoon.favicoin.presentation.utils.ImageUtils;
+import com.lupinemoon.favicoin.presentation.utils.NumberUtils;
 
 public class CoinItemViewModel extends BaseViewModel {
 
@@ -91,14 +92,14 @@ public class CoinItemViewModel extends BaseViewModel {
     public String getPriceUsd() {
         return String.format(
                 homeView.getActivity().getString(R.string.dollar_format),
-                coinItem.getPriceUsd());
+                NumberUtils.formatNumberWithSpaces(coinItem.getPriceUsd()));
     }
 
     @Bindable
     public String getMarketCapUsd() {
         return String.format(
                 homeView.getActivity().getString(R.string.dollar_format),
-                coinItem.getMarketCapUsd());
+                NumberUtils.formatNumberWithSpaces(coinItem.getMarketCapUsd()));
     }
 
     @Bindable
