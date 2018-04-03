@@ -8,7 +8,6 @@
 
     <TextView
         xmlns:android="http://schemas.android.com/apk/res/android"
-        android:id="@+id/nav_drawer_counter_text_view"
         style="@style/TextMedium.Field.ExtraSmall"
         android:layout_width="30dp"
         android:layout_height="30dp"

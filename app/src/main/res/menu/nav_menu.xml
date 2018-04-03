@@ -3,7 +3,6 @@
       xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <group
-        android:id="@+id/group_menu"
         android:checkableBehavior="single"
         android:enabled="true">
 
@@ -14,7 +13,6 @@
             android:title="@string/coins"/>
 
         <item
-            android:id="@+id/next_navigation_menu_item"
             android:enabled="true"
             android:icon="@drawable/vd_star"
             android:title="@string/favourites"

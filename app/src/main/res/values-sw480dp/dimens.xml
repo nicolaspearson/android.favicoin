@@ -3,6 +3,5 @@
 
     <dimen name="dialog.margin.xs">4dp</dimen>
     <dimen name="dialog.margin.s">6dp</dimen>
-    <dimen name="dialog.margin.sm">8dp</dimen>
 
 </resources>

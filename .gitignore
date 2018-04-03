@@ -1,6 +1,4 @@
-*.iml
 /local.properties
-.externalNativeBuild
 
 .DS_Store
 

@@ -16,42 +16,26 @@
     <string name="ok">OK</string>
     <string name="title_network_error">Something\'s not right</string>
     <string name="message_network_error">Please make sure that you’re connected to the internet.</string>
-    <string name="title_generic_request_failed">Request Failed</string>
     <string name="message_generic_request_failed">Oops! We’re having some technical issues. Stay tuned, we’ll be up and running soon.</string>
     <string name="retry">Retry</string>
-    <string name="try_again">Try Again</string>
     <string name="yes">Yes</string>
     <string name="no">No</string>
     <string name="ok_got_it">OK, GOT IT</string>
-    <string name="get_started">Get Started</string>
-    <string name="allow">Allow</string>
-    <string name="deny">Deny</string>
-    <string name="_continue">Continue</string>
-    <string name="confirm">Confirm</string>
     <string name="skip">SKIP</string>
     <string name="loading">Loading&#8230;</string>
-    <string name="on">on</string>
-    <string name="not_now">Not Now</string>
-    <string name="saving">Saving&#8230;</string>
-    <string name="select_an_option">Select An Option</string>
 
     <!-- Snackbar -->
     <string name="snackbar_dismiss_action">Dismiss</string>
-    <string name="snackbar_undo_action">Undo</string>
 
     <!-- Splash -->
     <string name="title_splash">Splash</string>
     <string name="analytics_splash">@string/title_splash</string>
 
     <!-- Play Services -->
-    <string name="dont_show_again">Don\'t show again</string>
-    <string name="title_play_services_not_found">Play Services Not Found</string>
-    <string name="message_play_services_not_found">This app makes use of Google Play Services. For best results, please install Google Play Services now.</string>
 
     <!-- Landing -->
     <string name="title_landing">Landing</string>
     <string name="analytics_landing">Landing</string>
-    <string name="home">Home</string>
     <string name="logout">Logout</string>
     <string name="coins">Coins</string>
     <string name="favourites">Favourites</string>
@@ -69,7 +53,6 @@
     <string name="error_password_invalid_length">Password must be a minimum of %d characters</string>
     <string name="error_please_fill_in_password">Please enter a password</string>
     <string name="no_account">Don\'t have an account?</string>
-    <string name="title_login_failed">Login Failed</string>
     <string name="sign_up">Sign up</string>
 
     <!-- Forgot Password -->
@@ -98,9 +81,6 @@
     <string name="email">Email</string>
 
     <!-- Upload -->
-    <string name="saving_success">Saved successfully</string>
-    <string name="saving_cancelled">Saving cancelled</string>
-    <string name="saving_did_not_complete">Upload failed</string>
 
     <!-- Home / Coin List -->
     <string name="title_coins_failed">Fetching Coins Failed</string>
