@@ -27,10 +27,6 @@ public class WidgetUtils {
         return new int[]{200, 200};
     }
 
-    public static double clamp(double value, double low, double high) {
-        return Math.min(Math.max(value, low), high);
-    }
-
     public static Drawable tint9PatchDrawableFrame(
             @NonNull Context context,
             @ColorInt int tintColor) {

@@ -53,7 +53,7 @@
                             android:id="@+id/coin_detail_image_container"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:layout_marginBottom="@dimen/dialog.margin.xl"
+                            android:layout_marginBottom="@dimen/dialog.margin.m"
                             android:background="@color/color_primary_dark">
 
                             <com.lupinemoon.favicoin.presentation.widgets.transitionimageview.TransitionImageView
@@ -75,100 +75,126 @@
                             android:id="@+id/coin_detail_body_container"
                             android:layout_width="match_parent"
                             android:layout_height="match_parent"
-                            android:layout_margin="@dimen/dialog.margin.l"
+                            android:layout_gravity="center"
+                            android:background="@color/white"
+                            android:fitsSystemWindows="false"
                             android:orientation="vertical"
                             android:visibility="visible">
 
-                            <LinearLayout
-                                android:id="@+id/parent_container"
+                            <RelativeLayout
                                 android:layout_width="match_parent"
-                                android:layout_height="match_parent"
-                                android:layout_gravity="center"
-                                android:background="@color/white"
-                                android:fitsSystemWindows="false"
-                                android:orientation="vertical">
+                                android:layout_height="wrap_content"
+                                android:layout_marginEnd="@dimen/dialog.margin.m"
+                                android:layout_marginLeft="@dimen/dialog.margin.m"
+                                android:layout_marginRight="@dimen/dialog.margin.m"
+                                android:layout_marginStart="@dimen/dialog.margin.m"
+                                android:layout_marginTop="@dimen/dialog.margin.l">
 
-                                <RelativeLayout
-                                    android:layout_width="match_parent"
+                                <TextView
+                                    android:id="@+id/coin_detail_name_text_view"
+                                    style="@style/TextRegular.Field.Large"
+                                    android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
-                                    android:paddingTop="@dimen/dialog.margin.m">
+                                    android:layout_alignParentLeft="true"
+                                    android:layout_alignParentStart="true"
+                                    android:ellipsize="end"
+                                    android:gravity="start"
+                                    android:maxLines="1"
+                                    android:maxWidth="@dimen/coin_detail_name_max_width"
+                                    android:paddingBottom="@dimen/dialog.margin.s"
+                                    android:text="@{viewModel.name}"
+                                    android:textColor="@color/grey_33"
+                                    android:textSize="@dimen/text.size.l"
+                                    app:minTextSize="@dimen/text.size.l"/>
 
-                                    <TextView
-                                        android:id="@+id/coin_detail_name_text_view"
-                                        style="@style/TextRegular.Field.Large"
-                                        android:layout_width="wrap_content"
-                                        android:layout_height="wrap_content"
-                                        android:layout_alignParentLeft="true"
-                                        android:layout_alignParentStart="true"
-                                        android:ellipsize="end"
-                                        android:gravity="start|left"
-                                        android:maxLines="1"
-                                        android:maxWidth="@dimen/coin_detail_name_max_width"
-                                        android:paddingBottom="@dimen/dialog.margin.s"
-                                        android:text="@{viewModel.name}"
-                                        android:textColor="@color/grey_33"
-                                        android:textSize="@dimen/text.size.l"
-                                        app:minTextSize="@dimen/text.size.l"/>
+                            </RelativeLayout>
 
-                                    <com.lupinemoon.favicoin.presentation.widgets.autofit.AutofitTextView
-                                        android:id="@+id/coin_detail_separator_text_view"
-                                        style="@style/TextRegular.Field.Large"
-                                        android:layout_width="wrap_content"
-                                        android:layout_height="wrap_content"
-                                        android:layout_toEndOf="@id/coin_detail_name_text_view"
-                                        android:layout_toRightOf="@id/coin_detail_name_text_view"
-                                        android:gravity="start|left|bottom"
-                                        android:paddingBottom="@dimen/dialog.margin.s"
-                                        android:text="@string/separator_name_symbol"
-                                        android:textColor="@color/grey_33"
-                                        app:minTextSize="@dimen/text.size.s"/>
+                            <View
+                                android:layout_width="40dp"
+                                android:layout_height="2dp"
+                                android:layout_margin="@dimen/dialog.margin.m"
+                                android:background="@color/color_accent"/>
 
-                                    <com.lupinemoon.favicoin.presentation.widgets.autofit.AutofitTextView
-                                        android:id="@+id/coin_detail_symbol_text_view"
-                                        style="@style/TextLight.Field.Large"
-                                        android:layout_width="wrap_content"
-                                        android:layout_height="wrap_content"
-                                        android:layout_marginLeft="@dimen/dialog.margin.m"
-                                        android:layout_marginStart="@dimen/dialog.margin.m"
-                                        android:layout_toEndOf="@id/coin_detail_separator_text_view"
-                                        android:layout_toRightOf="@id/coin_detail_separator_text_view"
-                                        android:gravity="start|left|bottom"
-                                        android:maxLines="1"
-                                        android:paddingBottom="@dimen/dialog.margin.s"
-                                        android:text="@{viewModel.symbol}"
-                                        android:textColor="@color/grey_33"
-                                        app:minTextSize="@dimen/text.size.s"/>
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginBottom="@dimen/dialog.margin.s"
+                                android:background="@color/grey_df"
+                                android:clickable="true"
+                                android:focusable="true"
+                                android:gravity="center"
+                                android:orientation="horizontal"
+                                android:padding="@dimen/dialog.margin.m">
 
-                                </RelativeLayout>
+                                <TextView
+                                    style="@style/TextMedium.Field.Small"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_gravity="center"
+                                    android:padding="@dimen/dialog.margin.xs"
+                                    android:text="@string/coin_market_cap"
+                                    android:textAllCaps="true"
+                                    android:textColor="@color/grey_33"/>
 
-                                <View
-                                    android:layout_width="80dp"
-                                    android:layout_height="2dp"
-                                    android:layout_marginBottom="@dimen/dialog.margin.m"
-                                    android:layout_marginTop="@dimen/dialog.margin.m"
-                                    android:background="@color/color_accent"/>
+                            </LinearLayout>
+
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_margin="@dimen/dialog.margin.m"
+                                android:orientation="vertical">
 
                                 <LinearLayout
                                     android:layout_width="match_parent"
                                     android:layout_height="wrap_content"
                                     android:orientation="horizontal"
-                                    android:paddingTop="@dimen/dialog.margin.m"
                                     android:weightSum="2">
 
                                     <TextView
-                                        android:id="@+id/coin_detail_rank_label"
                                         style="@style/TextRegular.Field.ListItemLabel"
                                         android:layout_width="wrap_content"
                                         android:layout_height="wrap_content"
                                         android:layout_weight="1"
-                                        android:text="@string/rank_label"/>
+                                        android:gravity="start"
+                                        android:text="@string/symbol_label"/>
 
                                     <TextView
-                                        android:id="@+id/coin_detail_rank_text_view"
                                         style="@style/TextRegular.Field.ListItemValue"
                                         android:layout_width="wrap_content"
                                         android:layout_height="wrap_content"
                                         android:layout_weight="1"
+                                        android:gravity="end"
+                                        android:text="@{viewModel.symbol}"/>
+
+                                </LinearLayout>
+
+                                <View
+                                    android:layout_width="match_parent"
+                                    android:layout_height="0.5dp"
+                                    android:layout_marginBottom="@dimen/dialog.margin.m"
+                                    android:layout_marginTop="@dimen/dialog.margin.m"
+                                    android:background="@color/grey_ee"/>
+
+                                <LinearLayout
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:orientation="horizontal"
+                                    android:weightSum="2">
+
+                                    <TextView
+                                        style="@style/TextRegular.Field.ListItemLabel"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:layout_weight="1"
+                                        android:gravity="start"
+                                        android:text="@string/rank_label"/>
+
+                                    <TextView
+                                        style="@style/TextRegular.Field.ListItemValue"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:layout_weight="1"
+                                        android:gravity="end"
                                         android:text="@{viewModel.rank}"/>
 
                                 </LinearLayout>
@@ -176,30 +202,30 @@
                                 <View
                                     android:layout_width="match_parent"
                                     android:layout_height="0.5dp"
-                                    android:layout_margin="@dimen/dialog.margin.l"
+                                    android:layout_marginBottom="@dimen/dialog.margin.m"
+                                    android:layout_marginTop="@dimen/dialog.margin.m"
                                     android:background="@color/grey_ee"/>
 
                                 <LinearLayout
                                     android:layout_width="match_parent"
                                     android:layout_height="wrap_content"
                                     android:orientation="horizontal"
-                                    android:paddingTop="@dimen/dialog.margin.m"
                                     android:weightSum="2">
 
                                     <TextView
-                                        android:id="@+id/coin_detail_price_usd_label"
                                         style="@style/TextRegular.Field.ListItemLabel"
                                         android:layout_width="wrap_content"
                                         android:layout_height="wrap_content"
                                         android:layout_weight="1"
+                                        android:gravity="start"
                                         android:text="@string/price_usd_label"/>
 
                                     <TextView
-                                        android:id="@+id/coin_detail_price_usd_text_view"
                                         style="@style/TextRegular.Field.ListItemValue"
                                         android:layout_width="wrap_content"
                                         android:layout_height="wrap_content"
                                         android:layout_weight="1"
+                                        android:gravity="end"
                                         android:text="@{viewModel.priceUsd}"/>
 
                                 </LinearLayout>
@@ -207,8 +233,463 @@
                                 <View
                                     android:layout_width="match_parent"
                                     android:layout_height="0.5dp"
-                                    android:layout_margin="@dimen/dialog.margin.l"
+                                    android:layout_marginBottom="@dimen/dialog.margin.m"
+                                    android:layout_marginTop="@dimen/dialog.margin.m"
                                     android:background="@color/grey_ee"/>
+
+                                <LinearLayout
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:orientation="horizontal"
+                                    android:weightSum="2">
+
+                                    <TextView
+                                        style="@style/TextRegular.Field.ListItemLabel"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:layout_weight="1"
+                                        android:gravity="start"
+                                        android:text="@string/price_btc_label"/>
+
+                                    <TextView
+                                        style="@style/TextRegular.Field.ListItemValue"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:layout_weight="1"
+                                        android:gravity="end"
+                                        android:text="@{viewModel.priceBtc}"/>
+
+                                </LinearLayout>
+
+                                <View
+                                    android:layout_width="match_parent"
+                                    android:layout_height="0.5dp"
+                                    android:layout_marginBottom="@dimen/dialog.margin.m"
+                                    android:layout_marginTop="@dimen/dialog.margin.m"
+                                    android:background="@color/grey_ee"/>
+
+                                <LinearLayout
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:orientation="horizontal"
+                                    android:weightSum="2">
+
+                                    <TextView
+                                        style="@style/TextRegular.Field.ListItemLabel"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:layout_weight="1"
+                                        android:gravity="start"
+                                        android:text="@string/volume_24h_usd_label"/>
+
+                                    <TextView
+                                        style="@style/TextRegular.Field.ListItemValue"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:layout_weight="1"
+                                        android:gravity="end"
+                                        android:text="@{viewModel.volume24hUsd}"/>
+
+                                </LinearLayout>
+
+                                <View
+                                    android:layout_width="match_parent"
+                                    android:layout_height="0.5dp"
+                                    android:layout_marginBottom="@dimen/dialog.margin.m"
+                                    android:layout_marginTop="@dimen/dialog.margin.m"
+                                    android:background="@color/grey_ee"/>
+
+                                <LinearLayout
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:orientation="horizontal"
+                                    android:weightSum="2">
+
+                                    <TextView
+                                        style="@style/TextRegular.Field.ListItemLabel"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:layout_weight="1"
+                                        android:gravity="start"
+                                        android:text="@string/market_cap_usd_label"/>
+
+                                    <TextView
+                                        style="@style/TextRegular.Field.ListItemValue"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:layout_weight="1"
+                                        android:gravity="end"
+                                        android:text="@{viewModel.marketCapUsd}"/>
+
+                                </LinearLayout>
+
+                                <View
+                                    android:layout_width="match_parent"
+                                    android:layout_height="0.5dp"
+                                    android:layout_marginBottom="@dimen/dialog.margin.m"
+                                    android:layout_marginTop="@dimen/dialog.margin.m"
+                                    android:background="@color/grey_ee"/>
+
+                                <LinearLayout
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:orientation="horizontal"
+                                    android:weightSum="2">
+
+                                    <TextView
+                                        style="@style/TextRegular.Field.ListItemLabel"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:layout_weight="1"
+                                        android:gravity="start"
+                                        android:text="@string/available_supply_label"/>
+
+                                    <TextView
+                                        style="@style/TextRegular.Field.ListItemValue"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:layout_weight="1"
+                                        android:gravity="end"
+                                        android:text="@{viewModel.availableSupply}"/>
+
+                                </LinearLayout>
+
+                                <View
+                                    android:layout_width="match_parent"
+                                    android:layout_height="0.5dp"
+                                    android:layout_marginBottom="@dimen/dialog.margin.m"
+                                    android:layout_marginTop="@dimen/dialog.margin.m"
+                                    android:background="@color/grey_ee"/>
+
+                                <LinearLayout
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:orientation="horizontal"
+                                    android:weightSum="2">
+
+                                    <TextView
+                                        style="@style/TextRegular.Field.ListItemLabel"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:layout_weight="1"
+                                        android:gravity="start"
+                                        android:text="@string/total_supply_label"/>
+
+                                    <TextView
+                                        style="@style/TextRegular.Field.ListItemValue"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:layout_weight="1"
+                                        android:gravity="end"
+                                        android:text="@{viewModel.totalSupply}"/>
+
+                                </LinearLayout>
+
+                                <View
+                                    android:layout_width="match_parent"
+                                    android:layout_height="0.5dp"
+                                    android:layout_marginBottom="@dimen/dialog.margin.m"
+                                    android:layout_marginTop="@dimen/dialog.margin.m"
+                                    android:background="@color/grey_ee"/>
+
+                                <LinearLayout
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:orientation="horizontal"
+                                    android:weightSum="2">
+
+                                    <TextView
+                                        style="@style/TextRegular.Field.ListItemLabel"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:layout_weight="1"
+                                        android:gravity="start"
+                                        android:text="@string/max_supply_label"/>
+
+                                    <TextView
+                                        style="@style/TextRegular.Field.ListItemValue"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:layout_weight="1"
+                                        android:gravity="end"
+                                        android:text="@{viewModel.maxSupply}"/>
+
+                                </LinearLayout>
+
+                                <View
+                                    android:layout_width="match_parent"
+                                    android:layout_height="0.5dp"
+                                    android:layout_marginBottom="@dimen/dialog.margin.m"
+                                    android:layout_marginTop="@dimen/dialog.margin.m"
+                                    android:background="@color/grey_ee"/>
+
+                                <LinearLayout
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:orientation="horizontal"
+                                    android:weightSum="2">
+
+                                    <TextView
+                                        style="@style/TextRegular.Field.ListItemLabel"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:layout_weight="1"
+                                        android:gravity="start"
+                                        android:text="@string/percentage_change_1h_label"/>
+
+                                    <TextView
+                                        style="@style/TextRegular.Field.ListItemValue"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:layout_weight="1"
+                                        android:gravity="end"
+                                        android:text="@{viewModel.percentChange1h}"
+                                        android:textColor="@{safeUnbox(viewModel.percentChange1hValue) > 0 ? @color/green : @color/red}"/>
+
+                                </LinearLayout>
+
+                                <View
+                                    android:layout_width="match_parent"
+                                    android:layout_height="0.5dp"
+                                    android:layout_marginBottom="@dimen/dialog.margin.m"
+                                    android:layout_marginTop="@dimen/dialog.margin.m"
+                                    android:background="@color/grey_ee"/>
+
+                                <LinearLayout
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:orientation="horizontal"
+                                    android:weightSum="2">
+
+                                    <TextView
+                                        style="@style/TextRegular.Field.ListItemLabel"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:layout_weight="1"
+                                        android:gravity="start"
+                                        android:text="@string/percentage_change_24h_label"/>
+
+                                    <TextView
+                                        style="@style/TextRegular.Field.ListItemValue"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:layout_weight="1"
+                                        android:gravity="end"
+                                        android:text="@{viewModel.percentChange24h}"
+                                        android:textColor="@{safeUnbox(viewModel.percentChange24hValue) > 0 ? @color/green : @color/red}"/>
+
+                                </LinearLayout>
+
+                                <View
+                                    android:layout_width="match_parent"
+                                    android:layout_height="0.5dp"
+                                    android:layout_marginBottom="@dimen/dialog.margin.m"
+                                    android:layout_marginTop="@dimen/dialog.margin.m"
+                                    android:background="@color/grey_ee"/>
+
+                                <LinearLayout
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:orientation="horizontal"
+                                    android:weightSum="2">
+
+                                    <TextView
+                                        style="@style/TextRegular.Field.ListItemLabel"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:layout_weight="1"
+                                        android:gravity="start"
+                                        android:text="@string/percentage_change_7d_label"/>
+
+                                    <TextView
+                                        style="@style/TextRegular.Field.ListItemValue"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:layout_weight="1"
+                                        android:gravity="end"
+                                        android:text="@{viewModel.percentChange7d}"
+                                        android:textColor="@{safeUnbox(viewModel.percentChange7dValue) > 0 ? @color/green : @color/red}"/>
+
+                                </LinearLayout>
+
+                                <View
+                                    android:layout_width="match_parent"
+                                    android:layout_height="0.5dp"
+                                    android:layout_marginBottom="@dimen/dialog.margin.m"
+                                    android:layout_marginTop="@dimen/dialog.margin.m"
+                                    android:background="@color/grey_ee"/>
+
+                                <LinearLayout
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:orientation="horizontal"
+                                    android:weightSum="2">
+
+                                    <TextView
+                                        style="@style/TextRegular.Field.ListItemLabel"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:layout_weight="1"
+                                        android:gravity="start"
+                                        android:text="@string/last_updated_label"/>
+
+                                    <TextView
+                                        style="@style/TextRegular.Field.ListItemValue"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:layout_weight="1"
+                                        android:gravity="end"
+                                        android:text="@{viewModel.lastUpdated}"/>
+
+                                </LinearLayout>
+
+                            </LinearLayout>
+
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginBottom="@dimen/dialog.margin.s"
+                                android:background="@color/grey_df"
+                                android:clickable="true"
+                                android:focusable="true"
+                                android:gravity="center"
+                                android:orientation="horizontal"
+                                android:padding="@dimen/dialog.margin.m">
+
+                                <TextView
+                                    style="@style/TextMedium.Field.Small"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_gravity="center"
+                                    android:padding="@dimen/dialog.margin.xs"
+                                    android:text="@string/crypto_compare"
+                                    android:textAllCaps="true"
+                                    android:textColor="@color/grey_33"/>
+
+                            </LinearLayout>
+
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_margin="@dimen/dialog.margin.m"
+                                android:orientation="vertical">
+
+                                <LinearLayout
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:orientation="horizontal"
+                                    android:weightSum="2">
+
+                                    <TextView
+                                        style="@style/TextRegular.Field.ListItemLabel"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:layout_weight="1"
+                                        android:gravity="start"
+                                        android:text="@string/algorithm_label"/>
+
+                                    <TextView
+                                        style="@style/TextRegular.Field.ListItemValue"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:layout_weight="1"
+                                        android:gravity="end"
+                                        android:text="@{viewModel.algorithm}"/>
+
+                                </LinearLayout>
+
+                                <View
+                                    android:layout_width="match_parent"
+                                    android:layout_height="0.5dp"
+                                    android:layout_marginBottom="@dimen/dialog.margin.m"
+                                    android:layout_marginTop="@dimen/dialog.margin.m"
+                                    android:background="@color/grey_ee"/>
+
+                                <LinearLayout
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:orientation="horizontal"
+                                    android:weightSum="2">
+
+                                    <TextView
+                                        style="@style/TextRegular.Field.ListItemLabel"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:layout_weight="1"
+                                        android:gravity="start"
+                                        android:text="@string/proof_type_label"/>
+
+                                    <TextView
+                                        style="@style/TextRegular.Field.ListItemValue"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:layout_weight="1"
+                                        android:gravity="end"
+                                        android:text="@{viewModel.proofType}"/>
+
+                                </LinearLayout>
+
+                                <View
+                                    android:layout_width="match_parent"
+                                    android:layout_height="0.5dp"
+                                    android:layout_marginBottom="@dimen/dialog.margin.m"
+                                    android:layout_marginTop="@dimen/dialog.margin.m"
+                                    android:background="@color/grey_ee"/>
+
+                                <LinearLayout
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:orientation="horizontal"
+                                    android:weightSum="2">
+
+                                    <TextView
+                                        style="@style/TextRegular.Field.ListItemLabel"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:layout_weight="1"
+                                        android:gravity="start"
+                                        android:text="@string/fully_premined_label"/>
+
+                                    <TextView
+                                        style="@style/TextRegular.Field.ListItemValue"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:layout_weight="1"
+                                        android:gravity="end"
+                                        android:text="@{viewModel.fullyPremined}"/>
+
+                                </LinearLayout>
+
+                                <View
+                                    android:layout_width="match_parent"
+                                    android:layout_height="0.5dp"
+                                    android:layout_marginBottom="@dimen/dialog.margin.m"
+                                    android:layout_marginTop="@dimen/dialog.margin.m"
+                                    android:background="@color/grey_ee"/>
+
+                                <LinearLayout
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:orientation="horizontal"
+                                    android:weightSum="2">
+
+                                    <TextView
+                                        style="@style/TextRegular.Field.ListItemLabel"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:layout_weight="1"
+                                        android:gravity="start"
+                                        android:text="@string/premined_value_label"/>
+
+                                    <TextView
+                                        style="@style/TextRegular.Field.ListItemValue"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:layout_weight="1"
+                                        android:gravity="end"
+                                        android:text="@{viewModel.preminedValue}"/>
+
+                                </LinearLayout>
 
                             </LinearLayout>
 
@@ -220,17 +701,17 @@
                         android:id="@+id/coin_detail_favourite_fab"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_margin="16dp"
+                        android:layout_margin="@dimen/fab.margin.l"
                         android:clickable="true"
                         android:focusable="true"
                         android:onClick="@{() -> viewModel.onFavouriteClick()}"
                         android:tint="@color/white"
-                        app:elevation="2dp"
+                        app:elevation="@dimen/fab.elevation.s"
                         app:fabSize="normal"
                         app:layout_anchor="@id/coin_detail_image_container"
                         app:layout_anchorGravity="bottom|right|end"
                         app:rippleColor="@color/fab_ripple_light"
-                        app:srcCompat="@drawable/vd_star"/>
+                        app:srcCompat="@drawable/vd_star_outline"/>
 
                 </android.support.design.widget.CoordinatorLayout>
 

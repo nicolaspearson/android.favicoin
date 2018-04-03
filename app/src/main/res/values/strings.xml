@@ -107,14 +107,31 @@
     <string name="dollar_format">$ %1$s</string>
     <string name="percentage_format">%1$s %%</string>
     <string name="rank">Rank: %1$s</string>
-    <string name="rank_label">Rank:</string>
-    <string name="price_usd_label">Price:</string>
 
     <!-- Coin Detail -->
     <string name="title_coin_detail">Coin Detail</string>
     <string name="title_no_coin_item">Coin Details Not Found</string>
     <string name="message_no_coin_item">Unfortunately we were unable to retrieve the selected coin\'s details, please try again.</string>
-    <string name="separator_name_symbol" translatable="false">, </string>
+    <string name="adding_to_favourites">Adding %1$s to favourites</string>
+    <string name="coin_market_cap">CoinMarketCap</string>
+    <string name="crypto_compare">CryptoCompare</string>
+    <string name="symbol_label">Symbol:</string>
+    <string name="rank_label">Rank:</string>
+    <string name="price_usd_label">Price:</string>
+    <string name="price_btc_label">Price BTC:</string>
+    <string name="volume_24h_usd_label">Volume 24 Hours:</string>
+    <string name="market_cap_usd_label">Market Cap:</string>
+    <string name="available_supply_label">Available Supply:</string>
+    <string name="total_supply_label">Total Supply:</string>
+    <string name="max_supply_label">Max Supply:</string>
+    <string name="percentage_change_1h_label">Change 1 Hour:</string>
+    <string name="percentage_change_24h_label">Change 24 Hours:</string>
+    <string name="percentage_change_7d_label">Change 7 Days:</string>
+    <string name="last_updated_label">Last Updated:</string>
+    <string name="algorithm_label">Algorithm:</string>
+    <string name="proof_type_label">Proof Type:</string>
+    <string name="fully_premined_label">Fully Premined:</string>
+    <string name="premined_value_label">Premined Value:</string>
 
     <!-- Shared Element Transition -->
     <string name="shared_image" translatable="false">sharedImage</string>

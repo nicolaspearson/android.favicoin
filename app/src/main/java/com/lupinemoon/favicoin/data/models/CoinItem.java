@@ -116,11 +116,11 @@ public class CoinItem extends RealmObject {
         this.priceBtc = priceBtc;
     }
 
-    public String get_24hVolumeUsd() {
+    public String get24hVolumeUsd() {
         return _24hVolumeUsd;
     }
 
-    public void set_24hVolumeUsd(String _24hVolumeUsd) {
+    public void set24hVolumeUsd(String _24hVolumeUsd) {
         this._24hVolumeUsd = _24hVolumeUsd;
     }
 

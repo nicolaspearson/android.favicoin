@@ -39,7 +39,7 @@
                     android:paddingTop="@dimen/dialog.margin.m"
                     android:text="Title"
                     android:textAllCaps="true"
-                    android:textColor="@color/black" />
+                    android:textColor="@color/black"/>
 
                 <TextView
                     android:id="@+id/dialog_message"
@@ -50,16 +50,7 @@
                     android:layout_marginTop="@dimen/dialog.margin.s"
                     android:gravity="start|left"
                     android:text="Message"
-                    android:textColor="@color/grey_66" />
-
-                <CheckBox
-                    android:id="@+id/dialog_checkbox_remember"
-                    style="@style/TextMedium.Field.Small"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/dont_show_again"
-                    android:textColor="@color/grey_66"
-                    android:visibility="gone" />
+                    android:textColor="@color/grey_66"/>
 
             </LinearLayout>
 
@@ -76,10 +67,11 @@
                     android:id="@+id/no_button"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_marginEnd="@dimen/dialog.margin.s"
+                    android:layout_marginRight="@dimen/dialog.margin.s"
                     android:background="@drawable/selector_button_dialog"
                     android:clickable="true"
-                    android:layout_marginRight="@dimen/dialog.margin.s"
-                    android:layout_marginEnd="@dimen/dialog.margin.s"
+                    android:focusable="true"
                     android:padding="@dimen/dialog.margin.l">
 
                     <TextView
@@ -89,7 +81,7 @@
                         android:layout_height="wrap_content"
                         android:layout_centerInParent="true"
                         android:text="@string/no"
-                        android:textSize="@dimen/text.size.m" />
+                        android:textSize="@dimen/text.size.m"/>
 
                 </RelativeLayout>
 
@@ -99,6 +91,7 @@
                     android:layout_height="wrap_content"
                     android:background="@drawable/selector_button_dialog"
                     android:clickable="true"
+                    android:focusable="true"
                     android:padding="@dimen/dialog.margin.l">
 
                     <TextView
@@ -108,7 +101,7 @@
                         android:layout_height="wrap_content"
                         android:layout_centerInParent="true"
                         android:text="@string/yes"
-                        android:textSize="@dimen/text.size.m" />
+                        android:textSize="@dimen/text.size.m"/>
 
                 </RelativeLayout>
 
@@ -135,7 +128,7 @@
                 android:background="@drawable/oval_white"
                 android:padding="@dimen/fab.margin.l"
                 android:scaleType="fitCenter"
-                app:srcCompat="@drawable/vd_no_connection" />
+                app:srcCompat="@drawable/vd_no_connection"/>
 
         </FrameLayout>
 

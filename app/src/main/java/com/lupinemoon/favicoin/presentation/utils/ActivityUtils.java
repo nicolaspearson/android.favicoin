@@ -11,31 +11,6 @@ import android.support.v4.app.FragmentTransaction;
 
 public class ActivityUtils {
 
-    private static int MAX_BACK_STACK_SIZE = 5;
-
-    /**
-     * The {@code fragment} is added to the container view with id {@code frameId}. The operation is
-     * performed by the {@code fragmentManager}.
-     */
-    public static void addFragmentToActivity(@NonNull FragmentManager fragmentManager, @NonNull Fragment fragment, String fragmentTag, int frameId, boolean limitBackStack, boolean addToBackStack) {
-        checkNotNull(fragmentManager);
-        checkNotNull(fragment);
-
-        if (limitBackStack && fragmentManager.getBackStackEntryCount() >= MAX_BACK_STACK_SIZE) {
-            fragmentManager.popBackStack();
-        }
-
-        FragmentTransaction transaction = fragmentManager.beginTransaction();
-
-        transaction.replace(frameId, fragment, fragmentTag);
-
-        if (addToBackStack) {
-            transaction.addToBackStack(fragmentTag);
-        }
-
-        transaction.commit();
-    }
-
     /**
      * The {@code fragment} is added to the container view with id {@code frameId}. The operation is
      * performed by the {@code fragmentManager}. This also enables enter and exit animations.
@@ -43,6 +18,8 @@ public class ActivityUtils {
     public static void addFragmentToActivityAnim(@NonNull FragmentManager fragmentManager, @NonNull Fragment fragment, String fragmentTag, int frameId, boolean limitBackStack, boolean addToBackStack, @AnimRes int enter, @AnimRes int exit, @AnimRes int popEnter, @AnimRes int popExit) {
         checkNotNull(fragmentManager);
         checkNotNull(fragment);
+
+        int MAX_BACK_STACK_SIZE = 5;
 
         if (limitBackStack && fragmentManager.getBackStackEntryCount() >= MAX_BACK_STACK_SIZE) {
             fragmentManager.popBackStack();

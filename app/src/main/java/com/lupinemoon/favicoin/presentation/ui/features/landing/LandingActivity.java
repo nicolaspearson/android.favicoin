@@ -28,7 +28,6 @@ import com.lupinemoon.favicoin.presentation.ui.features.dev.DevActivity;
 import com.lupinemoon.favicoin.presentation.ui.features.home.HomeFragment;
 import com.lupinemoon.favicoin.presentation.ui.features.login.LoginActivity;
 import com.lupinemoon.favicoin.presentation.utils.ActivityUtils;
-import com.lupinemoon.favicoin.presentation.utils.AndroidUtils;
 import com.lupinemoon.favicoin.presentation.utils.AnimationUtils;
 import com.lupinemoon.favicoin.presentation.utils.Constants;
 import com.lupinemoon.favicoin.presentation.widgets.Toasty;
@@ -99,11 +98,6 @@ public class LandingActivity extends BaseDrawerActivity<ActivityLandingBinding> 
         selectMenuItem(HomeFragment.TAG, true);
 
         updateDevMenuVisibility();
-
-        // Check play services and show an error dialog if required
-        if (AndroidUtils.checkPlayServices(this, true)) {
-            Timber.d("Play Services Is Available");
-        }
     }
 
     @Override

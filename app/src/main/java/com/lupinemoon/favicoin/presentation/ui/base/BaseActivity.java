@@ -314,7 +314,7 @@ public abstract class BaseActivity<B extends ViewDataBinding> extends AppCompatA
             View.OnClickListener posButtonClick,
             View.OnClickListener negButtonClick,
             DialogUtils.AlertType alertType) {
-        return DialogUtils.showCustomAlertDialogSimple(
+        return DialogUtils.showCustomAlertDialog(
                 this,
                 title,
                 message,

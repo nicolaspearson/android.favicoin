@@ -49,7 +49,7 @@ public class RetrofitUtils {
         // Create a clone of the source to avoid consumption
         source.request(Long.MAX_VALUE);
         Buffer buffer = source.buffer();
-        byte[] bytes = null;
+        byte[] bytes;
         try {
             bytes = buffer.clone().readByteArray();
         } finally {

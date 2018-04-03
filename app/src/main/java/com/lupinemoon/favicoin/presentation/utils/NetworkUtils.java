@@ -5,36 +5,9 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.telephony.TelephonyManager;
 
-import java.io.UnsupportedEncodingException;
-import java.net.URLDecoder;
-
 import timber.log.Timber;
 
 public class NetworkUtils {
-
-    public static String getUrlParameter(String separator, String requiredKey, String url) {
-        try {
-            String[] urlParts = url.split(separator);
-            if (urlParts.length > 1) {
-                String query = urlParts[1];
-                for (String param : query.split("&")) {
-                    String pair[] = param.split("=", 2);
-                    String key = URLDecoder.decode(pair[0], "UTF-8");
-                    String value;
-                    if (pair.length > 1) {
-                        value = URLDecoder.decode(pair[1], "UTF-8");
-                        if (requiredKey.equals(key)) {
-                            return value;
-                        }
-                    }
-                }
-            }
-        } catch (UnsupportedEncodingException e) {
-            Timber.e(e, e.toString());
-        }
-        return "";
-    }
-
 
     public static boolean hasActiveNetworkConnection(Context context) {
         if (context != null) {
@@ -53,7 +26,7 @@ public class NetworkUtils {
      * @param context The application context
      * @return NetworkInfo
      */
-    private static NetworkInfo getNetworkInfo(Context context){
+    private static NetworkInfo getNetworkInfo(Context context) {
         ConnectivityManager connectivityManager = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
         return connectivityManager.getActiveNetworkInfo();
     }
@@ -105,7 +78,7 @@ public class NetworkUtils {
      * @param subType NetworkInfo subtype
      * @return True if the connection is fast
      */
-    public static boolean isConnectionFast(int type, int subType) {
+    private static boolean isConnectionFast(int type, int subType) {
         if (type == ConnectivityManager.TYPE_WIFI) {
             return true;
         } else if (type == ConnectivityManager.TYPE_MOBILE) {

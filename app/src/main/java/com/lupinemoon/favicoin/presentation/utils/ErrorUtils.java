@@ -23,21 +23,17 @@ import okio.BufferedSource;
 import retrofit2.HttpException;
 import timber.log.Timber;
 
-
 public class ErrorUtils {
 
-    public static String getErrorMessage(Throwable throwable, Context context) {
-        return getErrorMessage(throwable, context, null);
-    }
-
-    public static String getErrorMessage(Throwable throwable, Context context, String fallbackMsg) {
-        String message = fallbackMsg;
+    public static String getErrorMessage(
+            Throwable throwable,
+            Context context) {
+        String message = null;
         AppErrorResponse appErrorResponse = null;
         if (throwable instanceof HttpException) {
             Timber.d(
-                    "getErrorMessage: throwable = %s, fallbackMsg = %s",
-                    throwable.toString(),
-                    fallbackMsg);
+                    "getErrorMessage: throwable = %s",
+                    throwable.toString());
             HttpException retroErr = (HttpException) throwable;
             try {
                 appErrorResponse = appErrorResponseFromRetrofit(retroErr);
@@ -60,7 +56,9 @@ public class ErrorUtils {
         AppErrorResponse appErrorResponse = new AppErrorResponse(new AppError());
         try {
             if ((retroErr != null) && (retroErr.response() != null)) {
-                Timber.d("retroErr body length = %s", retroErr.response().errorBody().contentLength());
+                Timber.d(
+                        "retroErr body length = %s",
+                        retroErr.response().errorBody().contentLength());
                 String errJson = RetrofitUtils.getHttpExceptionBody(retroErr);
                 appErrorResponse = appErrorResponseFromString(errJson);
             }
@@ -75,27 +73,29 @@ public class ErrorUtils {
         AppError appError = new AppError();
         try {
             if (!TextUtils.isEmpty(errJson)) {
-                    Gson gson = new GsonBuilder().create();
-                    Timber.d("retroErr json = %s", errJson.length() < 4000 ? errJson : "Too Much Output!");
-                    Object json = new JSONTokener(errJson).nextValue();
-                    if (json instanceof JSONObject) {
-                        appError = gson.fromJson(json.toString(), AppError.class);
-                        if (appError == null) {
-                            appErrorResponse = gson.fromJson(json.toString(), AppErrorResponse.class);
-                            appError = appErrorResponse.getAppError();
-                            Timber.d("AppErrorResponse: %s", appErrorResponse.toString());
-                        }
-                    } else if (json instanceof JSONArray) {
-                        appError = gson.fromJson(((JSONArray) json).get(0).toString(), AppError.class);
+                Gson gson = new GsonBuilder().create();
+                Timber.d(
+                        "retroErr json = %s",
+                        errJson.length() < 4000 ? errJson : "Too Much Output!");
+                Object json = new JSONTokener(errJson).nextValue();
+                if (json instanceof JSONObject) {
+                    appError = gson.fromJson(json.toString(), AppError.class);
+                    if (appError == null) {
+                        appErrorResponse = gson.fromJson(json.toString(), AppErrorResponse.class);
+                        appError = appErrorResponse.getAppError();
+                        Timber.d("AppErrorResponse: %s", appErrorResponse.toString());
                     }
-                    if (appError != null && appError.getMessages() != null && appError.getMessages().size() > 0 && !TextUtils.isEmpty(
-                            appError.getMessages().get(0).getValue())) {
-                        appErrorResponse.setAppError(appError);
-                    } else {
-                        appErrorResponse = gson.fromJson(errJson, AppErrorResponse.class);
-                    }
-                    Timber.w("AppErrorResponse = %s\n%s", appErrorResponse, errJson);
+                } else if (json instanceof JSONArray) {
+                    appError = gson.fromJson(((JSONArray) json).get(0).toString(), AppError.class);
                 }
+                if (appError != null && appError.getMessages() != null && appError.getMessages().size() > 0 && !TextUtils.isEmpty(
+                        appError.getMessages().get(0).getValue())) {
+                    appErrorResponse.setAppError(appError);
+                } else {
+                    appErrorResponse = gson.fromJson(errJson, AppErrorResponse.class);
+                }
+                Timber.w("AppErrorResponse = %s\n%s", appErrorResponse, errJson);
+            }
         } catch (Exception e) {
             Timber.e(e, "Convert Retrofit error to AppErrorResponse failed");
         }
@@ -124,7 +124,9 @@ public class ErrorUtils {
      */
     public static ResponseBody create(
             final MediaType contentType, final long contentLength, final BufferedSource content) {
-        if (content == null) throw new NullPointerException("source == null");
+        if (content == null) {
+            throw new NullPointerException("source == null");
+        }
 
         Timber.d("create ResponseBody: contentLength = %s", contentLength);
         return new ResponseBody() {

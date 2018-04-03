@@ -36,7 +36,8 @@ class ImageTransitionHelper {
     }
 
     static Animator createAnimator(
-            Animator parentAnimator, ViewGroup sceneRoot,
+            Animator parentAnimator,
+            ViewGroup sceneRoot,
             View endValuesView,
             Map<String, Object> startValues,
             Map<String, Object> endValues) {
@@ -47,10 +48,11 @@ class ImageTransitionHelper {
         float startRoundingProgress = (float) startValues.get(PROPERTY_NAME_ROUNDING_PROGRESS);
         float endRoundingProgress = (float) endValues.get(PROPERTY_NAME_ROUNDING_PROGRESS);
 
-        final ObjectAnimator roundingProgressAnimator = ObjectAnimator.ofFloat(endValuesView,
-                                                                               TransitionImageView.ROUNDING_PROGRESS_PROPERTY,
-                                                                               startRoundingProgress,
-                                                                               endRoundingProgress);
+        final ObjectAnimator roundingProgressAnimator = ObjectAnimator.ofFloat(
+                endValuesView,
+                TransitionImageView.ROUNDING_PROGRESS_PROPERTY,
+                startRoundingProgress,
+                endRoundingProgress);
 
         if (parentAnimator instanceof AnimatorSet) {
             ArrayList<Animator> parentAnimators = ((AnimatorSet) parentAnimator).getChildAnimations();

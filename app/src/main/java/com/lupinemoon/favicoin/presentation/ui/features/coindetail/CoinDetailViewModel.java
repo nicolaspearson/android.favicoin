@@ -21,7 +21,9 @@ import com.lupinemoon.favicoin.R;
 import com.lupinemoon.favicoin.data.models.CoinItem;
 import com.lupinemoon.favicoin.presentation.ui.base.BaseViewModel;
 import com.lupinemoon.favicoin.presentation.utils.ActivityUtils;
+import com.lupinemoon.favicoin.presentation.utils.DateTimeUtils;
 import com.lupinemoon.favicoin.presentation.utils.ImageUtils;
+import com.lupinemoon.favicoin.presentation.widgets.Toasty;
 
 import org.parceler.Parcels;
 
@@ -56,12 +58,12 @@ public class CoinDetailViewModel extends BaseViewModel implements CoinDetailCont
 
     @Bindable
     public String getName() {
-        return coinItem != null && coinItem.getName() != null ? coinItem.getName() : "";
+        return coinItem != null && coinItem.getName() != null ? coinItem.getName() : "N/A";
     }
 
     @Bindable
     public String getSymbol() {
-        return coinItem != null && coinItem.getSymbol() != null ? coinItem.getSymbol() : "";
+        return coinItem != null && coinItem.getSymbol() != null ? coinItem.getSymbol() : "N/A";
     }
 
     @Bindable
@@ -69,7 +71,7 @@ public class CoinDetailViewModel extends BaseViewModel implements CoinDetailCont
         if (coinItem != null && coinItem.getRank() != null) {
             return coinItem.getRank();
         }
-        return "";
+        return "N/A";
     }
 
     @Bindable
@@ -79,7 +81,17 @@ public class CoinDetailViewModel extends BaseViewModel implements CoinDetailCont
                     coinDetailView.getActivity().getString(R.string.dollar_format),
                     coinItem.getPriceUsd());
         }
-        return "";
+        return "N/A";
+    }
+
+    @Bindable
+    public String getPriceBtc() {
+        return coinItem != null && coinItem.getPriceBtc() != null ? coinItem.getPriceBtc() : "N/A";
+    }
+
+    @Bindable
+    public String getVolume24hUsd() {
+        return coinItem != null && coinItem.get24hVolumeUsd() != null ? coinItem.get24hVolumeUsd() : "N/A";
     }
 
     @Bindable
@@ -89,7 +101,44 @@ public class CoinDetailViewModel extends BaseViewModel implements CoinDetailCont
                     coinDetailView.getActivity().getString(R.string.dollar_format),
                     coinItem.getMarketCapUsd());
         }
-        return "";
+        return "N/A";
+    }
+
+    @Bindable
+    public String getAvailableSupply() {
+        return coinItem != null && coinItem.getAvailableSupply() != null ? coinItem.getAvailableSupply() : "N/A";
+    }
+
+    @Bindable
+    public String getTotalSupply() {
+        return coinItem != null && coinItem.getTotalSupply() != null ? coinItem.getTotalSupply() : "N/A";
+    }
+
+    @Bindable
+    public String getMaxSupply() {
+        return coinItem != null && coinItem.getMaxSupply() != null ? coinItem.getMaxSupply() : "N/A";
+    }
+
+    @Bindable
+    public String getPercentChange1h() {
+        if (coinItem != null && coinItem.getPercentChange1h() != null) {
+            return String.format(
+                    coinDetailView.getActivity().getString(R.string.percentage_format),
+                    coinItem.getPercentChange1h());
+        }
+        return "N/A";
+    }
+
+    @Bindable
+    public Double getPercentChange1hValue() {
+        if (coinItem != null && coinItem.getPercentChange1h() != null) {
+            try {
+                return Double.parseDouble(coinItem.getPercentChange1h());
+            } catch (NumberFormatException e) {
+                // Ignore
+            }
+        }
+        return 0D;
     }
 
     @Bindable
@@ -99,7 +148,7 @@ public class CoinDetailViewModel extends BaseViewModel implements CoinDetailCont
                     coinDetailView.getActivity().getString(R.string.percentage_format),
                     coinItem.getPercentChange24h());
         }
-        return "";
+        return "N/A";
     }
 
     @Bindable
@@ -114,8 +163,68 @@ public class CoinDetailViewModel extends BaseViewModel implements CoinDetailCont
         return 0D;
     }
 
+    @Bindable
+    public String getPercentChange7d() {
+        if (coinItem != null && coinItem.getPercentChange7d() != null) {
+            return String.format(
+                    coinDetailView.getActivity().getString(R.string.percentage_format),
+                    coinItem.getPercentChange7d());
+        }
+        return "N/A";
+    }
+
+    @Bindable
+    public Double getPercentChange7dValue() {
+        if (coinItem != null && coinItem.getPercentChange7d() != null) {
+            try {
+                return Double.parseDouble(coinItem.getPercentChange7d());
+            } catch (NumberFormatException e) {
+                // Ignore
+            }
+        }
+        return 0D;
+    }
+
+    @Bindable
+    public String getLastUpdated() {
+        if (coinItem != null && coinItem.getLastUpdated() != null) {
+            try {
+                return DateTimeUtils.epochToDateTimeString(coinItem.getLastUpdated());
+            } catch (NumberFormatException e) {
+                Timber.e(e, "Could not format last updated epoch");
+            }
+        }
+        return "N/A";
+    }
+
+    @Bindable
+    public String getAlgorithm() {
+        return coinItem != null && coinItem.getCryptoCompareCoin() != null && coinItem.getCryptoCompareCoin().getAlgorithm() != null ? coinItem.getCryptoCompareCoin().getAlgorithm() : "N/A";
+    }
+
+    @Bindable
+    public String getProofType() {
+        return coinItem != null && coinItem.getCryptoCompareCoin() != null && coinItem.getCryptoCompareCoin().getProofType() != null ? coinItem.getCryptoCompareCoin().getProofType() : "N/A";
+    }
+
+    @Bindable
+    public String getFullyPremined() {
+        return coinItem != null && coinItem.getCryptoCompareCoin() != null && coinItem.getCryptoCompareCoin().getFullyPremined() != null ? coinItem.getCryptoCompareCoin().getFullyPremined() : "N/A";
+    }
+
+    @Bindable
+    public String getPreminedValue() {
+        return coinItem != null && coinItem.getCryptoCompareCoin() != null && coinItem.getCryptoCompareCoin().getPreMinedValue() != null ? coinItem.getCryptoCompareCoin().getPreMinedValue() : "N/A";
+    }
+
     public void onFavouriteClick() {
         Timber.d("Favourite Clicked");
+        if (coinItem != null && !TextUtils.isEmpty(coinItem.getName())) {
+            String message = String.format(
+                    coinDetailView.getActivity().getString(R.string.adding_to_favourites),
+                    coinItem.getName());
+            coinDetailView.showToastMsg(message, Toasty.ToastType.INFO);
+        }
     }
 
     @Bindable
