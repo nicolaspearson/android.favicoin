@@ -9,6 +9,7 @@ import android.widget.TextView;
 /**
  * A {@link TextView} that re-sizes its text to be no larger than the width of the view.
  */
+@SuppressWarnings("unused")
 public class AutofitTextView extends AppCompatTextView implements AutofitHelper.OnTextSizeChangeListener {
 
     private AutofitHelper mHelper;
@@ -83,7 +84,7 @@ public class AutofitTextView extends AppCompatTextView implements AutofitHelper.
      * If true, the text will automatically be re-sized to fit its constraints; if false, it will
      * act like a normal TextView.
      *
-     * @param sizeToFit
+     * @param sizeToFit whether or not to size the text to fit the bounds
      */
     public void setSizeToFit(boolean sizeToFit) {
         mHelper.setEnabled(sizeToFit);

@@ -1,4 +1,4 @@
-package com.lupinemoon.favicoin.presentation.widgets.utils;
+package com.lupinemoon.favicoin.presentation.utils;
 
 import android.content.Context;
 import android.graphics.PorterDuff;
@@ -13,19 +13,7 @@ import android.view.View;
 
 import com.lupinemoon.favicoin.R;
 
-public class WidgetUtils {
-
-    public static int[] getImageLargeSize() {
-        return new int[]{900, 900};
-    }
-
-    public static int[] getImageStandardSize() {
-        return new int[]{450, 450};
-    }
-
-    public static int[] getImageThumbnailSize() {
-        return new int[]{200, 200};
-    }
+public class DrawableUtils {
 
     public static Drawable tint9PatchDrawableFrame(
             @NonNull Context context,

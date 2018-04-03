@@ -21,7 +21,7 @@ import android.util.Property;
 import android.view.View;
 
 import com.lupinemoon.favicoin.R;
-import com.lupinemoon.favicoin.presentation.widgets.utils.WidgetUtils;
+import com.lupinemoon.favicoin.presentation.utils.ImageUtils;
 
 public class TransitionImageView extends AppCompatImageView {
 
@@ -403,9 +403,9 @@ public class TransitionImageView extends AppCompatImageView {
 
     private enum ImageSize {
 
-        THUMB(WidgetUtils.getImageThumbnailSize()[0], WidgetUtils.getImageThumbnailSize()[1]),
-        STANDARD(WidgetUtils.getImageStandardSize()[0], WidgetUtils.getImageStandardSize()[1]),
-        LARGE(WidgetUtils.getImageLargeSize()[0], WidgetUtils.getImageLargeSize()[1]);
+        THUMB(ImageUtils.getImageThumbnailSize()[0], ImageUtils.getImageThumbnailSize()[1]),
+        STANDARD(ImageUtils.getImageStandardSize()[0], ImageUtils.getImageStandardSize()[1]),
+        LARGE(ImageUtils.getImageLargeSize()[0], ImageUtils.getImageLargeSize()[1]);
 
         private int width;
         private int height;

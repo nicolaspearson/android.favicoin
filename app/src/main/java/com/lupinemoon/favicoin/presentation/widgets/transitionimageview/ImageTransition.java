@@ -13,6 +13,7 @@ import android.view.ViewGroup;
 public class ImageTransition extends ChangeBounds {
 
     public ImageTransition() {
+        // Empty Constructor
     }
 
     @TargetApi(Build.VERSION_CODES.LOLLIPOP)
@@ -42,17 +43,19 @@ public class ImageTransition extends ChangeBounds {
             ViewGroup sceneRoot,
             TransitionValues startValues,
             TransitionValues endValues) {
+
         if (startValues == null || endValues == null) {
             return null;
         }
 
-        return ImageTransitionHelper.createAnimator(super.createAnimator(
+        return ImageTransitionHelper.createAnimator(
+                super.createAnimator(
+                        sceneRoot,
+                        startValues,
+                        endValues),
                 sceneRoot,
-                startValues,
-                endValues),
-                                                    sceneRoot,
-                                                    endValues.view,
-                                                    startValues.values,
-                                                    endValues.values);
+                endValues.view,
+                startValues.values,
+                endValues.values);
     }
 }

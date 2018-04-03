@@ -16,7 +16,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.lupinemoon.favicoin.R;
-import com.lupinemoon.favicoin.presentation.widgets.utils.WidgetUtils;
+import com.lupinemoon.favicoin.presentation.utils.DrawableUtils;
 
 @SuppressLint("InflateParams")
 @SuppressWarnings("unused, WeakerAccess")
@@ -84,7 +84,7 @@ public class Toasty {
             boolean withIcon) {
         return custom(context,
                       message,
-                      WidgetUtils.getDrawable(context, R.drawable.ic_error_outline_white),
+                      DrawableUtils.getDrawable(context, R.drawable.ic_error_outline_white),
                       ContextCompat.getColor(context, R.color.toasty_default_text_color),
                       ContextCompat.getColor(context, R.color.toasty_warning_color),
                       duration,
@@ -106,7 +106,7 @@ public class Toasty {
     Toast info(@NonNull Context context, @NonNull String message, int duration, boolean withIcon) {
         return custom(context,
                       message,
-                      WidgetUtils.getDrawable(context, R.drawable.ic_info_outline_white),
+                      DrawableUtils.getDrawable(context, R.drawable.ic_info_outline_white),
                       ContextCompat.getColor(context, R.color.toasty_default_text_color),
                       ContextCompat.getColor(context, R.color.toasty_info_color),
                       duration,
@@ -132,7 +132,7 @@ public class Toasty {
             boolean withIcon) {
         return custom(context,
                       message,
-                      WidgetUtils.getDrawable(context, R.drawable.ic_check_white),
+                      DrawableUtils.getDrawable(context, R.drawable.ic_check_white),
                       ContextCompat.getColor(context, R.color.toasty_default_text_color),
                       ContextCompat.getColor(context, R.color.toasty_success_color),
                       duration,
@@ -154,7 +154,7 @@ public class Toasty {
     Toast error(@NonNull Context context, @NonNull String message, int duration, boolean withIcon) {
         return custom(context,
                       message,
-                      WidgetUtils.getDrawable(context, R.drawable.ic_clear_white),
+                      DrawableUtils.getDrawable(context, R.drawable.ic_clear_white),
                       ContextCompat.getColor(context, R.color.toasty_default_text_color),
                       ContextCompat.getColor(context, R.color.toasty_error_color),
                       duration,
@@ -174,7 +174,7 @@ public class Toasty {
             @NonNull Context context, @NonNull String message, @DrawableRes int iconRes,
             @ColorInt int textColor, @ColorInt int tintColor, int duration,
             boolean withIcon, boolean shouldTint) {
-        return custom(context, message, WidgetUtils.getDrawable(context, iconRes), textColor,
+        return custom(context, message, DrawableUtils.getDrawable(context, iconRes), textColor,
                       tintColor, duration, withIcon, shouldTint);
     }
 
@@ -191,18 +191,18 @@ public class Toasty {
         Drawable drawableFrame;
 
         if (shouldTint) {
-            drawableFrame = WidgetUtils.tint9PatchDrawableFrame(context, tintColor);
+            drawableFrame = DrawableUtils.tint9PatchDrawableFrame(context, tintColor);
         } else {
-            drawableFrame = WidgetUtils.getDrawable(context, R.drawable.toast_frame);
+            drawableFrame = DrawableUtils.getDrawable(context, R.drawable.toast_frame);
         }
-        WidgetUtils.setBackground(toastLayout, drawableFrame);
+        DrawableUtils.setBackground(toastLayout, drawableFrame);
 
         if (withIcon) {
             if (icon == null) {
                 throw new IllegalArgumentException(
                         "Avoid passing 'icon' as null if 'withIcon' is set to true");
             }
-            WidgetUtils.setBackground(toastIcon, icon);
+            DrawableUtils.setBackground(toastIcon, icon);
         } else {
             toastIcon.setVisibility(View.GONE);
         }

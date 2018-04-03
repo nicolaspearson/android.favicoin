@@ -12,6 +12,18 @@ import timber.log.Timber;
 
 public class ImageUtils {
 
+    public static int[] getImageLargeSize() {
+        return new int[]{900, 900};
+    }
+
+    public static int[] getImageStandardSize() {
+        return new int[]{450, 450};
+    }
+
+    public static int[] getImageThumbnailSize() {
+        return new int[]{200, 200};
+    }
+
     public static String getFullCoinUrl(String imageUrl) {
         if (!TextUtils.isEmpty(imageUrl)) {
             if (imageUrl.contains("http")) {
