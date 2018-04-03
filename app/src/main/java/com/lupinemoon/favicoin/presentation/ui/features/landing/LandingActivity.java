@@ -289,7 +289,7 @@ public class LandingActivity extends BaseDrawerActivity<ActivityLandingBinding> 
                         .observeOn(Schedulers.io())
                         .subscribe(new Consumer<NetworkRestoredEvent>() {
                             @Override
-                            public void accept(NetworkRestoredEvent networkRestoredEvent) throws Exception {
+                            public void accept(NetworkRestoredEvent networkRestoredEvent) {
                                 Timber.w(
                                         "%s: Network restored event. Triggering queue processing.",
                                         this.getClass().getSimpleName());

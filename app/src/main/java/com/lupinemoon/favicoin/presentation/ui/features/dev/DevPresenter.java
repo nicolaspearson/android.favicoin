@@ -40,14 +40,14 @@ class DevPresenter extends BasePresenter implements DevContract.Presenter {
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe(new Consumer<File>() {
                             @Override
-                            public void accept(@io.reactivex.annotations.NonNull File file) throws Exception {
+                            public void accept(@io.reactivex.annotations.NonNull File file) {
                                 if (devView.isAttached()) {
                                     devView.emailFile(file);
                                 }
                             }
                         }, new Consumer<Throwable>() {
                             @Override
-                            public void accept(@io.reactivex.annotations.NonNull Throwable throwable) throws Exception {
+                            public void accept(@io.reactivex.annotations.NonNull Throwable throwable) {
                                 Timber.w(throwable);
                                 if (devView.isAttached()) {
                                     devView.showSnackbarMsg(
