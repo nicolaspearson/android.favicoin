@@ -91,6 +91,9 @@
     <!-- Favourites -->
     <string name="toolbar_title_favourites">Favourites</string>
     <string name="title_favourite_failed">Favourite Failed</string>
+    <string name="title_empty_favourites">No favourites</string>
+    <string name="msg_empty_favourites">You do not have any favourites, view the list of coins, click on an item to view the details, and star the coins you want to favourite.</string>
+    <string name="empty_button_favourites">Find favourites</string>
 
     <!-- Coin Detail -->
     <string name="title_coin_detail">Coin Detail</string>

@@ -21,4 +21,8 @@ public class FavouritesViewModel extends BaseViewModel implements FavouritesCont
         return null;
     }
 
+    public void onEmptyButtonClick() {
+        favouritesView.getPresenter().performEmptyButtonAction();
+    }
+
 }

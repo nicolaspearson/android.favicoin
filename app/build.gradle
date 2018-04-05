@@ -51,16 +51,10 @@ android {
 
     signingConfigs {
         debug {
-            Properties properties = new Properties()
-            File propertiesFile = new File('keys/debug.properties')
-            propertiesFile.withInputStream {
-                properties.load(it)
-            }
-
-            storeFile rootProject.file('keys/debug.jks')
-            keyAlias properties.getProperty("keyAlias")
-            keyPassword properties.getProperty("keyPassword")
-            storePassword properties.getProperty("storePassword")
+            storeFile rootProject.file('keys/favicoin-debug.jks')
+            keyAlias "androiddebugkey"
+            keyPassword "android"
+            storePassword "android"
         }
     }
 

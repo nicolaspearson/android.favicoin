@@ -279,7 +279,9 @@ public class AppRepository implements AppDataStore {
                                 @NonNull Coins localCoins,
                                 @NonNull Coins networkCoins) {
                             RealmList<CoinItem> resultCoinItemList = new RealmList<>();
-                            Coins savedCoins = appLocalDataStore.saveCoins(networkCoins.getCoinItems(), false);
+                            Coins savedCoins = appLocalDataStore.saveCoins(
+                                    networkCoins.getCoinItems(),
+                                    false);
                             try {
                                 if (savedCoins.getCoinItems() != null && savedCoins.getCoinItems().size() > 0) {
                                     Timber.d("savedCoinItems: %s", savedCoins.getCoinItems());
@@ -327,17 +329,7 @@ public class AppRepository implements AppDataStore {
         // Return local result
         return appLocalDataStore.getFavourites()
                 .subscribeOn(Schedulers.io())
-                .delay(BuildConfig.LOCAL_REPO_SOURCE_DELAY, TimeUnit.MILLISECONDS)
-                .filter(new Predicate<Coins>() {
-                    @Override
-                    public boolean test(@NonNull Coins coins) throws Exception {
-                        if (coins.getCoinItems() != null && coins.getCoinItems().size() > 0) {
-                            return true;
-                        } else {
-                            throw new Exception();
-                        }
-                    }
-                });
+                .delay(BuildConfig.LOCAL_REPO_SOURCE_DELAY, TimeUnit.MILLISECONDS);
     }
 
     @Override

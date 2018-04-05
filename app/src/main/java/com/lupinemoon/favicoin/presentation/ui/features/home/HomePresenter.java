@@ -64,6 +64,7 @@ class HomePresenter extends BasePresenter implements HomeContract.Presenter {
 
             if (refresh) {
                 coinItemList.clear();
+                homeView.setCoinItems(coinItemList, refresh);
                 page = 1;
             }
 

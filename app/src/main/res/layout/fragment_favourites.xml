@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<layout>
+<layout xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <data>
 
@@ -47,7 +47,123 @@
             android:layout_height="match_parent"
             android:background="@color/grey_ee"
             android:gravity="center"
-            android:visibility="gone"/>
+            android:visibility="visible">
+
+            <android.support.v7.widget.CardView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_margin="@dimen/dialog.margin.l"
+                app:cardElevation="@dimen/fab.elevation.s">
+
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent">
+
+                    <LinearLayout
+                        android:id="@+id/empty_details_container"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentBottom="true"
+                        android:orientation="vertical"
+                        android:visibility="visible">
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:background="@color/white"
+                            android:orientation="vertical"
+                            android:paddingBottom="@dimen/dialog.margin.m"
+                            android:paddingEnd="@dimen/text.size.l"
+                            android:paddingLeft="@dimen/text.size.l"
+                            android:paddingRight="@dimen/dialog.margin.l"
+                            android:paddingStart="@dimen/text.size.l"
+                            android:paddingTop="@dimen/dialog.margin.m">
+
+                            <com.lupinemoon.favicoin.presentation.widgets.autofit.AutofitTextView
+                                android:id="@+id/empty_title"
+                                style="@style/TextMedium.Dialog.Title.Large"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:gravity="center"
+                                android:text="@string/title_empty_favourites"
+                                app:minTextSize="@dimen/text.size.s"/>
+
+                            <com.lupinemoon.favicoin.presentation.widgets.autofit.AutofitTextView
+                                android:id="@+id/empty_message"
+                                style="@style/TextRegular.Dialog.Message.Medium"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:text="@string/msg_empty_favourites"
+                                app:minTextSize="@dimen/text.size.s"/>
+                        </LinearLayout>
+
+                        <RelativeLayout
+                            android:id="@+id/empty_button_container"
+                            android:layout_width="match_parent"
+                            android:layout_height="0dp"
+                            android:layout_weight="1"
+                            android:background="@drawable/rounded_bottom_bg_white">
+
+                            <TextView
+                                android:id="@+id/empty_button"
+                                style="@style/TextRegular.Button"
+                                android:layout_width="match_parent"
+                                android:layout_height="@dimen/default_button_height"
+                                android:layout_centerInParent="true"
+                                android:layout_margin="@dimen/default_button_margin"
+                                android:background="@drawable/selector_button_secondary_outline_rounded"
+                                android:clickable="true"
+                                android:focusable="true"
+                                android:onClick="@{() -> viewModel.onEmptyButtonClick()}"
+                                android:text="@string/empty_button_favourites"/>
+
+                        </RelativeLayout>
+
+                    </LinearLayout>
+
+                    <FrameLayout
+                        android:id="@+id/empty_image_container"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_above="@id/empty_details_container"
+                        android:background="@drawable/rounded_top_bg_white"
+                        android:orientation="vertical"
+                        android:padding="@dimen/dialog.margin.m"
+                        android:visibility="visible">
+
+                        <RelativeLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:background="@drawable/rounded_top_bg_primary">
+
+                            <RelativeLayout
+                                android:layout_width="@dimen/stub_size_large"
+                                android:layout_height="@dimen/stub_size_large"
+                                android:layout_centerInParent="true"
+                                android:background="@color/transparent">
+
+                                <ImageView
+                                    android:id="@+id/sample_like_fab"
+                                    android:layout_width="@dimen/fab.size.l"
+                                    android:layout_height="@dimen/fab.size.l"
+                                    android:layout_centerInParent="true"
+                                    android:background="@drawable/oval_white"
+                                    android:padding="@dimen/dialog.margin.xl"
+                                    android:scaleType="fitCenter"
+                                    android:tint="@color/color_accent"
+                                    app:srcCompat="@drawable/vd_star"/>
+
+                            </RelativeLayout>
+
+                        </RelativeLayout>
+
+                    </FrameLayout>
+
+                </RelativeLayout>
+
+            </android.support.v7.widget.CardView>
+
+        </RelativeLayout>
 
         <include
             android:id="@+id/no_network_layout"

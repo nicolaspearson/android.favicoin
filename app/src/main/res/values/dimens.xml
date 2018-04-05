@@ -13,8 +13,11 @@
     <dimen name="text.size.m">16sp</dimen>
     <dimen name="text.size.l">24sp</dimen>
 
+    <dimen name="fab.size.l">80dp</dimen>
     <dimen name="fab.size.xl">100dp</dimen>
     <dimen name="fab.size.xxl">120dp</dimen>
+
+    <dimen name="stub_size_large">250dp</dimen>
 
     <dimen name="fab.margin.l">12dp</dimen>
 

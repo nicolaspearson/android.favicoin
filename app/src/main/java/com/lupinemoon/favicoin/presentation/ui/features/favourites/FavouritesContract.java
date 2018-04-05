@@ -32,6 +32,8 @@ public class FavouritesContract {
     public interface Presenter extends IBasePresenter {
         void fetchCoinItems(boolean refresh, long delay);
 
+        void performEmptyButtonAction();
+
         void showCoinDetailView(
                 CoinItem coinItem,
                 android.view.View transitionView,

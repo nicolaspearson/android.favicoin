@@ -16,6 +16,8 @@ import com.lupinemoon.favicoin.data.models.Coins;
 import com.lupinemoon.favicoin.data.storage.AppRepository;
 import com.lupinemoon.favicoin.presentation.ui.base.BasePresenter;
 import com.lupinemoon.favicoin.presentation.ui.features.coindetail.CoinDetailActivity;
+import com.lupinemoon.favicoin.presentation.ui.features.home.HomeFragment;
+import com.lupinemoon.favicoin.presentation.ui.features.landing.LandingActivity;
 import com.lupinemoon.favicoin.presentation.utils.ActivityUtils;
 import com.lupinemoon.favicoin.presentation.utils.Constants;
 import com.lupinemoon.favicoin.presentation.utils.DialogUtils;
@@ -52,12 +54,20 @@ class FavouritesPresenter extends BasePresenter implements FavouritesContract.Pr
     }
 
     @Override
+    public void performEmptyButtonAction() {
+        if (favouritesView.isAttached()) {
+            ((LandingActivity) favouritesView.getActivity()).selectMenuItem(HomeFragment.TAG, true);
+        }
+    }
+
+    @Override
     public void fetchCoinItems(final boolean refresh, long delay) {
         if (favouritesView.isAttached()) {
             favouritesView.showLoading();
 
             if (refresh) {
                 coinItemList.clear();
+                favouritesView.setCoinItems(coinItemList, refresh);
             }
 
             nonViewDisposables.add(
@@ -79,19 +89,7 @@ class FavouritesPresenter extends BasePresenter implements FavouritesContract.Pr
                                                     "Observer Thread: %s",
                                                     Thread.currentThread());
                                             if (favouritesView.isAttached()) {
-
-                                                if (!TextUtils.isEmpty(coins.getSource()) &&
-                                                        coins.getSource().equals(Constants.SOURCE_REALM) &&
-                                                        coins.getCoinItems() != null &&
-                                                        coins.getCoinItems().size() < 1 &&
-                                                        NetworkUtils.isConnected(favouritesView.getActivity().getApplicationContext())
-                                                        && favouritesView.getCoinItems().size() < 1) {
-                                                    // Our local is empty and we are still fetching the network result
-                                                    return;
-                                                }
-
                                                 favouritesView.hideLoading();
-
                                                 if (favouritesView.getCoinItems().size() < 1) {
                                                     favouritesView.setCoinItems(
                                                             coinItemList,
