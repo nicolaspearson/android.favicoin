@@ -90,6 +90,7 @@
 
     <!-- Favourites -->
     <string name="toolbar_title_favourites">Favourites</string>
+    <string name="title_favourite_failed">Favourite Failed</string>
 
     <!-- Coin Detail -->
     <string name="title_coin_detail">Coin Detail</string>

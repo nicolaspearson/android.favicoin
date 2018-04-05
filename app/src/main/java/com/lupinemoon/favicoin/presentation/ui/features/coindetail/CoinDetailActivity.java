@@ -182,14 +182,8 @@ public class CoinDetailActivity extends BaseVMPActivity<CoinDetailContract.ViewM
     }
 
     @Override
-    public void showNetworkErrorLayout(final GenericCallback genericCallback) {
-        getBinding().noNetworkLayout.noNetworkButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                genericCallback.execute();
-            }
-        });
-        toggleNoNetworkView(false);
+    public void favouriteToggleSuccess(CoinItem coinItem) {
+        getBinding().getViewModel().setCoinItem(coinItem);
     }
 
     private void toggleNoNetworkView(boolean hide) {

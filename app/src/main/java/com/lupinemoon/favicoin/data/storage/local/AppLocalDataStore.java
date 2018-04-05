@@ -324,6 +324,52 @@ public class AppLocalDataStore implements AppDataStore {
     }
     //endregion
 
+    // region Favourites API
+    @Override
+    public Flowable<Coins> getFavourites() {
+        Realm iRealm = getRealm();
+        Coins coins = new Coins();
+        coins.setSource(Constants.SOURCE_REALM);
+        RealmList<CoinItem> coinItems = new RealmList<>();
+        try {
+            RealmResults<CoinItem> result = iRealm.where(CoinItem.class).equalTo("isFavourite", true).findAll();
+            if (result != null) {
+                // Get detached object from realm
+                Collection<CoinItem> detachedCoinItems = iRealm.copyFromRealm(result);
+                Timber.d("getFavourites: %s", detachedCoinItems);
+                coinItems.addAll(detachedCoinItems);
+            }
+        } catch (Exception e) {
+            Timber.e(e);
+        } finally {
+            closeRealm(iRealm);
+        }
+        coins.setCoinItems(coinItems);
+        return Flowable.just(coins);
+    }
+
+    @Override
+    public Flowable<CoinItem> toggleFavourite(final CoinItem coinItem, boolean isFavourite) {
+        Realm iRealm = getRealm();
+        coinItem.setFavourite(isFavourite);
+        Timber.d("saveFavourite: %s", coinItem);
+        try {
+            iRealm.executeTransaction(new Realm.Transaction() {
+                @Override
+                public void execute(@NonNull Realm realm) {
+                    realm.copyToRealmOrUpdate(coinItem);
+                }
+            });
+        } catch (Exception e) {
+            Timber.e(e);
+        } finally {
+            closeRealm(iRealm);
+        }
+
+        return Flowable.just(coinItem);
+    }
+    // endregion
+
     // region Crypto Compare API
     @Override
     public Completable loadCryptoCompareCoins(Context context) {

@@ -1,10 +1,10 @@
 package com.lupinemoon.favicoin.presentation.ui.features.coindetail;
 
+import com.lupinemoon.favicoin.data.models.CoinItem;
 import com.lupinemoon.favicoin.databinding.ActivityCoinDetailBinding;
 import com.lupinemoon.favicoin.presentation.ui.base.IBasePresenter;
 import com.lupinemoon.favicoin.presentation.ui.base.IBaseView;
 import com.lupinemoon.favicoin.presentation.ui.base.IBaseViewModel;
-import com.lupinemoon.favicoin.presentation.widgets.interfaces.GenericCallback;
 
 class CoinDetailContract {
 
@@ -17,11 +17,11 @@ class CoinDetailContract {
 
         void showNoCoinItemDialog();
 
-        void showNetworkErrorLayout(GenericCallback genericCallback);
+        void favouriteToggleSuccess(CoinItem coinItem);
     }
 
     interface Presenter extends IBasePresenter {
-        void performAction(String actionText);
+        void toggleFavourite(CoinItem coinItem);
     }
 
     interface ViewModel extends IBaseViewModel {

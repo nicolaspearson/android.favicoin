@@ -3,6 +3,7 @@ package com.lupinemoon.favicoin.data.storage.remote;
 import android.content.Context;
 
 import com.lupinemoon.favicoin.data.models.AuthToken;
+import com.lupinemoon.favicoin.data.models.CoinItem;
 import com.lupinemoon.favicoin.data.models.Coins;
 import com.lupinemoon.favicoin.data.network.services.AuthService;
 import com.lupinemoon.favicoin.data.network.services.CoinService;
@@ -43,6 +44,21 @@ public class AppRemoteDataStore implements AppDataStore {
     @Override
     public Flowable<Coins> getCoins(Context context, int start, int limit) {
         return coinService.getCoins(context, start, limit);
+    }
+    // endregion
+
+    // region Favourites API
+    @Override
+    public Flowable<Coins> getFavourites() {
+        // Local only
+        return null;
+    }
+
+    @Override
+    public Flowable<CoinItem> toggleFavourite(
+            CoinItem coinItem, boolean isFavourite) {
+        // Local only
+        return null;
     }
     // endregion
 

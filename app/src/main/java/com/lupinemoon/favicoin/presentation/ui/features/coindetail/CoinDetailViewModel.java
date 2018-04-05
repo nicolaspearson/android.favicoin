@@ -92,7 +92,8 @@ public class CoinDetailViewModel extends BaseViewModel implements CoinDetailCont
 
     @Bindable
     public String getVolume24hUsd() {
-        return coinItem != null && coinItem.get24hVolumeUsd() != null ? NumberUtils.formatNumberWithSpaces(coinItem.get24hVolumeUsd()) : "N/A";
+        return coinItem != null && coinItem.get24hVolumeUsd() != null ? NumberUtils.formatNumberWithSpaces(
+                coinItem.get24hVolumeUsd()) : "N/A";
     }
 
     @Bindable
@@ -107,17 +108,20 @@ public class CoinDetailViewModel extends BaseViewModel implements CoinDetailCont
 
     @Bindable
     public String getAvailableSupply() {
-        return coinItem != null && coinItem.getAvailableSupply() != null ? NumberUtils.formatNumberWithSpaces(coinItem.getAvailableSupply()) : "N/A";
+        return coinItem != null && coinItem.getAvailableSupply() != null ? NumberUtils.formatNumberWithSpaces(
+                coinItem.getAvailableSupply()) : "N/A";
     }
 
     @Bindable
     public String getTotalSupply() {
-        return coinItem != null && coinItem.getTotalSupply() != null ? NumberUtils.formatNumberWithSpaces(coinItem.getTotalSupply()) : "N/A";
+        return coinItem != null && coinItem.getTotalSupply() != null ? NumberUtils.formatNumberWithSpaces(
+                coinItem.getTotalSupply()) : "N/A";
     }
 
     @Bindable
     public String getMaxSupply() {
-        return coinItem != null && coinItem.getMaxSupply() != null ? NumberUtils.formatNumberWithSpaces(coinItem.getMaxSupply()) : "N/A";
+        return coinItem != null && coinItem.getMaxSupply() != null ? NumberUtils.formatNumberWithSpaces(
+                coinItem.getMaxSupply()) : "N/A";
     }
 
     @Bindable
@@ -218,6 +222,11 @@ public class CoinDetailViewModel extends BaseViewModel implements CoinDetailCont
         return coinItem != null && coinItem.getCryptoCompareCoin() != null && coinItem.getCryptoCompareCoin().getPreMinedValue() != null ? coinItem.getCryptoCompareCoin().getPreMinedValue() : "N/A";
     }
 
+    @Bindable
+    private Boolean getIsFavourite() {
+        return coinItem != null && coinItem.isFavourite();
+    }
+
     public void onFavouriteClick() {
         Timber.d("Favourite Clicked");
         if (coinItem != null && !TextUtils.isEmpty(coinItem.getName())) {
@@ -225,6 +234,7 @@ public class CoinDetailViewModel extends BaseViewModel implements CoinDetailCont
                     coinDetailView.getActivity().getString(R.string.adding_to_favourites),
                     coinItem.getSymbol());
             coinDetailView.showToastMsg(message, Toasty.ToastType.INFO);
+            coinDetailView.getPresenter().toggleFavourite(coinItem);
         }
     }
 
@@ -273,6 +283,13 @@ public class CoinDetailViewModel extends BaseViewModel implements CoinDetailCont
                 imageView.setImageResource(R.drawable.ic_placeholder);
             }
         }
+    }
+
+    @BindingAdapter(value = {"loadFavouriteImage"})
+    public static void loadFavouriteImage(
+            final ImageView imageView,
+            final CoinDetailViewModel coinDetailViewModel) {
+        imageView.setImageResource(coinDetailViewModel.getIsFavourite() ? R.drawable.vd_star : R.drawable.vd_star_outline);
     }
 
     private static class CoinDetailState extends State {

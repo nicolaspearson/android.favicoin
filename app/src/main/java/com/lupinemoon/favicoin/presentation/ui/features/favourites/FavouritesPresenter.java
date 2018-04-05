@@ -9,7 +9,6 @@ import android.support.v4.app.ActivityOptionsCompat;
 import android.text.TextUtils;
 import android.view.View;
 
-import com.lupinemoon.favicoin.BuildConfig;
 import com.lupinemoon.favicoin.MainApplication;
 import com.lupinemoon.favicoin.R;
 import com.lupinemoon.favicoin.data.models.CoinItem;
@@ -47,11 +46,6 @@ class FavouritesPresenter extends BasePresenter implements FavouritesContract.Pr
 
     private RealmList<CoinItem> coinItemList = new RealmList<>();
 
-    private int page = 1;
-    private int maxPage = 1;
-    private int totalCount = 0;
-    private boolean busyFetching = false;
-
     FavouritesPresenter(@NonNull FavouritesContract.View view, @NonNull Bundle args) {
         // Set the view locally
         favouritesView = ActivityUtils.checkNotNull(view, "view cannot be null!");
@@ -64,16 +58,10 @@ class FavouritesPresenter extends BasePresenter implements FavouritesContract.Pr
 
             if (refresh) {
                 coinItemList.clear();
-                page = 1;
             }
 
-            busyFetching = true;
-
             nonViewDisposables.add(
-                    appRepository.getCoins(
-                            favouritesView.getActivity().getApplicationContext(),
-                            BuildConfig.COIN_PAGE_SIZE * (page - 1),
-                            BuildConfig.COIN_PAGE_SIZE)
+                    appRepository.getFavourites()
                             .delay(delay > 0 ? delay : 0, TimeUnit.MILLISECONDS)
                             .concatMap(new Function<Coins, Publisher<Coins>>() {
                                 @Override
@@ -90,7 +78,6 @@ class FavouritesPresenter extends BasePresenter implements FavouritesContract.Pr
                                             Timber.d(
                                                     "Observer Thread: %s",
                                                     Thread.currentThread());
-                                            busyFetching = false;
                                             if (favouritesView.isAttached()) {
 
                                                 if (!TextUtils.isEmpty(coins.getSource()) &&
@@ -118,7 +105,6 @@ class FavouritesPresenter extends BasePresenter implements FavouritesContract.Pr
                                     }, new Consumer<Throwable>() {
                                         @Override
                                         public void accept(Throwable throwable) {
-                                            busyFetching = false;
                                             if (favouritesView.isAttached()) {
                                                 favouritesView.hideLoading();
 
@@ -200,35 +186,9 @@ class FavouritesPresenter extends BasePresenter implements FavouritesContract.Pr
         }
     }
 
-    @Override
-    public void loadMore(int itemCount) {
-        if (totalCount <= 0 || busyFetching) {
-            return;
-        }
-        if (page < maxPage && itemCount < totalCount) {
-            page++;
-            fetchCoinItems(false, 0);
-            favouritesView.showSnackbarMsg(
-                    favouritesView.getActivity().getString(R.string.loading),
-                    500);
-        }
-    }
-
     private Coins manipulateCoinItems(Coins coins) {
         Timber.d("Manipulate Coin Items: %s", coins.getCoinItems());
         Timber.d("Transform Thread: %s", Thread.currentThread());
-
-        // The API does not provide a nice way to perform pagination
-        totalCount = BuildConfig.MAX_NUM_COINS;
-        maxPage = Math.round(totalCount / BuildConfig.COIN_PAGE_SIZE) + ((totalCount % BuildConfig.COIN_PAGE_SIZE) > 0 ? 1 : 0);
-
-        Timber.d(
-                "Page: %d | Page Size: %d | Max Page: %d | Total Count: %d",
-                page,
-                BuildConfig.COIN_PAGE_SIZE,
-                maxPage,
-                totalCount);
-
 
         // Remove any duplicates
         if (favouritesView.getCoinItems() != null && favouritesView.getCoinItems().size() > 0) {

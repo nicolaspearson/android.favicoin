@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<menu xmlns:android="http://schemas.android.com/apk/res/android"
-      xmlns:app="http://schemas.android.com/apk/res-auto">
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
 
     <group
         android:checkableBehavior="single"
@@ -16,8 +15,7 @@
             android:id="@+id/favourites_navigation_menu_item"
             android:enabled="true"
             android:icon="@drawable/vd_star"
-            android:title="@string/favourites"
-            app:actionLayout="@layout/navigation_drawer_counter"/>
+            android:title="@string/favourites"/>
 
         <item
             android:id="@+id/logout_navigation_menu_item"

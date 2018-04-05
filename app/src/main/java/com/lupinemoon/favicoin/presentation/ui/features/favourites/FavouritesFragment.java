@@ -7,13 +7,11 @@ import android.support.annotation.Nullable;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SimpleItemAnimator;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.lupinemoon.favicoin.BuildConfig;
 import com.lupinemoon.favicoin.R;
 import com.lupinemoon.favicoin.data.models.CoinItem;
 import com.lupinemoon.favicoin.databinding.FragmentFavouritesBinding;
@@ -34,8 +32,6 @@ public class FavouritesFragment extends BaseVMPFragment<FavouritesContract.ViewM
     public static final String TAG = FavouritesFragment.class.getSimpleName();
 
     private FavCoinItemAdapter coinItemAdapter;
-
-    private boolean loading = false;
 
     public static FavouritesFragment instance(AppCompatActivity activity, Bundle args) {
         FavouritesFragment favouritesFragment = (FavouritesFragment) activity.getSupportFragmentManager().findFragmentByTag(
@@ -129,27 +125,6 @@ public class FavouritesFragment extends BaseVMPFragment<FavouritesContract.ViewM
                     false);
         }
 
-        getBinding().favouritesRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
-            @Override
-            public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
-                super.onScrollStateChanged(recyclerView, newState);
-            }
-
-            @Override
-            public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
-                super.onScrolled(recyclerView, dx, dy);
-
-                LinearLayoutManager layoutManager = (LinearLayoutManager) recyclerView.getLayoutManager();
-                int lastVisibleItem = layoutManager.findLastVisibleItemPosition();
-                int totalItemCount = layoutManager.getItemCount();
-
-                if (!loading && totalItemCount <= (lastVisibleItem + BuildConfig.COIN_PAGE_LOAD_THRESHOLD)) {
-                    loading = true;
-                    getPresenter().loadMore(totalItemCount);
-                }
-            }
-        });
-
         getBinding().favouritesRecyclerView.setLayoutManager(new LinearLayoutManager(
                 getActivity(),
                 LinearLayoutManager.VERTICAL,
@@ -170,14 +145,13 @@ public class FavouritesFragment extends BaseVMPFragment<FavouritesContract.ViewM
     }
 
     @Override
-    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
+    public void onResume() {
+        super.onResume();
         getPresenter().fetchCoinItems(true, Constants.DRAWER_CLOSED_TIME_INTERVAL);
     }
 
     @Override
     public void showLoading() {
-        loading = true;
         // We hide the recycler view, because initially we have no data
         // to display. All calls except fetchCoinItems() should be async
         // and performed in the background and therefore should not show
@@ -194,7 +168,6 @@ public class FavouritesFragment extends BaseVMPFragment<FavouritesContract.ViewM
 
     @Override
     public void hideLoading() {
-        loading = false;
         getBinding().favouritesSwipeRefreshLayout.setVisibility(View.VISIBLE);
         if (!getBinding().favouritesSwipeRefreshLayout.isRefreshing()) {
             togglePopupLoader(false);

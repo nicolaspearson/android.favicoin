@@ -711,7 +711,8 @@
                         app:layout_anchor="@id/coin_detail_image_container"
                         app:layout_anchorGravity="bottom|right|end"
                         app:rippleColor="@color/fab_ripple_light"
-                        app:srcCompat="@drawable/vd_star_outline"/>
+                        app:srcCompat="@drawable/vd_star_outline"
+                        app:loadFavouriteImage="@{viewModel}"/>
 
                 </android.support.design.widget.CoordinatorLayout>
 

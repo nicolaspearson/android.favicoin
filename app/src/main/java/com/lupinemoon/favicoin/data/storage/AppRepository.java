@@ -321,6 +321,34 @@ public class AppRepository implements AppDataStore {
     }
     // endregion
 
+    // region Favourites API
+    @Override
+    public Flowable<Coins> getFavourites() {
+        // Return local result
+        return appLocalDataStore.getFavourites()
+                .subscribeOn(Schedulers.io())
+                .delay(BuildConfig.LOCAL_REPO_SOURCE_DELAY, TimeUnit.MILLISECONDS)
+                .filter(new Predicate<Coins>() {
+                    @Override
+                    public boolean test(@NonNull Coins coins) throws Exception {
+                        if (coins.getCoinItems() != null && coins.getCoinItems().size() > 0) {
+                            return true;
+                        } else {
+                            throw new Exception();
+                        }
+                    }
+                });
+    }
+
+    @Override
+    public Flowable<CoinItem> toggleFavourite(CoinItem coinItem, boolean isFavourite) {
+        // Return local result
+        return appLocalDataStore.toggleFavourite(coinItem, isFavourite)
+                .subscribeOn(Schedulers.io())
+                .delay(BuildConfig.LOCAL_REPO_SOURCE_DELAY, TimeUnit.MILLISECONDS);
+    }
+    // endregion
+
     // region Crypto Compare API
     @Override
     public Completable loadCryptoCompareCoins(Context context) {

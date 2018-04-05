@@ -66,6 +66,9 @@ public class CoinItem extends RealmObject {
     @SerializedName("last_updated")
     String lastUpdated;
 
+    @Index
+    boolean isFavourite;
+
     CryptoCompareCoin cryptoCompareCoin;
 
     public String getId() {
@@ -190,6 +193,14 @@ public class CoinItem extends RealmObject {
 
     public String getImageUrl() {
         return cryptoCompareCoin != null ? cryptoCompareCoin.getImageUrl() : "";
+    }
+
+    public boolean isFavourite() {
+        return isFavourite;
+    }
+
+    public void setFavourite(boolean favourite) {
+        isFavourite = favourite;
     }
 
     public CryptoCompareCoin getCryptoCompareCoin() {
