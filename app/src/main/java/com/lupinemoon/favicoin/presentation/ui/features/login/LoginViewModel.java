@@ -65,7 +65,7 @@ public class LoginViewModel extends BaseViewModel implements LoginContract.ViewM
 
     @Bindable
     public boolean getAllowSkip() {
-        return BuildConfig.DEBUG;
+        return true;
     }
 
     @Bindable

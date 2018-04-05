@@ -36,9 +36,7 @@ public class CoinItemViewModel extends BaseViewModel {
 
     private long lastClickTime = 0;
 
-    CoinItemViewModel(
-            HomeContract.View view,
-            @NonNull RequestBuilder requestBuilder,
+    CoinItemViewModel(HomeContract.View view, @NonNull RequestBuilder requestBuilder,
             ListItemCoinBinding listItemCoinBinding) {
         // Set the view locally
         homeView = ActivityUtils.checkNotNull(view, "view cannot be null!");
@@ -69,9 +67,7 @@ public class CoinItemViewModel extends BaseViewModel {
 
     public void onCoinItemClicked() {
         if ((homeView.getActivity() != null) && !doubleClick()) {
-            homeView.getPresenter().showCoinDetailView(
-                    coinItem,
-                    listItemCoinBinding.coinItemImageView,
+            homeView.getPresenter().showCoinDetailView(coinItem, listItemCoinBinding.coinItemImageView,
                     getImageBitmap());
         }
     }
@@ -83,39 +79,37 @@ public class CoinItemViewModel extends BaseViewModel {
 
     @Bindable
     public String getRank() {
-        return String.format(
-                homeView.getActivity().getString(R.string.rank),
-                coinItem.getRank());
+        return String.format(homeView.getActivity().getString(R.string.rank), coinItem.getRank());
     }
 
     @Bindable
     public String getPriceUsd() {
-        return String.format(
-                homeView.getActivity().getString(R.string.dollar_format),
+        return String.format(homeView.getActivity().getString(R.string.dollar_format),
                 NumberUtils.formatNumberWithSpaces(coinItem.getPriceUsd()));
     }
 
     @Bindable
     public String getMarketCapUsd() {
-        return String.format(
-                homeView.getActivity().getString(R.string.dollar_format),
+        return String.format(homeView.getActivity().getString(R.string.dollar_format),
                 NumberUtils.formatNumberWithSpaces(coinItem.getMarketCapUsd()));
     }
 
     @Bindable
     public String getPercentChange24h() {
-        return String.format(
-                homeView.getActivity().getString(R.string.percentage_format),
+        return String.format(homeView.getActivity().getString(R.string.percentage_format),
                 coinItem.getPercentChange24h());
     }
 
     @Bindable
     public Double getPercentChange24hValue() {
-        try {
-            return Double.parseDouble(coinItem.getPercentChange24h());
-        } catch (NumberFormatException e) {
-            return 0D;
+        if (coinItem != null && coinItem.getPercentChange24h() != null) {
+            try {
+                return Double.parseDouble(coinItem.getPercentChange24h());
+            } catch (NumberFormatException e) {
+                // Ignore
+            }
         }
+        return 0D;
     }
 
     @Bindable
@@ -136,27 +130,22 @@ public class CoinItemViewModel extends BaseViewModel {
         this.imageBitmap = imageBitmap;
     }
 
-    @BindingAdapter(value = {"loadTickerChangeImage"})
-    public static void loadTickerChangeImage(
-            final ImageView imageView,
-            final CoinItemViewModel coinItemViewModel) {
-        imageView.setImageResource(coinItemViewModel.getPercentChange24hValue() > 0 ? R.drawable.vd_ticker_up : R.drawable.vd_ticker_down);
+    @BindingAdapter(value = { "loadTickerChangeImage" })
+    public static void loadTickerChangeImage(final ImageView imageView, final CoinItemViewModel coinItemViewModel) {
+        imageView.setImageResource(
+                coinItemViewModel.getPercentChange24hValue() > 0 ? R.drawable.vd_ticker_up : R.drawable.vd_ticker_down);
     }
 
-    @BindingAdapter(value = {"loadCoinImage"})
-    public static void loadCoinImage(
-            final ImageView imageView,
-            final CoinItemViewModel coinItemViewModel) {
+    @BindingAdapter(value = { "loadCoinImage" })
+    public static void loadCoinImage(final ImageView imageView, final CoinItemViewModel coinItemViewModel) {
         // Reset the coin bitmap
         coinItemViewModel.setImageBitmap(null);
 
         if (!TextUtils.isEmpty(coinItemViewModel.getImageUrl())) {
-            coinItemViewModel.getRequestBuilder().load(ImageUtils.getFullCoinUrl(
-                    coinItemViewModel.getImageUrl()))
+            coinItemViewModel.getRequestBuilder().load(ImageUtils.getFullCoinUrl(coinItemViewModel.getImageUrl()))
                     .into(new SimpleTarget<Bitmap>(Target.SIZE_ORIGINAL, Target.SIZE_ORIGINAL) {
                         @Override
-                        public void onResourceReady(
-                                @NonNull Bitmap resource,
+                        public void onResourceReady(@NonNull Bitmap resource,
                                 @Nullable Transition<? super Bitmap> transition) {
                             imageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
                             imageView.setImageBitmap(resource);
