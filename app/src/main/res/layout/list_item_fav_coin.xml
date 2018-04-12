@@ -31,7 +31,7 @@
                 android:layout_centerVertical="true"
                 android:layout_margin="@dimen/dialog.margin.m">
 
-                <com.lupinemoon.favicoin.presentation.widgets.transitionimageview.TransitionImageView
+                <ImageView
                     android:id="@+id/coin_item_image_view"
                     android:layout_width="@dimen/list_item_image_height"
                     android:layout_height="@dimen/list_item_image_height"
@@ -40,8 +40,7 @@
                     android:scaleType="centerCrop"
                     android:src="@drawable/ic_placeholder"
                     android:transitionName="@string/shared_image"
-                    app:loadCoinImage="@{viewModel}"
-                    app:tiv_rounding="0"/>
+                    app:loadCoinImage="@{viewModel}"/>
 
             </RelativeLayout>
 

@@ -8,9 +8,4 @@
         <attr name="sizeToFit" format="boolean"/>
     </declare-styleable>
 
-    <!--TRANSITION IMAGE VIEW-->
-    <declare-styleable name="TransitionImageView">
-        <attr name="tiv_rounding" format="float"/>
-    </declare-styleable>
-
 </resources>

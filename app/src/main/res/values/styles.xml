@@ -27,7 +27,7 @@
 
     <!-- Added this style to prevent black backgrounds through transitions -->
     <style name="AppTheme.Translucent.Basic" parent="AppTheme">
-        <item name="android:windowIsTranslucent">true</item>
+        <item name="android:windowIsTranslucent">false</item>
     </style>
 
     <style name="AppTheme.Splash">

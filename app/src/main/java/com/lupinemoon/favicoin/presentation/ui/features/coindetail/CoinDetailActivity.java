@@ -8,6 +8,7 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.transition.Transition;
+import android.transition.TransitionInflater;
 import android.view.View;
 import android.view.animation.AccelerateInterpolator;
 
@@ -22,8 +23,6 @@ import com.lupinemoon.favicoin.presentation.utils.Constants;
 import com.lupinemoon.favicoin.presentation.utils.DialogUtils;
 import com.lupinemoon.favicoin.presentation.utils.NetworkUtils;
 import com.lupinemoon.favicoin.presentation.widgets.interfaces.GenericCallback;
-import com.lupinemoon.favicoin.presentation.widgets.transitionimageview.ImageTransition;
-import com.lupinemoon.favicoin.presentation.widgets.transitionimageview.ImageTransitionUtil;
 
 import org.parceler.Parcels;
 
@@ -88,11 +87,11 @@ public class CoinDetailActivity extends BaseVMPActivity<CoinDetailContract.ViewM
                 getApplicationContext())) {
             coinImage = MainApplication.getBitmapCache().getBitmap();
             try {
-                Transition transition = new ImageTransition();
+                Transition transition = TransitionInflater.from(this).
+                        inflateTransition(R.transition.accelerate_transform);
                 transition.setDuration(250);
                 transition.setInterpolator(new AccelerateInterpolator());
                 getWindow().setExitTransition(transition);
-                setEnterSharedElementCallback(ImageTransitionUtil.DEFAULT_SHARED_ELEMENT_CALLBACK);
             } catch (Exception e) {
                 Timber.d("Get Extras Exception %s", e.toString());
             }

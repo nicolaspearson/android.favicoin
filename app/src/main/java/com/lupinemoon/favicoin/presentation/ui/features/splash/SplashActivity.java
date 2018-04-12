@@ -155,7 +155,7 @@ public class SplashActivity extends BaseActivity<ActivitySplashBinding> implemen
 
     private void navigateToNextActivity() {
         // TODO: Check the auth token
-        if (autoLogin) {
+        if (autoLogin || !BuildConfig.LOGIN_ACTIVITY_ENABLED) {
             presenter.performAutoLogin();
         } else {
             startLoginActivity();

@@ -18,7 +18,10 @@ import com.lupinemoon.favicoin.databinding.ListItemFavCoinBinding;
 import com.lupinemoon.favicoin.presentation.ui.features.favourites.FavouritesContract;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
+import java.util.function.UnaryOperator;
 
 public class FavCoinItemAdapter extends RecyclerView.Adapter<FavCoinItemAdapter.CoinItemViewHolder> {
 
@@ -52,8 +55,16 @@ public class FavCoinItemAdapter extends RecyclerView.Adapter<FavCoinItemAdapter.
 
     public void setCoinItems(List<CoinItem> newCoinItems) {
         notifyItemRangeRemoved(0, this.coinItems.size());
-        this.coinItems.clear();
-        this.coinItems.addAll(newCoinItems);
+        // Find removed items
+        if (this.coinItems.size() > 0) {
+            Set<CoinItem> originalSet = new HashSet<>(this.coinItems);
+            Set<CoinItem> newSet = new HashSet<>(newCoinItems);
+            originalSet.removeAll(newSet);
+            this.coinItems.removeAll(originalSet);
+        } else {
+            this.coinItems.clear();
+            this.coinItems.addAll(newCoinItems);
+        }
         notifyItemRangeInserted(0, this.coinItems.size());
     }
 

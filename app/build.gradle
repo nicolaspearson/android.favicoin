@@ -31,6 +31,7 @@ android {
         buildConfigField("Integer", "HTTP_TIMEOUT", "40")
         buildConfigField("Integer", "STORAGE_MEM_CACHE_SIZE", "100")
 
+        buildConfigField("Boolean", "LOGIN_ACTIVITY_ENABLED", "false")
         buildConfigField("Boolean", "SPLASH_ANIMATION_ENABLED", "true")
         buildConfigField("Boolean", "STAGING", "false")
 
@@ -175,7 +176,7 @@ ext {
     rxJavaVersion = '2.1.12'
     rxJavaRetrofitAdapterVersion = '2.4.0'
     rxJavaExtrasVersion = '0.1.10'
-    supportLibVersion = '27.1.0'
+    supportLibVersion = '27.1.1'
     timberVersion = '4.7.0'
 }
 

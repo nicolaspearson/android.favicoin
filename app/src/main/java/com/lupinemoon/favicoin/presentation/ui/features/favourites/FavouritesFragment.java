@@ -31,7 +31,7 @@ public class FavouritesFragment extends BaseVMPFragment<FavouritesContract.ViewM
 
     public static final String TAG = FavouritesFragment.class.getSimpleName();
 
-    private FavCoinItemAdapter coinItemAdapter;
+    private FavCoinItemAdapter favCoinItemAdapter;
 
     public static FavouritesFragment instance(AppCompatActivity activity, Bundle args) {
         FavouritesFragment favouritesFragment = (FavouritesFragment) activity.getSupportFragmentManager().findFragmentByTag(
@@ -147,7 +147,7 @@ public class FavouritesFragment extends BaseVMPFragment<FavouritesContract.ViewM
     @Override
     public void onResume() {
         super.onResume();
-        getPresenter().fetchCoinItems(true, Constants.DRAWER_CLOSED_TIME_INTERVAL);
+        getPresenter().fetchCoinItems(true, 0);
     }
 
     @Override
@@ -157,9 +157,11 @@ public class FavouritesFragment extends BaseVMPFragment<FavouritesContract.ViewM
         // and performed in the background and therefore should not show
         // the popup loader.
         toggleNoNetworkView(true);
-        if (coinItemAdapter == null) {
+        if (favCoinItemAdapter == null) {
             getBinding().favouritesSwipeRefreshLayout.setVisibility(View.GONE);
-            toggleEmptyView(true);
+            if (this.favCoinItemAdapter != null && this.favCoinItemAdapter.getCoinItems().size() > 0) {
+                toggleEmptyView(true);
+            }
         }
         if (!getBinding().favouritesSwipeRefreshLayout.isRefreshing()) {
             togglePopupLoader(true);
@@ -198,8 +200,8 @@ public class FavouritesFragment extends BaseVMPFragment<FavouritesContract.ViewM
 
     @Override
     public List<CoinItem> getCoinItems() {
-        if (coinItemAdapter != null) {
-            return coinItemAdapter.getCoinItems();
+        if (favCoinItemAdapter != null) {
+            return favCoinItemAdapter.getCoinItems();
         }
         return new ArrayList<>();
     }
@@ -210,16 +212,16 @@ public class FavouritesFragment extends BaseVMPFragment<FavouritesContract.ViewM
         toggleNoNetworkView(true);
         togglePopupLoader(false);
         Timber.d("setCoinItems: %s", coinItems);
-        if (coinItemAdapter == null) {
-            coinItemAdapter = new FavCoinItemAdapter(this, coinItems);
-            getBinding().favouritesRecyclerView.setAdapter(coinItemAdapter);
+        if (favCoinItemAdapter == null) {
+            favCoinItemAdapter = new FavCoinItemAdapter(this, coinItems);
+            getBinding().favouritesRecyclerView.setAdapter(favCoinItemAdapter);
             return;
         }
 
-        if (!refresh && coinItemAdapter.getItemCount() > 0) {
+        if (!refresh && favCoinItemAdapter.getItemCount() > 0) {
             addCoinItems(coinItems);
         } else {
-            coinItemAdapter.setCoinItems(coinItems);
+            favCoinItemAdapter.setCoinItems(coinItems);
         }
     }
 
@@ -228,8 +230,8 @@ public class FavouritesFragment extends BaseVMPFragment<FavouritesContract.ViewM
         toggleEmptyView(coinItems.size() > 0);
         toggleNoNetworkView(true);
         Timber.d("addCoinItems: %s", coinItems);
-        if (coinItemAdapter != null) {
-            coinItemAdapter.addCoinItems(coinItems);
+        if (favCoinItemAdapter != null) {
+            favCoinItemAdapter.addCoinItems(coinItems);
         } else {
             setCoinItems(coinItems, true);
         }

@@ -420,7 +420,11 @@ public abstract class BaseActivity<B extends ViewDataBinding> extends AppCompatA
     // To avoid memory leaks we dismiss any visible dialogs
     public void dismissCustomAlertDialog() {
         if (customAlertDialog != null) {
-            customAlertDialog.dismiss();
+            try {
+                customAlertDialog.dismiss();
+            } catch (Exception e) {
+                Timber.e(e, "An error occurred dismissing the dialog");
+            }
         }
     }
 

@@ -13,6 +13,8 @@ import com.lupinemoon.favicoin.databinding.FragmentCustomDialogBinding;
 import com.lupinemoon.favicoin.presentation.ui.base.BaseActivity;
 import com.lupinemoon.favicoin.presentation.widgets.DecoratorOnClickListener;
 
+import timber.log.Timber;
+
 public class DialogUtils {
 
     public enum AlertType {
@@ -110,8 +112,12 @@ public class DialogUtils {
                     new Handler().postDelayed(new Runnable() {
                         @Override
                         public void run() {
-                            if (alertDialog != null) {
-                                alertDialog.dismiss();
+                            if (alertDialog != null && !((BaseActivity) activity).isBasicallyDestroyedCompat()) {
+                                try {
+                                    alertDialog.dismiss();
+                                } catch (Exception e) {
+                                    Timber.e(e, "An error occurred dismissing the dialog");
+                                }
                             }
                         }
                     }, Constants.DEFAULT_SELECTOR_DELAY);
@@ -134,7 +140,11 @@ public class DialogUtils {
                         @Override
                         public void run() {
                             if (alertDialog != null && !((BaseActivity) activity).isBasicallyDestroyedCompat()) {
-                                alertDialog.dismiss();
+                                try {
+                                    alertDialog.dismiss();
+                                } catch (Exception e) {
+                                    Timber.e(e, "An error occurred dismissing the dialog");
+                                }
                             }
                         }
                     }, Constants.DEFAULT_SELECTOR_DELAY);

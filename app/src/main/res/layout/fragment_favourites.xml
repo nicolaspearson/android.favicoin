@@ -47,7 +47,7 @@
             android:layout_height="match_parent"
             android:background="@color/grey_ee"
             android:gravity="center"
-            android:visibility="visible">
+            android:visibility="gone">
 
             <android.support.v7.widget.CardView
                 android:layout_width="match_parent"
@@ -143,7 +143,6 @@
                                 android:background="@color/transparent">
 
                                 <ImageView
-                                    android:id="@+id/sample_like_fab"
                                     android:layout_width="@dimen/fab.size.l"
                                     android:layout_height="@dimen/fab.size.l"
                                     android:layout_centerInParent="true"
