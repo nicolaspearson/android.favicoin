@@ -74,6 +74,23 @@ public class FavCoinItemAdapter extends RecyclerView.Adapter<FavCoinItemAdapter.
         notifyItemRangeInserted(currentSize, newCoinItems.size());
     }
 
+    public void removeCoinItem(CoinItem coinItem) {
+        if (coinItem != null) {
+            int position = -1;
+            for (int i = 0; i < coinItems.size(); i++) {
+                CoinItem item = coinItems.get(i);
+                if (coinItem.getId().equals(item.getId())) {
+                    position = i;
+                    break;
+                }
+            }
+            if (position >= 0) {
+                coinItems.remove(position);
+                notifyItemRemoved(position);
+            }
+        }
+    }
+
     @NonNull
     @Override
     public CoinItemViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {

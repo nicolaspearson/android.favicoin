@@ -123,13 +123,8 @@ public class SplashActivity extends BaseActivity<ActivitySplashBinding> implemen
                 colorFrom,
                 colorTo);
         colorAnimation.setDuration(2500);
-        colorAnimation.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
-            @Override
-            public void onAnimationUpdate(ValueAnimator animator) {
-                getBinding().splashContainer.setBackgroundColor((int) animator.getAnimatedValue());
-            }
-
-        });
+        colorAnimation.addUpdateListener(animator -> getBinding().splashContainer.setBackgroundColor(
+                (int) animator.getAnimatedValue()));
         colorAnimation.start();
 
         splashThread = new Thread() {

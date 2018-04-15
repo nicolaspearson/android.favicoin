@@ -1,10 +1,12 @@
 package com.lupinemoon.favicoin.presentation.ui.features.favourites;
 
+import android.app.Activity;
+import android.content.Intent;
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.v4.widget.SwipeRefreshLayout;
+import android.support.v4.app.Fragment;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.SimpleItemAnimator;
@@ -19,8 +21,10 @@ import com.lupinemoon.favicoin.presentation.ui.base.BaseVMPFragment;
 import com.lupinemoon.favicoin.presentation.ui.base.BaseViewModel;
 import com.lupinemoon.favicoin.presentation.ui.features.favourites.adapters.FavCoinItemAdapter;
 import com.lupinemoon.favicoin.presentation.utils.Constants;
-import com.lupinemoon.favicoin.presentation.widgets.OnBackPressedListener;
+import com.lupinemoon.favicoin.presentation.widgets.interfaces.OnBackPressedListener;
 import com.lupinemoon.favicoin.presentation.widgets.interfaces.GenericCallback;
+
+import org.parceler.Parcels;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -32,6 +36,7 @@ public class FavouritesFragment extends BaseVMPFragment<FavouritesContract.ViewM
     public static final String TAG = FavouritesFragment.class.getSimpleName();
 
     private FavCoinItemAdapter favCoinItemAdapter;
+
 
     public static FavouritesFragment instance(AppCompatActivity activity, Bundle args) {
         FavouritesFragment favouritesFragment = (FavouritesFragment) activity.getSupportFragmentManager().findFragmentByTag(
@@ -131,12 +136,9 @@ public class FavouritesFragment extends BaseVMPFragment<FavouritesContract.ViewM
                 false));
 
         getBinding().favouritesSwipeRefreshLayout.setColorSchemeResources(R.color.color_accent);
-        getBinding().favouritesSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
-            @Override
-            public void onRefresh() {
-                getPresenter().fetchCoinItems(true, 0);
-            }
-        });
+        getBinding().favouritesSwipeRefreshLayout.setOnRefreshListener(() -> getPresenter().fetchCoinItems(
+                true,
+                0));
 
         // Set the view model variable
         getBinding().setViewModel((FavouritesViewModel) getViewModel());
@@ -145,9 +147,30 @@ public class FavouritesFragment extends BaseVMPFragment<FavouritesContract.ViewM
     }
 
     @Override
-    public void onResume() {
-        super.onResume();
-        getPresenter().fetchCoinItems(true, 0);
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        getPresenter().fetchCoinItems(false, 0);
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent intent) {
+        if (requestCode == Constants.INTENT_REQUEST_CODE_RETURNED_COIN_ITEM) {
+            if (resultCode == Activity.RESULT_OK && intent != null && intent.getExtras() != null) {
+                CoinItem returnedCoinItem = Parcels.unwrap(intent.getExtras().getParcelable(
+                        Constants.INTENT_COIN_ITEM_DETAIL));
+                if (returnedCoinItem != null && !returnedCoinItem.isFavourite()) {
+                    this.getPresenter().removeCoinItem(returnedCoinItem);
+                    if (this.favCoinItemAdapter != null) {
+                        this.favCoinItemAdapter.removeCoinItem(returnedCoinItem);
+                    }
+                }
+            }
+        }
+    }
+
+    @Override
+    public Fragment getFragment() {
+        return this;
     }
 
     @Override
@@ -208,7 +231,7 @@ public class FavouritesFragment extends BaseVMPFragment<FavouritesContract.ViewM
 
     @Override
     public void setCoinItems(List<CoinItem> coinItems, boolean refresh) {
-        toggleEmptyView(coinItems.size() > 0);
+        toggleEmptyView(coinItems.size() > 0 || refresh);
         toggleNoNetworkView(true);
         togglePopupLoader(false);
         Timber.d("setCoinItems: %s", coinItems);

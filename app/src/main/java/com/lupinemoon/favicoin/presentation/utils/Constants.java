@@ -22,6 +22,8 @@ public class Constants {
 
     // INTENT KEYS
     public static final String INTENT_COIN_ITEM = "intent_coin_item";
+    public static final String INTENT_COIN_ITEM_DETAIL = "intent_coin_item_detail";
+    public static final int INTENT_REQUEST_CODE_RETURNED_COIN_ITEM = 5001;
 
     // REALM
     public static final String SOURCE_REALM = "source_realm";

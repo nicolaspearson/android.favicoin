@@ -69,17 +69,7 @@ public class OfflineActivity extends BaseVMPActivity<OfflineContract.ViewModel, 
             getSupportActionBar().setTitle(R.string.title_offline);
         }
 
-        getToolbar().setNavigationOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                animateOnBackPressed(new GenericCallback() {
-                    @Override
-                    public void execute() {
-                        onBackPressed();
-                    }
-                });
-            }
-        });
+        getToolbar().setNavigationOnClickListener(view -> animateOnBackPressed(() -> onBackPressed()));
 
         // Set the view model variable
         getBinding().setViewModel((OfflineViewModel) getViewModel());

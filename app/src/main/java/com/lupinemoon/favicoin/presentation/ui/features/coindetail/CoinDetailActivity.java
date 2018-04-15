@@ -1,6 +1,7 @@
 package com.lupinemoon.favicoin.presentation.ui.features.coindetail;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.databinding.DataBindingUtil;
 import android.graphics.Bitmap;
 import android.os.Build;
@@ -144,17 +145,7 @@ public class CoinDetailActivity extends BaseVMPActivity<CoinDetailContract.ViewM
             }
         }
 
-        getToolbar().setNavigationOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                animateOnBackPressed(new GenericCallback() {
-                    @Override
-                    public void execute() {
-                        onBackPressed();
-                    }
-                });
-            }
-        });
+        getToolbar().setNavigationOnClickListener(v -> animateOnBackPressed(this::onBackPressed));
 
         // Set the view model variable
         getBinding().setViewModel((CoinDetailViewModel) getViewModel());
@@ -162,8 +153,6 @@ public class CoinDetailActivity extends BaseVMPActivity<CoinDetailContract.ViewM
 
     @Override
     public void onBackPressed() {
-        supportFinishAfterTransition();
-
         // Do not make a scene transition if the user does not have a network connection
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP || !NetworkUtils.hasActiveNetworkConnection(
                 getApplicationContext())) {
@@ -178,10 +167,19 @@ public class CoinDetailActivity extends BaseVMPActivity<CoinDetailContract.ViewM
                 getBinding().coinImageView.setImageResource(R.drawable.ic_placeholder);
             }
         }
+        this.setActivityResult();
+    }
+
+    private void setActivityResult() {
+        Intent intent = new Intent();
+        intent.putExtra(Constants.INTENT_COIN_ITEM_DETAIL, Parcels.wrap(this.coinItem));
+        setResult(Activity.RESULT_OK, intent);
+        supportFinishAfterTransition();
     }
 
     @Override
     public void favouriteToggleSuccess(CoinItem coinItem) {
+        this.coinItem = coinItem;
         getBinding().getViewModel().setCoinItem(coinItem);
     }
 
@@ -232,12 +230,9 @@ public class CoinDetailActivity extends BaseVMPActivity<CoinDetailContract.ViewM
                 R.string.message_no_coin_item,
                 R.string.ok,
                 0,
-                new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        // Auto-dismissed
-                        CoinDetailActivity.this.supportFinishAfterTransition();
-                    }
+                view -> {
+                    // Auto-dismissed
+                    CoinDetailActivity.this.setActivityResult();
                 },
                 null,
                 DialogUtils.AlertType.NONE);

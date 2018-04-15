@@ -61,94 +61,87 @@ class FavouritesPresenter extends BasePresenter implements FavouritesContract.Pr
     }
 
     @Override
+    public void removeCoinItem(CoinItem coinItem) {
+        if (coinItem != null) {
+            int position = -1;
+            for (int i = 0; i < coinItemList.size(); i++) {
+                CoinItem item = coinItemList.get(i);
+                if (coinItem.getId().equals(item.getId())) {
+                    position = i;
+                    break;
+                }
+            }
+            if (position >= 0) {
+                coinItemList.remove(position);
+            }
+        }
+    }
+
+    @Override
     public void fetchCoinItems(final boolean refresh, long delay) {
         if (favouritesView.isAttached()) {
             favouritesView.showLoading();
 
             if (refresh) {
                 coinItemList.clear();
-                favouritesView.setCoinItems(coinItemList, refresh);
+                favouritesView.setCoinItems(coinItemList, true);
             }
 
             nonViewDisposables.add(
                     appRepository.getFavourites()
                             .delay(delay > 0 ? delay : 0, TimeUnit.MILLISECONDS)
-                            .concatMap(new Function<Coins, Publisher<Coins>>() {
-                                @Override
-                                public Publisher<Coins> apply(@io.reactivex.annotations.NonNull Coins coins) {
-                                    return Flowable.just(manipulateCoinItems(coins));
-                                }
-                            })
+                            .concatMap((Function<Coins, Publisher<Coins>>) coins -> Flowable.just(manipulateCoinItems(coins)))
                             .subscribeOn(Schedulers.io())
                             .observeOn(AndroidSchedulers.mainThread())
                             .subscribe(
-                                    new Consumer<Coins>() {
-                                        @Override
-                                        public void accept(Coins coins) {
-                                            Timber.d(
-                                                    "Observer Thread: %s",
-                                                    Thread.currentThread());
-                                            if (favouritesView.isAttached()) {
-                                                favouritesView.hideLoading();
-                                                if (favouritesView.getCoinItems().size() < 1) {
-                                                    favouritesView.setCoinItems(
-                                                            coinItemList,
-                                                            refresh);
-                                                } else if (coins.getCoinItems() != null && coins.getCoinItems().size() > 0) {
-                                                    favouritesView.addCoinItems(
-                                                            coins.getCoinItems());
-                                                }
+                                    coins -> {
+                                        Timber.d(
+                                                "Observer Thread: %s",
+                                                Thread.currentThread());
+                                        if (favouritesView.isAttached()) {
+                                            favouritesView.hideLoading();
+                                            if (favouritesView.getCoinItems().size() < 1) {
+                                                favouritesView.setCoinItems(
+                                                        coinItemList,
+                                                        refresh);
+                                            } else if (coins.getCoinItems() != null && coins.getCoinItems().size() > 0) {
+                                                favouritesView.addCoinItems(
+                                                        coins.getCoinItems());
                                             }
                                         }
-                                    }, new Consumer<Throwable>() {
-                                        @Override
-                                        public void accept(Throwable throwable) {
-                                            if (favouritesView.isAttached()) {
-                                                favouritesView.hideLoading();
+                                    }, throwable -> {
+                                        if (favouritesView.isAttached()) {
+                                            favouritesView.hideLoading();
 
-                                                if (!favouritesView.notAuthorized(throwable)) {
-                                                    if (NetworkUtils.hasActiveNetworkConnection(
-                                                            favouritesView.getActivity())) {
-                                                        String message = ErrorUtils.getErrorMessage(
-                                                                throwable,
-                                                                favouritesView.getActivity().getApplicationContext());
-                                                        favouritesView.showCustomAlertDialogSimple(
-                                                                favouritesView.getActivity().getString(
-                                                                        R.string.title_coins_failed),
-                                                                message,
-                                                                R.string.cancel,
-                                                                R.string.retry,
-                                                                new View.OnClickListener() {
-                                                                    @Override
-                                                                    public void onClick(View view) {
-                                                                        // Auto-dismissed
-                                                                    }
-                                                                },
-                                                                new View.OnClickListener() {
-                                                                    @Override
-                                                                    public void onClick(View view) {
-                                                                        fetchCoinItems(
-                                                                                refresh,
-                                                                                0);
-                                                                    }
-                                                                },
-                                                                DialogUtils.AlertType.NONE);
-                                                    } else {
-                                                        boolean offlineData = favouritesView.getCoinItems() != null && favouritesView.getCoinItems().size() > 0;
-                                                        Timber.d(
-                                                                "offlineData: %b",
-                                                                offlineData);
-                                                        if (!offlineData) {
-                                                            favouritesView.showNetworkErrorLayout(
-                                                                    new GenericCallback() {
-                                                                        @Override
-                                                                        public void execute() {
-                                                                            fetchCoinItems(
-                                                                                    refresh,
-                                                                                    0);
-                                                                        }
-                                                                    });
-                                                        }
+                                            if (!favouritesView.notAuthorized(throwable)) {
+                                                if (NetworkUtils.hasActiveNetworkConnection(
+                                                        favouritesView.getActivity())) {
+                                                    String message = ErrorUtils.getErrorMessage(
+                                                            throwable,
+                                                            favouritesView.getActivity().getApplicationContext());
+                                                    favouritesView.showCustomAlertDialogSimple(
+                                                            favouritesView.getActivity().getString(
+                                                                    R.string.title_coins_failed),
+                                                            message,
+                                                            R.string.cancel,
+                                                            R.string.retry,
+                                                            view -> {
+                                                                // Auto-dismissed
+                                                            },
+                                                            view -> fetchCoinItems(
+                                                                    refresh,
+                                                                    0),
+                                                            DialogUtils.AlertType.NONE);
+                                                } else {
+                                                    boolean offlineData = favouritesView.getCoinItems() != null && favouritesView.getCoinItems().size() > 0;
+                                                    Timber.d(
+                                                            "offlineData: %b",
+                                                            offlineData);
+                                                    if (!offlineData) {
+                                                        favouritesView.showNetworkErrorLayout(
+                                                                () -> fetchCoinItems(
+                                                                        refresh,
+                                                                        0));
                                                     }
                                                 }
                                             }
@@ -165,7 +158,6 @@ class FavouritesPresenter extends BasePresenter implements FavouritesContract.Pr
         if (favouritesView.isAttached()) {
             Intent intent = new Intent(favouritesView.getActivity(), CoinDetailActivity.class);
             intent.putExtra(Constants.INTENT_COIN_ITEM, Parcels.wrap(coinItem));
-            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
 
             // Do not make a scene transition if the user does not have a network connection
             // we do not know at this point if the profile to be loaded is available offline
@@ -179,7 +171,7 @@ class FavouritesPresenter extends BasePresenter implements FavouritesContract.Pr
                         favouritesView.getActivity().getResources().getString(R.string.shared_image));
                 MainApplication.getBitmapCache().delBitmap();
                 MainApplication.getBitmapCache().putBitmap(imageBitmap);
-                favouritesView.getActivity().startActivity(intent, options.toBundle());
+                favouritesView.getFragment().startActivityForResult(intent, Constants.INTENT_REQUEST_CODE_RETURNED_COIN_ITEM, options.toBundle());
             }
         }
     }
@@ -210,26 +202,23 @@ class FavouritesPresenter extends BasePresenter implements FavouritesContract.Pr
             coins.setCoinItems(sortedList);
             coinItemList.addAll(sortedList);
         } else {
-            coinItemList = coins.getCoinItems() != null ? sortCoinItems(coins.getCoinItems()) : new RealmList<CoinItem>();
+            coinItemList = coins.getCoinItems() != null ? sortCoinItems(coins.getCoinItems()) : new RealmList<>();
         }
         return coins;
     }
 
     private RealmList<CoinItem> sortCoinItems(RealmList<CoinItem> originalList) {
         // Sort the list by rank
-        Collections.sort(originalList, new Comparator<CoinItem>() {
-            @Override
-            public int compare(CoinItem coinItem1, CoinItem coinItem2) {
-                if (coinItem1 == null || coinItem2 == null) {
-                    return 0;
-                }
-
-                if (TextUtils.isEmpty(coinItem1.getRank()) || TextUtils.isEmpty(coinItem2.getRank())) {
-                    return 0;
-                }
-
-                return Integer.parseInt(coinItem1.getRank()) > Integer.parseInt(coinItem2.getRank()) ? 1 : -1;
+        Collections.sort(originalList, (coinItem1, coinItem2) -> {
+            if (coinItem1 == null || coinItem2 == null) {
+                return 0;
             }
+
+            if (TextUtils.isEmpty(coinItem1.getRank()) || TextUtils.isEmpty(coinItem2.getRank())) {
+                return 0;
+            }
+
+            return Integer.parseInt(coinItem1.getRank()) > Integer.parseInt(coinItem2.getRank()) ? 1 : -1;
         });
         return originalList;
     }

@@ -7,6 +7,7 @@ import android.telephony.TelephonyManager;
 
 import timber.log.Timber;
 
+@SuppressWarnings("unused")
 public class NetworkUtils {
 
     public static boolean hasActiveNetworkConnection(Context context) {

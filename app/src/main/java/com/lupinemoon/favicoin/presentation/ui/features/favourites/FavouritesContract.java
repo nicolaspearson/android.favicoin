@@ -1,6 +1,7 @@
 package com.lupinemoon.favicoin.presentation.ui.features.favourites;
 
 import android.graphics.Bitmap;
+import android.support.v4.app.Fragment;
 
 import com.lupinemoon.favicoin.data.models.CoinItem;
 import com.lupinemoon.favicoin.databinding.FragmentFavouritesBinding;
@@ -14,6 +15,8 @@ import java.util.List;
 public class FavouritesContract {
 
     public interface View extends IBaseView {
+        Fragment getFragment();
+
         Presenter getPresenter();
 
         ViewModel getViewModel();
@@ -30,6 +33,8 @@ public class FavouritesContract {
     }
 
     public interface Presenter extends IBasePresenter {
+        void removeCoinItem(CoinItem coinItem);
+
         void fetchCoinItems(boolean refresh, long delay);
 
         void performEmptyButtonAction();

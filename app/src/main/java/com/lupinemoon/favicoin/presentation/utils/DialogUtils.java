@@ -106,23 +106,15 @@ public class DialogUtils {
 
             DecoratorOnClickListener decoratorOnClickListener = new DecoratorOnClickListener();
             decoratorOnClickListener.add(posButtonClick);
-            decoratorOnClickListener.add(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    new Handler().postDelayed(new Runnable() {
-                        @Override
-                        public void run() {
-                            if (alertDialog != null && !((BaseActivity) activity).isBasicallyDestroyedCompat()) {
-                                try {
-                                    alertDialog.dismiss();
-                                } catch (Exception e) {
-                                    Timber.e(e, "An error occurred dismissing the dialog");
-                                }
-                            }
-                        }
-                    }, Constants.DEFAULT_SELECTOR_DELAY);
+            decoratorOnClickListener.add(v -> new Handler().postDelayed(() -> {
+                if (alertDialog != null && !((BaseActivity) activity).isBasicallyDestroyedCompat()) {
+                    try {
+                        alertDialog.dismiss();
+                    } catch (Exception e) {
+                        Timber.e(e, "An error occurred dismissing the dialog");
+                    }
                 }
-            });
+            }, Constants.DEFAULT_SELECTOR_DELAY));
 
             binding.yesButton.setOnClickListener(decoratorOnClickListener);
         }
@@ -133,23 +125,15 @@ public class DialogUtils {
 
             DecoratorOnClickListener decoratorOnClickListener = new DecoratorOnClickListener();
             decoratorOnClickListener.add(negButtonClick);
-            decoratorOnClickListener.add(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    new Handler().postDelayed(new Runnable() {
-                        @Override
-                        public void run() {
-                            if (alertDialog != null && !((BaseActivity) activity).isBasicallyDestroyedCompat()) {
-                                try {
-                                    alertDialog.dismiss();
-                                } catch (Exception e) {
-                                    Timber.e(e, "An error occurred dismissing the dialog");
-                                }
-                            }
-                        }
-                    }, Constants.DEFAULT_SELECTOR_DELAY);
+            decoratorOnClickListener.add(v -> new Handler().postDelayed(() -> {
+                if (alertDialog != null && !((BaseActivity) activity).isBasicallyDestroyedCompat()) {
+                    try {
+                        alertDialog.dismiss();
+                    } catch (Exception e) {
+                        Timber.e(e, "An error occurred dismissing the dialog");
+                    }
                 }
-            });
+            }, Constants.DEFAULT_SELECTOR_DELAY));
             binding.noButton.setOnClickListener(decoratorOnClickListener);
         }
         return alertDialog;

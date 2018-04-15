@@ -58,13 +58,31 @@ class HomePresenter extends BasePresenter implements HomeContract.Presenter {
     }
 
     @Override
+    public void updateCoinItem(CoinItem coinItem) {
+        if (coinItem != null) {
+            int position = -1;
+            for (int i = 0; i < coinItemList.size(); i++) {
+                CoinItem item = coinItemList.get(i);
+                if (coinItem.getId().equals(item.getId())) {
+                    position = i;
+                    break;
+                }
+            }
+            if (position >= 0) {
+                coinItemList.remove(position);
+                coinItemList.add(position, coinItem);
+            }
+        }
+    }
+
+    @Override
     public void fetchCoinItems(final boolean refresh, long delay) {
         if (homeView.isAttached()) {
             homeView.showLoading();
 
             if (refresh) {
                 coinItemList.clear();
-                homeView.setCoinItems(coinItemList, refresh);
+                homeView.setCoinItems(coinItemList, true);
                 page = 1;
             }
 
@@ -76,96 +94,72 @@ class HomePresenter extends BasePresenter implements HomeContract.Presenter {
                             BuildConfig.COIN_PAGE_SIZE * (page - 1),
                             BuildConfig.COIN_PAGE_SIZE)
                             .delay(delay > 0 ? delay : 0, TimeUnit.MILLISECONDS)
-                            .concatMap(new Function<Coins, Publisher<Coins>>() {
-                                @Override
-                                public Publisher<Coins> apply(@io.reactivex.annotations.NonNull Coins coins) {
-                                    return Flowable.just(manipulateCoinItems(coins));
-                                }
-                            })
+                            .concatMap((Function<Coins, Publisher<Coins>>) coins -> Flowable.just(manipulateCoinItems(coins)))
                             .subscribeOn(Schedulers.io())
                             .observeOn(AndroidSchedulers.mainThread())
                             .subscribe(
-                                    new Consumer<Coins>() {
-                                        @Override
-                                        public void accept(Coins coins) {
-                                            Timber.d(
-                                                    "Observer Thread: %s",
-                                                    Thread.currentThread());
-                                            busyFetching = false;
-                                            if (homeView.isAttached()) {
+                                    coins -> {
+                                        Timber.d(
+                                                "Observer Thread: %s",
+                                                Thread.currentThread());
+                                        busyFetching = false;
+                                        if (homeView.isAttached()) {
 
-                                                if (!TextUtils.isEmpty(coins.getSource()) &&
-                                                        coins.getSource().equals(Constants.SOURCE_REALM) &&
-                                                        coins.getCoinItems() != null &&
-                                                        coins.getCoinItems().size() < 1 &&
-                                                        NetworkUtils.isConnected(homeView.getActivity().getApplicationContext())
-                                                        && homeView.getCoinItems().size() < 1) {
-                                                    // Our local is empty and we are still fetching the network result
-                                                    return;
-                                                }
+                                            if (!TextUtils.isEmpty(coins.getSource()) &&
+                                                    coins.getSource().equals(Constants.SOURCE_REALM) &&
+                                                    coins.getCoinItems() != null &&
+                                                    coins.getCoinItems().size() < 1 &&
+                                                    NetworkUtils.isConnected(homeView.getActivity().getApplicationContext())
+                                                    && homeView.getCoinItems().size() < 1) {
+                                                // Our local is empty and we are still fetching the network result
+                                                return;
+                                            }
 
-                                                homeView.hideLoading();
+                                            homeView.hideLoading();
 
-                                                if (homeView.getCoinItems().size() < 1) {
-                                                    homeView.setCoinItems(
-                                                            coinItemList,
-                                                            refresh);
-                                                } else if (coins.getCoinItems() != null && coins.getCoinItems().size() > 0) {
-                                                    homeView.addCoinItems(
-                                                            coins.getCoinItems());
-                                                }
+                                            if (homeView.getCoinItems().size() < 1) {
+                                                homeView.setCoinItems(
+                                                        coinItemList,
+                                                        refresh);
+                                            } else if (coins.getCoinItems() != null && coins.getCoinItems().size() > 0) {
+                                                homeView.addCoinItems(
+                                                        coins.getCoinItems());
                                             }
                                         }
-                                    }, new Consumer<Throwable>() {
-                                        @Override
-                                        public void accept(Throwable throwable) {
-                                            busyFetching = false;
-                                            if (homeView.isAttached()) {
-                                                homeView.hideLoading();
+                                    }, throwable -> {
+                                        busyFetching = false;
+                                        if (homeView.isAttached()) {
+                                            homeView.hideLoading();
 
-                                                if (!homeView.notAuthorized(throwable)) {
-                                                    if (NetworkUtils.hasActiveNetworkConnection(
-                                                            homeView.getActivity())) {
-                                                        String message = ErrorUtils.getErrorMessage(
-                                                                throwable,
-                                                                homeView.getActivity().getApplicationContext());
-                                                        homeView.showCustomAlertDialogSimple(
-                                                                homeView.getActivity().getString(
-                                                                        R.string.title_coins_failed),
-                                                                message,
-                                                                R.string.cancel,
-                                                                R.string.retry,
-                                                                new View.OnClickListener() {
-                                                                    @Override
-                                                                    public void onClick(View view) {
-                                                                        // Auto-dismissed
-                                                                    }
-                                                                },
-                                                                new View.OnClickListener() {
-                                                                    @Override
-                                                                    public void onClick(View view) {
-                                                                        fetchCoinItems(
-                                                                                refresh,
-                                                                                0);
-                                                                    }
-                                                                },
-                                                                DialogUtils.AlertType.NONE);
-                                                    } else {
-                                                        boolean offlineData = homeView.getCoinItems() != null && homeView.getCoinItems().size() > 0;
-                                                        Timber.d(
-                                                                "offlineData: %b",
-                                                                offlineData);
-                                                        if (!offlineData) {
-                                                            homeView.showNetworkErrorLayout(
-                                                                    new GenericCallback() {
-                                                                        @Override
-                                                                        public void execute() {
-                                                                            fetchCoinItems(
-                                                                                    refresh,
-                                                                                    0);
-                                                                        }
-                                                                    });
-                                                        }
+                                            if (!homeView.notAuthorized(throwable)) {
+                                                if (NetworkUtils.hasActiveNetworkConnection(
+                                                        homeView.getActivity())) {
+                                                    String message = ErrorUtils.getErrorMessage(
+                                                            throwable,
+                                                            homeView.getActivity().getApplicationContext());
+                                                    homeView.showCustomAlertDialogSimple(
+                                                            homeView.getActivity().getString(
+                                                                    R.string.title_coins_failed),
+                                                            message,
+                                                            R.string.cancel,
+                                                            R.string.retry,
+                                                            view -> {
+                                                                // Auto-dismissed
+                                                            },
+                                                            view -> fetchCoinItems(
+                                                                    refresh,
+                                                                    0),
+                                                            DialogUtils.AlertType.NONE);
+                                                } else {
+                                                    boolean offlineData = homeView.getCoinItems() != null && homeView.getCoinItems().size() > 0;
+                                                    Timber.d(
+                                                            "offlineData: %b",
+                                                            offlineData);
+                                                    if (!offlineData) {
+                                                        homeView.showNetworkErrorLayout(
+                                                                () -> fetchCoinItems(
+                                                                        refresh,
+                                                                        0));
                                                     }
                                                 }
                                             }
@@ -182,7 +176,6 @@ class HomePresenter extends BasePresenter implements HomeContract.Presenter {
         if (homeView.isAttached()) {
             Intent intent = new Intent(homeView.getActivity(), CoinDetailActivity.class);
             intent.putExtra(Constants.INTENT_COIN_ITEM, Parcels.wrap(coinItem));
-            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
 
             // Do not make a scene transition if the user does not have a network connection
             // we do not know at this point if the profile to be loaded is available offline
@@ -196,7 +189,10 @@ class HomePresenter extends BasePresenter implements HomeContract.Presenter {
                         homeView.getActivity().getResources().getString(R.string.shared_image));
                 MainApplication.getBitmapCache().delBitmap();
                 MainApplication.getBitmapCache().putBitmap(imageBitmap);
-                homeView.getActivity().startActivity(intent, options.toBundle());
+                homeView.getFragment().startActivityForResult(
+                        intent,
+                        Constants.INTENT_REQUEST_CODE_RETURNED_COIN_ITEM,
+                        options.toBundle());
             }
         }
     }
@@ -251,26 +247,23 @@ class HomePresenter extends BasePresenter implements HomeContract.Presenter {
             coins.setCoinItems(sortedList);
             coinItemList.addAll(sortedList);
         } else {
-            coinItemList = coins.getCoinItems() != null ? sortCoinItems(coins.getCoinItems()) : new RealmList<CoinItem>();
+            coinItemList = coins.getCoinItems() != null ? sortCoinItems(coins.getCoinItems()) : new RealmList<>();
         }
         return coins;
     }
 
     private RealmList<CoinItem> sortCoinItems(RealmList<CoinItem> originalList) {
         // Sort the list by rank
-        Collections.sort(originalList, new Comparator<CoinItem>() {
-            @Override
-            public int compare(CoinItem coinItem1, CoinItem coinItem2) {
-                if (coinItem1 == null || coinItem2 == null) {
-                    return 0;
-                }
-
-                if (TextUtils.isEmpty(coinItem1.getRank()) || TextUtils.isEmpty(coinItem2.getRank())) {
-                    return 0;
-                }
-
-                return Integer.parseInt(coinItem1.getRank()) > Integer.parseInt(coinItem2.getRank()) ? 1 : -1;
+        Collections.sort(originalList, (coinItem1, coinItem2) -> {
+            if (coinItem1 == null || coinItem2 == null) {
+                return 0;
             }
+
+            if (TextUtils.isEmpty(coinItem1.getRank()) || TextUtils.isEmpty(coinItem2.getRank())) {
+                return 0;
+            }
+
+            return Integer.parseInt(coinItem1.getRank()) > Integer.parseInt(coinItem2.getRank()) ? 1 : -1;
         });
         return originalList;
     }

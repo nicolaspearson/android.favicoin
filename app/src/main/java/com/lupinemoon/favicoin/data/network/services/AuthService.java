@@ -43,20 +43,17 @@ public class AuthService {
             String username,
             String password) {
         return getAuthApi(context).postLogin(username, password)
-                .map(new Function<AuthToken, AuthToken>() {
-                    @Override
-                    public AuthToken apply(AuthToken token) {
-                        // Add the created_at date to the token
-                        if (token != null) {
-                            token.setCreatedAt(DateTimeUtils.getCurrentTimeStamp());
-                        }
-
-                        MainApplication.getStorage(context).putObject(
-                                Constants.KEY_AUTH_TOKEN,
-                                token);
-                        MainApplication.setLoggedIn(true);
-                        return token;
+                .map(token -> {
+                    // Add the created_at date to the token
+                    if (token != null) {
+                        token.setCreatedAt(DateTimeUtils.getCurrentTimeStamp());
                     }
+
+                    MainApplication.getStorage(context).putObject(
+                            Constants.KEY_AUTH_TOKEN,
+                            token);
+                    MainApplication.setLoggedIn(true);
+                    return token;
                 });
     }
 }

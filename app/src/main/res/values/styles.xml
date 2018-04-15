@@ -132,10 +132,6 @@
         <item name="android:textColor">@color/white</item>
     </style>
 
-    <style name="TextMedium.Field.ExtraSmall">
-        <item name="android:textSize">@dimen/text.size.xs</item>
-    </style>
-
     <style name="TextMedium.Field.Small">
         <item name="android:textSize">@dimen/text.size.s</item>
     </style>

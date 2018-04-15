@@ -86,12 +86,7 @@ public class AppLocalDataStore implements AppDataStore {
         Timber.w("Clearing Realm...");
         Realm iRealm = getRealm();
         try {
-            iRealm.executeTransaction(new Realm.Transaction() {
-                @Override
-                public void execute(@NonNull Realm realm) {
-                    realm.deleteAll();
-                }
-            });
+            iRealm.executeTransaction(realm -> realm.deleteAll());
         } catch (Exception e) {
             Timber.e(e);
         } finally {
@@ -148,12 +143,7 @@ public class AppLocalDataStore implements AppDataStore {
         Realm iRealm = getRealm();
         Timber.d("%s: saveNetworkRequest %s", this.getClass().getSimpleName(), networkRequest);
         try {
-            iRealm.executeTransaction(new Realm.Transaction() {
-                @Override
-                public void execute(@NonNull Realm realm) {
-                    realm.copyToRealmOrUpdate(networkRequest);
-                }
-            });
+            iRealm.executeTransaction(realm -> realm.copyToRealmOrUpdate(networkRequest));
         } catch (Exception e) {
             Timber.e(e);
         } finally {
@@ -170,12 +160,7 @@ public class AppLocalDataStore implements AppDataStore {
                     .equalTo("primaryKey", networkHeader.getPrimaryKey())
                     .findAll();
             if (result != null) {
-                iRealm.executeTransaction(new Realm.Transaction() {
-                    @Override
-                    public void execute(@NonNull Realm realm) {
-                        result.deleteAllFromRealm();
-                    }
-                });
+                iRealm.executeTransaction(realm -> result.deleteAllFromRealm());
             }
         } catch (Exception e) {
             Timber.e(e);
@@ -193,12 +178,7 @@ public class AppLocalDataStore implements AppDataStore {
                     .equalTo("primaryKey", networkMediaType.getPrimaryKey())
                     .findAll();
             if (result != null) {
-                iRealm.executeTransaction(new Realm.Transaction() {
-                    @Override
-                    public void execute(@NonNull Realm realm) {
-                        result.deleteAllFromRealm();
-                    }
-                });
+                iRealm.executeTransaction(realm -> result.deleteAllFromRealm());
             }
         } catch (Exception e) {
             Timber.e(e);
@@ -216,12 +196,7 @@ public class AppLocalDataStore implements AppDataStore {
                     .equalTo("primaryKey", networkRequest.getPrimaryKey())
                     .findAll();
             if (result != null) {
-                iRealm.executeTransaction(new Realm.Transaction() {
-                    @Override
-                    public void execute(@NonNull Realm realm) {
-                        result.deleteAllFromRealm();
-                    }
-                });
+                iRealm.executeTransaction(realm -> result.deleteAllFromRealm());
             }
             removeNetworkHeader(networkRequest.getNetworkHeader());
             removeNetworkMediaType(networkRequest.getNetworkRequestBody().getNetworkMediaType());
@@ -242,12 +217,7 @@ public class AppLocalDataStore implements AppDataStore {
                     .equalTo("primaryKey", networkRequestBody.getPrimaryKey())
                     .findAll();
             if (result != null) {
-                iRealm.executeTransaction(new Realm.Transaction() {
-                    @Override
-                    public void execute(@NonNull Realm realm) {
-                        result.deleteAllFromRealm();
-                    }
-                });
+                iRealm.executeTransaction(realm -> result.deleteAllFromRealm());
             }
         } catch (Exception e) {
             Timber.e(e);
@@ -298,14 +268,18 @@ public class AppLocalDataStore implements AppDataStore {
         Timber.d("saveCoins: %s", coinItems);
         try {
             for (final CoinItem item : coinItems) {
-                item.setCryptoCompareCoin(fetchCryptoCompareCoin(item.getSymbol(), item.getName()));
-            }
-            iRealm.executeTransaction(new Realm.Transaction() {
-                @Override
-                public void execute(@NonNull Realm realm) {
-                    realm.copyToRealmOrUpdate(coinItems);
+                CryptoCompareCoin cryptoCompareCoin = this.fetchCryptoCompareCoin(
+                        item.getSymbol(),
+                        item.getName());
+                if (cryptoCompareCoin != null) {
+                    item.setCryptoCompareCoin(cryptoCompareCoin);
                 }
-            });
+                CoinItem existingCoinItem = this.fetchCoin(item.getId());
+                if (existingCoinItem != null) {
+                    item.setFavourite(existingCoinItem.isFavourite());
+                }
+            }
+            iRealm.executeTransaction(realm -> realm.copyToRealmOrUpdate(coinItems));
         } catch (Exception e) {
             Timber.e(e);
         } finally {
@@ -322,6 +296,30 @@ public class AppLocalDataStore implements AppDataStore {
         }
         return coins;
     }
+
+    private CoinItem fetchCoin(String id) {
+        Realm iRealm = getRealm();
+        try {
+            CoinItem coinItem = iRealm
+                    .where(CoinItem.class)
+                    .equalTo("id", id)
+                    .findFirst();
+            if (coinItem != null) {
+                // Get detached object from realm
+                CoinItem detachedValue = iRealm.copyFromRealm(coinItem);
+                Timber.d("fetchCoin: %s", detachedValue);
+                if (detachedValue != null) {
+                    return detachedValue;
+                }
+            }
+        } catch (Exception e) {
+            Timber.e(e);
+        } finally {
+            closeRealm(iRealm);
+        }
+        Timber.d("fetchCoin: ID: %s", id);
+        return null;
+    }
     //endregion
 
     // region Favourites API
@@ -332,7 +330,9 @@ public class AppLocalDataStore implements AppDataStore {
         coins.setSource(Constants.SOURCE_REALM);
         RealmList<CoinItem> coinItems = new RealmList<>();
         try {
-            RealmResults<CoinItem> result = iRealm.where(CoinItem.class).equalTo("isFavourite", true).findAll();
+            RealmResults<CoinItem> result = iRealm.where(CoinItem.class).equalTo(
+                    "isFavourite",
+                    true).findAll();
             if (result != null) {
                 // Get detached object from realm
                 Collection<CoinItem> detachedCoinItems = iRealm.copyFromRealm(result);
@@ -354,12 +354,7 @@ public class AppLocalDataStore implements AppDataStore {
         coinItem.setFavourite(isFavourite);
         Timber.d("saveFavourite: %s", coinItem);
         try {
-            iRealm.executeTransaction(new Realm.Transaction() {
-                @Override
-                public void execute(@NonNull Realm realm) {
-                    realm.copyToRealmOrUpdate(coinItem);
-                }
-            });
+            iRealm.executeTransaction(realm -> realm.copyToRealmOrUpdate(coinItem));
         } catch (Exception e) {
             Timber.e(e);
         } finally {
@@ -386,12 +381,7 @@ public class AppLocalDataStore implements AppDataStore {
                 final List<CryptoCompareCoin> cryptoCompareCoins = new Gson().fromJson(
                         jsonArray,
                         listType);
-                iRealm.executeTransaction(new Realm.Transaction() {
-                    @Override
-                    public void execute(@NonNull Realm realm) {
-                        realm.copyToRealmOrUpdate(cryptoCompareCoins);
-                    }
-                });
+                iRealm.executeTransaction(realm -> realm.copyToRealmOrUpdate(cryptoCompareCoins));
             } catch (Exception e) {
                 Timber.e(e);
                 return Completable.error(e);
@@ -446,7 +436,7 @@ public class AppLocalDataStore implements AppDataStore {
             closeRealm(iRealm);
         }
         Timber.d("fetchCryptoCompareCoin: MISSED - SYM: %s | NAME: %s", symbol, name);
-        return new CryptoCompareCoin();
+        return null;
     }
     // endregion
 }

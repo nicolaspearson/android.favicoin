@@ -46,15 +46,12 @@ public class CoinService {
     public Flowable<Coins> getCoins(Context context, int start, int limit) {
         return getCoinApi(context).getCoins(
                 start,
-                limit).map(new Function<List<CoinItem>, Coins>() {
-            @Override
-            public Coins apply(@NonNull List<CoinItem> coinItems) {
-                Coins coins = new Coins();
-                RealmList<CoinItem> realmList = new RealmList<>();
-                realmList.addAll(coinItems);
-                coins.setCoinItems(realmList);
-                return coins;
-            }
-        });
+                limit).map(coinItems -> {
+                    Coins coins = new Coins();
+                    RealmList<CoinItem> realmList = new RealmList<>();
+                    realmList.addAll(coinItems);
+                    coins.setCoinItems(realmList);
+                    return coins;
+                });
     }
 }

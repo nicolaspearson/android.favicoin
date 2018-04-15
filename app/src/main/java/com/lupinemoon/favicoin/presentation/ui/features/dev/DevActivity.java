@@ -74,17 +74,7 @@ public class DevActivity extends BaseVMPActivity<DevContract.ViewModel, DevContr
             getSupportActionBar().setTitle(R.string.title_dev);
         }
 
-        getToolbar().setNavigationOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                animateOnBackPressed(new GenericCallback() {
-                    @Override
-                    public void execute() {
-                        onBackPressed();
-                    }
-                });
-            }
-        });
+        getToolbar().setNavigationOnClickListener(view -> animateOnBackPressed(() -> onBackPressed()));
 
         // Set the view model variable
         getBinding().setViewModel((DevViewModel) getViewModel());

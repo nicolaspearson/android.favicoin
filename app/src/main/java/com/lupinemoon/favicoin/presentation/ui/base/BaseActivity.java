@@ -34,14 +34,13 @@ import com.lupinemoon.favicoin.presentation.utils.ErrorUtils;
 import com.lupinemoon.favicoin.presentation.utils.NetworkUtils;
 import com.lupinemoon.favicoin.presentation.utils.RetrofitUtils;
 import com.lupinemoon.favicoin.presentation.utils.ViewUtils;
-import com.lupinemoon.favicoin.presentation.widgets.OnBackPressedListener;
+import com.lupinemoon.favicoin.presentation.widgets.interfaces.OnBackPressedListener;
 import com.lupinemoon.favicoin.presentation.widgets.PopupLoader;
 import com.lupinemoon.favicoin.presentation.widgets.Toasty;
 import com.lupinemoon.favicoin.presentation.widgets.interfaces.GenericCallback;
 
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
-import io.reactivex.functions.Consumer;
 import timber.log.Timber;
 import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
 
@@ -169,12 +168,9 @@ public abstract class BaseActivity<B extends ViewDataBinding> extends AppCompatA
     public void animateOnBackPressed(final GenericCallback onBackPressedCallback) {
         // This doesn't animate, it just waits for the default animation to end
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            new Handler().postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    onBackPressedCallback.execute();
-                }
-            }, Constants.DEFAULT_SELECTOR_DELAY);
+            new Handler().postDelayed(
+                    onBackPressedCallback::execute,
+                    Constants.DEFAULT_SELECTOR_DELAY);
         } else {
             onBackPressedCallback.execute();
         }
@@ -276,12 +272,7 @@ public abstract class BaseActivity<B extends ViewDataBinding> extends AppCompatA
         // Duration between LENGTH_SHORT & LENGTH_LONG
         final Snackbar snackBar = Snackbar.make(rootView, msg, duration);
         snackBar.setActionTextColor(Color.RED);
-        snackBar.setAction(getString(R.string.snackbar_dismiss_action), new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                snackBar.dismiss();
-            }
-        });
+        snackBar.setAction(getString(R.string.snackbar_dismiss_action), v -> snackBar.dismiss());
         snackBar.show();
     }
 
@@ -341,18 +332,10 @@ public abstract class BaseActivity<B extends ViewDataBinding> extends AppCompatA
                     message,
                     R.string.cancel,
                     R.string.retry,
-                    new View.OnClickListener() {
-                        @Override
-                        public void onClick(View view) {
-                            // Auto-dismissed
-                        }
+                    view -> {
+                        // Auto-dismissed
                     },
-                    new View.OnClickListener() {
-                        @Override
-                        public void onClick(View view) {
-                            retryCallback.execute();
-                        }
-                    },
+                    view -> retryCallback.execute(),
                     DialogUtils.AlertType.NONE);
         }
     }
@@ -365,18 +348,12 @@ public abstract class BaseActivity<B extends ViewDataBinding> extends AppCompatA
                 R.string.message_network_error,
                 R.string.retry,
                 R.string.cancel,
-                new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        // Auto dismissed
-                        retryCallback.execute();
-                    }
+                view -> {
+                    // Auto dismissed
+                    retryCallback.execute();
                 },
-                new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        // Auto dismissed
-                    }
+                view -> {
+                    // Auto dismissed
                 },
                 DialogUtils.AlertType.NETWORK);
     }
@@ -391,19 +368,11 @@ public abstract class BaseActivity<B extends ViewDataBinding> extends AppCompatA
                 R.string.message_network_error,
                 R.string.retry,
                 R.string.cancel,
-                new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        // Auto dismissed
-                        retryCallback.execute();
-                    }
+                view -> {
+                    // Auto dismissed
+                    retryCallback.execute();
                 },
-                new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        cancelCallback.execute();
-                    }
-                },
+                view -> cancelCallback.execute(),
                 DialogUtils.AlertType.NETWORK);
     }
 
@@ -433,16 +402,13 @@ public abstract class BaseActivity<B extends ViewDataBinding> extends AppCompatA
         rxBusEvents.add(
                 RxBus.getDefault().observeEvents(QueueProcessingComplete.class)
                         .observeOn(AndroidSchedulers.mainThread())
-                        .subscribe(new Consumer<QueueProcessingComplete>() {
-                            @Override
-                            public void accept(@io.reactivex.annotations.NonNull QueueProcessingComplete queueProcessingComplete) {
-                                ViewGroup offlineLayout = getRootView().findViewById(R.id.offline_banner_layout);
-                                final Context context = getActivity();
-                                if (offlineLayout != null && NetworkUtils.hasActiveNetworkConnection(
-                                        context)) {
-                                    if (offlineLayout.findViewById(R.id.offline_banner_offline_container).getVisibility() != View.VISIBLE) {
-                                        resetOfflineBanner(offlineLayout);
-                                    }
+                        .subscribe(queueProcessingComplete -> {
+                            ViewGroup offlineLayout = getRootView().findViewById(R.id.offline_banner_layout);
+                            final Context context = getActivity();
+                            if (offlineLayout != null && NetworkUtils.hasActiveNetworkConnection(
+                                    context)) {
+                                if (offlineLayout.findViewById(R.id.offline_banner_offline_container).getVisibility() != View.VISIBLE) {
+                                    resetOfflineBanner(offlineLayout);
                                 }
                             }
                         }));
@@ -451,19 +417,16 @@ public abstract class BaseActivity<B extends ViewDataBinding> extends AppCompatA
         rxBusEvents.add(
                 RxBus.getDefault().observeEvents(QueueProcessingStarted.class)
                         .observeOn(AndroidSchedulers.mainThread())
-                        .subscribe(new Consumer<QueueProcessingStarted>() {
-                            @Override
-                            public void accept(@io.reactivex.annotations.NonNull QueueProcessingStarted queueProcessingStarted) {
-                                if (NetworkUtils.hasActiveNetworkConnection(getActivity())) {
-                                    final View offlineLayout = rootView.findViewById(R.id.offline_banner_layout);
-                                    if (offlineLayout != null && getActivity() != null && isAttached()) {
-                                        offlineLayout.findViewById(R.id.offline_banner_offline_container).setVisibility(
-                                                View.GONE);
-                                        offlineLayout.findViewById(R.id.offline_banner_connected_container).setVisibility(
-                                                View.VISIBLE);
-                                        if (offlineLayout.getVisibility() == View.GONE) {
-                                            offlineLayout.setVisibility(View.VISIBLE);
-                                        }
+                        .subscribe(queueProcessingStarted -> {
+                            if (NetworkUtils.hasActiveNetworkConnection(getActivity())) {
+                                final View offlineLayout = rootView.findViewById(R.id.offline_banner_layout);
+                                if (offlineLayout != null && getActivity() != null && isAttached()) {
+                                    offlineLayout.findViewById(R.id.offline_banner_offline_container).setVisibility(
+                                            View.GONE);
+                                    offlineLayout.findViewById(R.id.offline_banner_connected_container).setVisibility(
+                                            View.VISIBLE);
+                                    if (offlineLayout.getVisibility() == View.GONE) {
+                                        offlineLayout.setVisibility(View.VISIBLE);
                                     }
                                 }
                             }
@@ -499,14 +462,11 @@ public abstract class BaseActivity<B extends ViewDataBinding> extends AppCompatA
                 View offlineButton = offlineLayout.findViewById(R.id.offline_more_button);
                 if (offlineButton != null && !offlineButton.hasOnClickListeners()) {
                     Timber.d("Set offlineButton Click Listener");
-                    offlineButton.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View v) {
-                            Intent offlineIntent = new Intent(
-                                    getActivity(),
-                                    OfflineActivity.class);
-                            getActivity().startActivity(offlineIntent);
-                        }
+                    offlineButton.setOnClickListener(v -> {
+                        Intent offlineIntent = new Intent(
+                                getActivity(),
+                                OfflineActivity.class);
+                        getActivity().startActivity(offlineIntent);
                     });
                 }
 

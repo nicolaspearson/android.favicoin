@@ -21,6 +21,7 @@
             android:id="@+id/logout_navigation_menu_item"
             android:checkable="false"
             android:enabled="true"
+            android:visible="false"
             android:icon="@drawable/vd_logout"
             android:title="@string/logout"/>
 

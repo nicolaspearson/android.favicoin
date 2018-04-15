@@ -1,10 +1,12 @@
 package com.lupinemoon.favicoin.presentation.ui.features.home;
 
+import android.app.Activity;
+import android.content.Intent;
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.v4.widget.SwipeRefreshLayout;
+import android.support.v4.app.Fragment;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -21,8 +23,10 @@ import com.lupinemoon.favicoin.presentation.ui.base.BaseVMPFragment;
 import com.lupinemoon.favicoin.presentation.ui.base.BaseViewModel;
 import com.lupinemoon.favicoin.presentation.ui.features.home.adapters.CoinItemAdapter;
 import com.lupinemoon.favicoin.presentation.utils.Constants;
-import com.lupinemoon.favicoin.presentation.widgets.OnBackPressedListener;
+import com.lupinemoon.favicoin.presentation.widgets.interfaces.OnBackPressedListener;
 import com.lupinemoon.favicoin.presentation.widgets.interfaces.GenericCallback;
+
+import org.parceler.Parcels;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -113,7 +117,7 @@ public class HomeFragment extends BaseVMPFragment<HomeContract.ViewModel, HomeCo
 
     @Override
     public View onCreateView(
-            LayoutInflater inflater,
+            @NonNull LayoutInflater inflater,
             ViewGroup container,
             Bundle savedInstanceState) {
         super.onCreateView(inflater, container, savedInstanceState);
@@ -156,12 +160,9 @@ public class HomeFragment extends BaseVMPFragment<HomeContract.ViewModel, HomeCo
                 false));
 
         getBinding().homeSwipeRefreshLayout.setColorSchemeResources(R.color.color_accent);
-        getBinding().homeSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
-            @Override
-            public void onRefresh() {
-                getPresenter().fetchCoinItems(true, 0);
-            }
-        });
+        getBinding().homeSwipeRefreshLayout.setOnRefreshListener(() -> getPresenter().fetchCoinItems(
+                true,
+                0));
 
         // Set the view model variable
         getBinding().setViewModel((HomeViewModel) getViewModel());
@@ -173,6 +174,27 @@ public class HomeFragment extends BaseVMPFragment<HomeContract.ViewModel, HomeCo
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         getPresenter().fetchCoinItems(true, Constants.DRAWER_CLOSED_TIME_INTERVAL);
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent intent) {
+        if (requestCode == Constants.INTENT_REQUEST_CODE_RETURNED_COIN_ITEM) {
+            if (resultCode == Activity.RESULT_OK && intent != null && intent.getExtras() != null) {
+                CoinItem returnedCoinItem = Parcels.unwrap(intent.getExtras().getParcelable(
+                        Constants.INTENT_COIN_ITEM_DETAIL));
+                if (returnedCoinItem != null) {
+                    this.getPresenter().updateCoinItem(returnedCoinItem);
+                    if (this.coinItemAdapter != null) {
+                        this.coinItemAdapter.updateCoinItem(returnedCoinItem);
+                    }
+                }
+            }
+        }
+    }
+
+    @Override
+    public Fragment getFragment() {
+        return this;
     }
 
     @Override
@@ -205,12 +227,7 @@ public class HomeFragment extends BaseVMPFragment<HomeContract.ViewModel, HomeCo
 
     @Override
     public void showNetworkErrorLayout(final GenericCallback genericCallback) {
-        getBinding().noNetworkLayout.noNetworkButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                genericCallback.execute();
-            }
-        });
+        getBinding().noNetworkLayout.noNetworkButton.setOnClickListener(v -> genericCallback.execute());
         toggleNoNetworkView(false);
     }
 

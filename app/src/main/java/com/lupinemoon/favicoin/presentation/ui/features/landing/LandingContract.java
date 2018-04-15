@@ -11,6 +11,7 @@ interface LandingContract {
 
     interface Presenter extends IBasePresenter {
         void retryQueuedRequests();
+
         void onLogout();
     }
 

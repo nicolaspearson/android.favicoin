@@ -38,12 +38,7 @@ class SplashPresenter extends BasePresenter implements SplashContract.Presenter 
                         .subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())
                         .doOnComplete(
-                                new Action() {
-                                    @Override
-                                    public void run() {
-                                        splashView.cryptoCompareCoinsLoaded();
-                                    }
-                                })
+                                () -> splashView.cryptoCompareCoinsLoaded())
                         .subscribe());
     }
 

@@ -27,7 +27,7 @@ public class CoinItemListParcelConverter implements ParcelConverter<RealmList<Co
         }
         RealmList<CoinItem> items = new RealmList<>();
         for (int i = 0; i < size; ++i) {
-            items.add((CoinItem) Parcels.unwrap(parcel.readParcelable(CoinItem.class.getClassLoader())));
+            items.add(Parcels.unwrap(parcel.readParcelable(CoinItem.class.getClassLoader())));
         }
         return items;
     }

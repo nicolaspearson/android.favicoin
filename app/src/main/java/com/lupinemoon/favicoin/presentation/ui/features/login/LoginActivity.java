@@ -60,7 +60,6 @@ public class LoginActivity extends BaseVMPActivity<LoginContract.ViewModel, Logi
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        // AnimationUtils.animateTransitionStartActivity(this.getActivity(), R.anim.fade_in);
         // Set the view model variable
         getBinding().setViewModel((LoginViewModel) getViewModel());
 

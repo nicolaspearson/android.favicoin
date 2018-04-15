@@ -100,6 +100,7 @@
     <string name="title_no_coin_item">Coin Details Not Found</string>
     <string name="message_no_coin_item">Unfortunately we were unable to retrieve the selected coin\'s details, please try again.</string>
     <string name="adding_to_favourites">Adding %1$s to favourites</string>
+    <string name="removing_from_favourites">Removing %1$s from favourites</string>
     <string name="coin_market_cap">CoinMarketCap</string>
     <string name="crypto_compare">CryptoCompare</string>
     <string name="symbol_label">Symbol:</string>

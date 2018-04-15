@@ -4,6 +4,7 @@ import com.crashlytics.android.answers.Answers;
 import com.crashlytics.android.answers.ContentViewEvent;
 import com.crashlytics.android.answers.CustomEvent;
 import com.lupinemoon.favicoin.data.analytics.interfaces.IAnalyticsService;
+import com.lupinemoon.favicoin.data.models.CoinItem;
 
 public class AnalyticsService implements IAnalyticsService {
 
@@ -36,6 +37,14 @@ public class AnalyticsService implements IAnalyticsService {
     public void reportAndroidOsVersion(String androidOsVersion) {
         CustomEvent customEvent = new CustomEvent("Android OS Version");
         customEvent.putCustomAttribute("Version", androidOsVersion);
+        Answers.getInstance().logCustom(customEvent);
+    }
+
+    @Override
+    public void reportCoinItemFavourited(CoinItem coinItem) {
+        CustomEvent customEvent = new CustomEvent("Favourite");
+        customEvent.putCustomAttribute("Name", coinItem.getName());
+        customEvent.putCustomAttribute("Symbol", coinItem.getSymbol());
         Answers.getInstance().logCustom(customEvent);
     }
 }

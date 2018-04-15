@@ -35,15 +35,12 @@ class LoginPresenter extends BasePresenter implements LoginContract.Presenter {
                             .delay(2500, TimeUnit.MILLISECONDS)
                             .subscribeOn(Schedulers.io())
                             .observeOn(AndroidSchedulers.mainThread())
-                            .subscribe(new Consumer<String>() {
-                                @Override
-                                public void accept(@io.reactivex.annotations.NonNull String s) {
-                                    if (loginView.isAttached()) {
-                                        loginView.showLoading();
-                                        loginView.getActivity().startActivity(new Intent(
-                                                loginView.getActivity(),
-                                                LandingActivity.class));
-                                    }
+                            .subscribe(s -> {
+                                if (loginView.isAttached()) {
+                                    loginView.showLoading();
+                                    loginView.getActivity().startActivity(new Intent(
+                                            loginView.getActivity(),
+                                            LandingActivity.class));
                                 }
                             }));
         }

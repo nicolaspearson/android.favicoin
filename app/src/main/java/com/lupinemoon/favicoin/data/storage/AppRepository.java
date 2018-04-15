@@ -84,19 +84,16 @@ public class AppRepository implements AppDataStore {
         rxBusEvents.add(
                 RxBus.getDefault().observeEvents(PostRequestFailedEvent.class)
                         .observeOn(Schedulers.io())
-                        .subscribe(new Consumer<PostRequestFailedEvent>() {
-                            @Override
-                            public void accept(@NonNull PostRequestFailedEvent postRequestFailedEvent) {
-                                Timber.w("POST Request Failed");
-                                Request request = postRequestFailedEvent.getRequest();
-                                NetworkRequest networkRequest = new NetworkRequest(
-                                        request.method(),
-                                        request.url().toString(),
-                                        request.headers(),
-                                        request.body()
-                                );
-                                appLocalDataStore.saveNetworkRequest(networkRequest);
-                            }
+                        .subscribe(postRequestFailedEvent -> {
+                            Timber.w("POST Request Failed");
+                            Request request = postRequestFailedEvent.getRequest();
+                            NetworkRequest networkRequest = new NetworkRequest(
+                                    request.method(),
+                                    request.url().toString(),
+                                    request.headers(),
+                                    request.body()
+                            );
+                            appLocalDataStore.saveNetworkRequest(networkRequest);
                         }));
 
     }
@@ -121,20 +118,10 @@ public class AppRepository implements AppDataStore {
             processingQueue = true;
             retryDisposables.add(
                     appLocalDataStore.getNetworkRequests()
-                            .concatMapIterable(new Function<List<NetworkRequest>, Iterable<NetworkRequest>>() {
-                                @Override
-                                public Iterable<NetworkRequest> apply(@NonNull List<NetworkRequest> networkRequests) {
-                                    return networkRequests;
-                                }
-                            })
-                            .concatMap(new Function<NetworkRequest, Publisher<NetworkRequest>>() {
-                                @Override
-                                public Publisher<NetworkRequest> apply(@NonNull NetworkRequest networkRequest) {
-                                    return Flowable.just(networkRequest).delay(
-                                            queueInterval,
-                                            TimeUnit.MILLISECONDS);
-                                }
-                            })
+                            .concatMapIterable((Function<List<NetworkRequest>, Iterable<NetworkRequest>>) networkRequests -> networkRequests)
+                            .concatMap((Function<NetworkRequest, Publisher<NetworkRequest>>) networkRequest -> Flowable.just(networkRequest).delay(
+                                    queueInterval,
+                                    TimeUnit.MILLISECONDS))
                             .subscribeOn(Schedulers.io())
                             .subscribe(new Consumer<NetworkRequest>() {
                                 @Override
@@ -202,20 +189,14 @@ public class AppRepository implements AppDataStore {
                                         Timber.w(e, "Process Request Failed");
                                     }
                                 }
-                            }, new Consumer<Throwable>() {
-                                @Override
-                                public void accept(@NonNull Throwable throwable) {
-                                    Timber.w(throwable, "Process Request Failed");
-                                    RxBus.getDefault().post(new QueueProcessingComplete());
-                                    processingQueue = false;
-                                }
-                            }, new Action() {
-                                @Override
-                                public void run() {
-                                    Timber.d("Process Request Complete");
-                                    RxBus.getDefault().post(new QueueProcessingComplete());
-                                    processingQueue = false;
-                                }
+                            }, throwable -> {
+                                Timber.w(throwable, "Process Request Failed");
+                                RxBus.getDefault().post(new QueueProcessingComplete());
+                                processingQueue = false;
+                            }, () -> {
+                                Timber.d("Process Request Complete");
+                                RxBus.getDefault().post(new QueueProcessingComplete());
+                                processingQueue = false;
                             }));
         }
     }
@@ -254,14 +235,11 @@ public class AppRepository implements AppDataStore {
             return appLocalDataStore.getCoins(context, start, limit)
                     .subscribeOn(Schedulers.io())
                     .delay(BuildConfig.LOCAL_REPO_SOURCE_DELAY, TimeUnit.MILLISECONDS)
-                    .filter(new Predicate<Coins>() {
-                        @Override
-                        public boolean test(@NonNull Coins coins) throws Exception {
-                            if (coins.getCoinItems() != null && coins.getCoinItems().size() > 0) {
-                                return true;
-                            } else {
-                                throw new Exception();
-                            }
+                    .filter(coins -> {
+                        if (coins.getCoinItems() != null && coins.getCoinItems().size() > 0) {
+                            return true;
+                        } else {
+                            throw new Exception();
                         }
                     });
         } else if (BuildConfig.LOCAL_REPO_COMBINE_SOURCES && NetworkUtils.isConnectedFast(context)) {
@@ -273,34 +251,29 @@ public class AppRepository implements AppDataStore {
                             .subscribeOn(Schedulers.io()),
                     appRemoteDataStore.getCoins(context, start, limit)
                             .subscribeOn(Schedulers.io()),
-                    new BiFunction<Coins, Coins, Coins>() {
-                        @Override
-                        public Coins apply(
-                                @NonNull Coins localCoins,
-                                @NonNull Coins networkCoins) {
-                            RealmList<CoinItem> resultCoinItemList = new RealmList<>();
-                            Coins savedCoins = appLocalDataStore.saveCoins(
-                                    networkCoins.getCoinItems(),
-                                    false);
-                            try {
-                                if (savedCoins.getCoinItems() != null && savedCoins.getCoinItems().size() > 0) {
-                                    Timber.d("savedCoinItems: %s", savedCoins.getCoinItems());
-                                    // Prefer saved coins
-                                    return savedCoins;
-                                } else if (localCoins.getCoinItems() != null && localCoins.getCoinItems().size() > 0) {
-                                    // Fail over to local coins
-                                    Timber.d("localCoinItems: %s", localCoins.getCoinItems());
-                                    return localCoins;
-                                }
-                            } catch (Exception e) {
-                                Timber.e(e, "Coin List Combine Latest Failed");
+                    (localCoins, networkCoins) -> {
+                        RealmList<CoinItem> resultCoinItemList = new RealmList<>();
+                        Coins savedCoins = appLocalDataStore.saveCoins(
+                                networkCoins.getCoinItems(),
+                                false);
+                        try {
+                            if (savedCoins.getCoinItems() != null && savedCoins.getCoinItems().size() > 0) {
+                                Timber.d("savedCoinItems: %s", savedCoins.getCoinItems());
+                                // Prefer saved coins
+                                return savedCoins;
+                            } else if (localCoins.getCoinItems() != null && localCoins.getCoinItems().size() > 0) {
+                                // Fail over to local coins
+                                Timber.d("localCoinItems: %s", localCoins.getCoinItems());
+                                return localCoins;
                             }
-
-                            // No result
-                            Coins coins = new Coins();
-                            coins.setCoinItems(resultCoinItemList);
-                            return coins;
+                        } catch (Exception e) {
+                            Timber.e(e, "Coin List Combine Latest Failed");
                         }
+
+                        // No result
+                        Coins coins = new Coins();
+                        coins.setCoinItems(resultCoinItemList);
+                        return coins;
                     });
         } else {
             // SLOW CONNECTION
@@ -312,12 +285,9 @@ public class AppRepository implements AppDataStore {
                     appRemoteDataStore.getCoins(context, start, limit)
                             .subscribeOn(Schedulers.io())
                             .observeOn(Schedulers.io())
-                            .doOnNext(new Consumer<Coins>() {
-                                @Override
-                                public void accept(Coins coins) {
-                                    // Save locally
-                                    appLocalDataStore.saveCoins(coins.getCoinItems(), true);
-                                }
+                            .doOnNext(coins -> {
+                                // Save locally
+                                appLocalDataStore.saveCoins(coins.getCoinItems(), true);
                             }));
         }
     }

@@ -106,75 +106,72 @@ public class ServiceGenerator {
         Cache cache = new Cache(cacheDir, DISK_CACHE_SIZE);
         clientBuilder = clientBuilder.cache(cache);
 
-        clientBuilder.addInterceptor(new Interceptor() {
-            @Override
-            public Response intercept(@NonNull Chain chain) throws IOException {
+        clientBuilder.addInterceptor(chain -> {
 
-                Request origRequest = chain.request();
-                Request.Builder builder = origRequest.newBuilder().addHeader("platform", "android")
-                        .addHeader(
-                                "User-Agent",
-                                "Favicoin Android Version " + BuildConfig.VERSION_NAME)
-                        .addHeader("app-version", String.valueOf(BuildConfig.VERSION_CODE))
-                        .addHeader("os_version", String.valueOf(Build.VERSION.SDK_INT));
+            Request origRequest = chain.request();
+            Request.Builder builder = origRequest.newBuilder().addHeader("platform", "android")
+                    .addHeader(
+                            "User-Agent",
+                            "Favicoin Android Version " + BuildConfig.VERSION_NAME)
+                    .addHeader("app-version", String.valueOf(BuildConfig.VERSION_CODE))
+                    .addHeader("os_version", String.valueOf(Build.VERSION.SDK_INT));
 
-                Request request = builder.build();
+            Request request = builder.build();
 
-                if (BuildConfig.DEBUG) {
-                    Timber.d("HEADERS = %s", request.headers());
-                }
+            if (BuildConfig.DEBUG) {
+                Timber.d("HEADERS = %s", request.headers());
+            }
 
-                Response origResponse;
-                try {
-                    // Perform request (original request will be executed)
-                    origResponse = chain.proceed(request);
-                } catch (IOException exception) {
-                    Timber.w(exception, "Response Exception Error");
-                    // Notify error using the original request data.
-                    notifyRequestFailed(request);
-                    throw exception;
-                }
+            Response origResponse;
+            try {
+                // Perform request (original request will be executed)
+                origResponse = chain.proceed(request);
+            } catch (IOException exception) {
+                Timber.w(exception, "Response Exception Error");
+                // Notify error using the original request data.
+                notifyRequestFailed(request);
+                throw exception;
+            }
 
-                Response response = origResponse;
-                if (!response.isSuccessful() || BuildConfig.DEBUG) {
-                    ResponseBody body = origResponse.body();
-                    if (body != null) {
-                        String responseString = body.string();
+            Response response = origResponse;
+            if (!response.isSuccessful() || BuildConfig.DEBUG) {
+                ResponseBody body = origResponse.body();
+                if (body != null) {
+                    String responseString = body.string();
 
-                        // Recreate the response since responseString consumed it
-                        response = origResponse.newBuilder().body(ResponseBody.create(
-                                body.contentType(),
-                                responseString))
-                                .build();
+                    // Recreate the response since responseString consumed it
+                    response = origResponse.newBuilder().body(ResponseBody.create(
+                            body.contentType(),
+                            responseString))
+                            .build();
 
-                        if (!response.isSuccessful()) {
-                            if (response.code() == 440) {
-                                // User subscription has expired, show a dialog and
-                                // navigate the user to login screen or subscribe
-                                RxBus.getDefault().post(new SubscriptionExpiredEvent());
-                            } else {
-                                try {
-                                    // And again, if we receive remote error responses
-                                    // Let's notify and queue the request
-                                    notifyRequestFailed(request);
-                                    Gson gson = new GsonBuilder().create();
-                                    AppErrorResponse appErrorResponse = gson.fromJson(
-                                            responseString,
-                                            AppErrorResponse.class);
-                                    if (appErrorResponse != null && appErrorResponse.getAppError() != null) {
-                                        AppError error = appErrorResponse.getAppError();
-                                        Timber.d("Error, %s", error);
-                                    }
-                                } catch (Throwable throwable) {
-                                    Timber.d("Parse error-response error");
+                    if (!response.isSuccessful()) {
+                        if (response.code() == 440) {
+                            // User subscription has expired, show a dialog and
+                            // navigate the user to login screen or subscribe
+                            RxBus.getDefault().post(new SubscriptionExpiredEvent());
+                        } else {
+                            try {
+                                // And again, if we receive remote error responses
+                                // Let's notify and queue the request
+                                notifyRequestFailed(request);
+                                Gson gson = new GsonBuilder().create();
+                                AppErrorResponse appErrorResponse = gson.fromJson(
+                                        responseString,
+                                        AppErrorResponse.class);
+                                if (appErrorResponse != null && appErrorResponse.getAppError() != null) {
+                                    AppError error = appErrorResponse.getAppError();
+                                    Timber.d("Error, %s", error);
                                 }
+                            } catch (Throwable throwable) {
+                                Timber.d("Parse error-response error");
                             }
                         }
                     }
                 }
-
-                return response;
             }
+
+            return response;
         });
         return clientBuilder.build();
     }

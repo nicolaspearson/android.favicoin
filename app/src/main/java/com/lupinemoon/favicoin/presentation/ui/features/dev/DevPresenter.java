@@ -38,22 +38,16 @@ class DevPresenter extends BasePresenter implements DevContract.Presenter {
                         devView.getActivity().getExternalCacheDir())
                         .subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())
-                        .subscribe(new Consumer<File>() {
-                            @Override
-                            public void accept(@io.reactivex.annotations.NonNull File file) {
-                                if (devView.isAttached()) {
-                                    devView.emailFile(file);
-                                }
+                        .subscribe(file -> {
+                            if (devView.isAttached()) {
+                                devView.emailFile(file);
                             }
-                        }, new Consumer<Throwable>() {
-                            @Override
-                            public void accept(@io.reactivex.annotations.NonNull Throwable throwable) {
-                                Timber.w(throwable);
-                                if (devView.isAttached()) {
-                                    devView.showSnackbarMsg(
-                                            devView.getActivity().getString(R.string.export_failed),
-                                            Snackbar.LENGTH_SHORT);
-                                }
+                        }, throwable -> {
+                            Timber.w(throwable);
+                            if (devView.isAttached()) {
+                                devView.showSnackbarMsg(
+                                        devView.getActivity().getString(R.string.export_failed),
+                                        Snackbar.LENGTH_SHORT);
                             }
                         }));
     }

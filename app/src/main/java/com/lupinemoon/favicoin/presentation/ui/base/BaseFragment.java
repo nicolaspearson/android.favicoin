@@ -9,7 +9,7 @@ import android.net.ConnectivityManager;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.v4.app.DialogFragment;
+import android.support.v4.app.Fragment;
 import android.support.v7.app.AlertDialog;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -23,16 +23,15 @@ import com.lupinemoon.favicoin.presentation.services.rxbus.events.QueueProcessin
 import com.lupinemoon.favicoin.presentation.ui.features.offline.OfflineActivity;
 import com.lupinemoon.favicoin.presentation.utils.DialogUtils;
 import com.lupinemoon.favicoin.presentation.utils.NetworkUtils;
-import com.lupinemoon.favicoin.presentation.widgets.OnBackPressedListener;
+import com.lupinemoon.favicoin.presentation.widgets.interfaces.OnBackPressedListener;
 import com.lupinemoon.favicoin.presentation.widgets.Toasty;
 import com.lupinemoon.favicoin.presentation.widgets.interfaces.GenericCallback;
 
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
-import io.reactivex.functions.Consumer;
 import timber.log.Timber;
 
-public abstract class BaseFragment<B extends ViewDataBinding> extends DialogFragment implements IBaseView {
+public abstract class BaseFragment<B extends ViewDataBinding> extends Fragment implements IBaseView {
 
     View rootView;
 
@@ -79,8 +78,6 @@ public abstract class BaseFragment<B extends ViewDataBinding> extends DialogFrag
         if (getOnBackPressedListener() != null && getActivity() != null) {
             ((BaseActivity) getActivity()).setOnBackPressedListener(getOnBackPressedListener());
         }
-
-        setShowsDialog(false);
     }
 
     @Override
@@ -297,17 +294,14 @@ public abstract class BaseFragment<B extends ViewDataBinding> extends DialogFrag
     private void createRxBusSubscriptions() {
         rxBusEvents.add(RxBus.getDefault().observeEvents(QueueProcessingComplete.class)
                                 .observeOn(AndroidSchedulers.mainThread())
-                                .subscribe(new Consumer<QueueProcessingComplete>() {
-                                    @Override
-                                    public void accept(@io.reactivex.annotations.NonNull QueueProcessingComplete queueProcessingComplete) {
-                                        ViewGroup offlineLayout = getRootView().findViewById(
-                                                R.id.offline_banner_layout);
-                                        final Context context = getActivity();
-                                        if (offlineLayout != null && NetworkUtils.hasActiveNetworkConnection(
-                                                context)) {
-                                            if (offlineLayout.findViewById(R.id.offline_banner_offline_container).getVisibility() != View.VISIBLE) {
-                                                resetOfflineBanner(offlineLayout);
-                                            }
+                                .subscribe(queueProcessingComplete -> {
+                                    ViewGroup offlineLayout = getRootView().findViewById(
+                                            R.id.offline_banner_layout);
+                                    final Context context = getActivity();
+                                    if (offlineLayout != null && NetworkUtils.hasActiveNetworkConnection(
+                                            context)) {
+                                        if (offlineLayout.findViewById(R.id.offline_banner_offline_container).getVisibility() != View.VISIBLE) {
+                                            resetOfflineBanner(offlineLayout);
                                         }
                                     }
                                 }));
@@ -316,19 +310,16 @@ public abstract class BaseFragment<B extends ViewDataBinding> extends DialogFrag
         rxBusEvents.add(
                 RxBus.getDefault().observeEvents(QueueProcessingStarted.class)
                         .observeOn(AndroidSchedulers.mainThread())
-                        .subscribe(new Consumer<QueueProcessingStarted>() {
-                            @Override
-                            public void accept(@io.reactivex.annotations.NonNull QueueProcessingStarted queueProcessingStarted) {
-                                if (NetworkUtils.hasActiveNetworkConnection(getActivity())) {
-                                    final View offlineLayout = rootView.findViewById(R.id.offline_banner_layout);
-                                    if (offlineLayout != null && getActivity() != null && isAttached()) {
-                                        offlineLayout.findViewById(R.id.offline_banner_offline_container).setVisibility(
-                                                View.GONE);
-                                        offlineLayout.findViewById(R.id.offline_banner_connected_container).setVisibility(
-                                                View.VISIBLE);
-                                        if (offlineLayout.getVisibility() == View.GONE) {
-                                            offlineLayout.setVisibility(View.VISIBLE);
-                                        }
+                        .subscribe(queueProcessingStarted -> {
+                            if (NetworkUtils.hasActiveNetworkConnection(getActivity())) {
+                                final View offlineLayout = rootView.findViewById(R.id.offline_banner_layout);
+                                if (offlineLayout != null && getActivity() != null && isAttached()) {
+                                    offlineLayout.findViewById(R.id.offline_banner_offline_container).setVisibility(
+                                            View.GONE);
+                                    offlineLayout.findViewById(R.id.offline_banner_connected_container).setVisibility(
+                                            View.VISIBLE);
+                                    if (offlineLayout.getVisibility() == View.GONE) {
+                                        offlineLayout.setVisibility(View.VISIBLE);
                                     }
                                 }
                             }
@@ -352,15 +343,12 @@ public abstract class BaseFragment<B extends ViewDataBinding> extends DialogFrag
                 View offlineButton = offlineLayout.findViewById(R.id.offline_more_button);
                 if (offlineButton != null && !offlineButton.hasOnClickListeners()) {
                     Timber.d("Set offlineButton Click Listener");
-                    offlineButton.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View v) {
-                            if (getActivity() != null) {
-                                Intent offlineIntent = new Intent(
-                                        getActivity(),
-                                        OfflineActivity.class);
-                                getActivity().startActivity(offlineIntent);
-                            }
+                    offlineButton.setOnClickListener(v -> {
+                        if (getActivity() != null) {
+                            Intent offlineIntent = new Intent(
+                                    getActivity(),
+                                    OfflineActivity.class);
+                            getActivity().startActivity(offlineIntent);
                         }
                     });
                 }

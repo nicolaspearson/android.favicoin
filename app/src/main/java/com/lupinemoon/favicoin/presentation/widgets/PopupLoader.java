@@ -56,28 +56,22 @@ public class PopupLoader {
 
         final int dimen = context.getResources().getDimensionPixelSize(R.dimen.loader_dimen);
 
-        new Handler().postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                if (!isAttachedToWindow(parentView)) {
-                    return;
-                }
-                int viewHeight = parentView.getHeight();
-                popupWindow.showAtLocation(
-                        parentView,
-                        Gravity.CENTER,
-                        0,
-                        (-1 * (viewHeight / 4 - dimen / 4)));
-                progressBar.setVisibility(View.VISIBLE);
+        new Handler().postDelayed(() -> {
+            if (!isAttachedToWindow(parentView)) {
+                return;
             }
+            int viewHeight = parentView.getHeight();
+            popupWindow.showAtLocation(
+                    parentView,
+                    Gravity.CENTER,
+                    0,
+                    (-1 * (viewHeight / 4 - dimen / 4)));
+            progressBar.setVisibility(View.VISIBLE);
         }, 50);
 
-        getHandler().postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                dismissPopupLoader(context);
-            }
-        }, BuildConfig.HTTP_TIMEOUT * 1000 * 2);
+        getHandler().postDelayed(
+                () -> dismissPopupLoader(context),
+                BuildConfig.HTTP_TIMEOUT * 1000 * 2);
     }
 
     public static void dismissPopupLoader(Context context) {

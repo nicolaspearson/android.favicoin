@@ -19,6 +19,7 @@ public interface AppDataStore {
 
     // Favourites API
     Flowable<Coins> getFavourites();
+
     Flowable<CoinItem> toggleFavourite(final CoinItem coinItem, boolean isFavourite);
 
     // Crypto Compare API
