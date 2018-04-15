@@ -36,7 +36,7 @@ Here are some basic rules to follow to ensure timely addition of your request:
   2. If its a feature, bugfix, or anything please only change code to what you specify.
   3. Please keep PR titles easy to read and descriptive of changes, this will make them easier to merge :)
   4. Pull requests _must_ be made against `develop` branch. Any other branch (unless specified by the maintainers) will get rejected.
-  5. Check for existing [issues](https://github.com/nisrulz/screenshott/issues) first, before filing an issue.
+  5. Check for existing [issues](https://github.com/nicolaspearson/android.favicoin/issues) first, before filing an issue.
 
 ## 3rd party libraries used:
 
