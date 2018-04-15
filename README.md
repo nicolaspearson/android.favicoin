@@ -11,7 +11,7 @@ You can download [Favicoin](https://drive.google.com/drive/folders/1XF157ZTtaF5s
 ### Screenshots
 
 </br>
-![sc1](/screenshots/sc1.png)  ![sc2](/screenshots/sc2.png)  ![sc3](/screenshots/sc3.png)  ![sc4](/screenshots/sc4.png)
+![sc1](/img/sc1.png)  ![sc2](/img/sc2.png)  ![sc3](/img/sc3.png)  ![sc4](/img/sc4.png)
 </br>
 
 ### How do I get set up?
