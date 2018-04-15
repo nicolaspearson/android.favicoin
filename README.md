@@ -6,7 +6,7 @@ app has offline support, and makes use of the following libraries: RxJava, Realm
 
 ### Download
 
-You can download [Favicoin](https://drive.google.com/drive/folders/1XF157ZTtaF5sesjzJDWSyzHVqMXBWzvJ) from Google Drive.
+You can download [Favicoin](https://drive.google.com/drive/folders/1XF157ZTtaF5sesjzJDWSyzHVqMXBWzvJ) from Google Drive. I play store will link will be posted soon.
 
 ### Screenshots
 
@@ -24,6 +24,20 @@ You can download [Favicoin](https://drive.google.com/drive/folders/1XF157ZTtaF5s
 1. Navigate into the cloned folder `cd android.favicoin`
 2. Open the project in Android Studio / Run `./gradlew clean build`
 
+## Contribution Guidelines:
+
+I welcome and encourage all pull requests. It usually will take me within 24-48 hours to respond to any issue or request.
+
+### Pull Requests
+
+Here are some basic rules to follow to ensure timely addition of your request:
+
+  1. Match coding style (braces, spacing, etc.) This is best achieved using `CMD`+`Option`+`L` (Reformat code) on Mac (not sure for Windows) with Android Studio defaults.
+  2. If its a feature, bugfix, or anything please only change code to what you specify.
+  3. Please keep PR titles easy to read and descriptive of changes, this will make them easier to merge :)
+  4. Pull requests _must_ be made against `develop` branch. Any other branch (unless specified by the maintainers) will get rejected.
+  5. Check for existing [issues](https://github.com/nisrulz/screenshott/issues) first, before filing an issue.
+
 ## 3rd party libraries used:
 
 * [Caligraphy](https://github.com/chrisjenx/Calligraphy)
@@ -40,12 +54,3 @@ You can download [Favicoin](https://drive.google.com/drive/folders/1XF157ZTtaF5s
 * [RxAndroid](https://github.com/ReactiveX/RxAndroid)
 * [RxJava](https://github.com/ReactiveX/RxJava)
 * [Timber](https://github.com/JakeWharton/timber)
-
-### Pull Requests
-I welcome and encourage all pull requests. It usually will take me within 24-48 hours to respond to any issue or request. Here are some basic rules to follow to ensure timely addition of your request:
-  1. Match coding style (braces, spacing, etc.) This is best achieved using `CMD`+`Option`+`L` (Reformat code) on Mac (not sure for Windows) with Android Studio defaults.
-  2. If its a feature, bugfix, or anything please only change code to what you specify.
-  3. Please keep PR titles easy to read and descriptive of changes, this will make them easier to merge :)
-  4. Pull requests _must_ be made against `develop` branch. Any other branch (unless specified by the maintainers) will get rejected.
-  5. Check for existing [issues](https://github.com/nisrulz/screenshott/issues) first, before filing an issue.
-
