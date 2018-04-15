@@ -4,6 +4,16 @@ Favicoin is a simple Android app that connects to a remote API and fetches a lis
 the user is able to view details of a specific cryptocurrency, and favourite it for future use. The
 app has offline support, and makes use of the following libraries: RxJava, Realm, Retrofit, Crashlytics, Data-binding etc.
 
+### Download
+
+You can download [Favicoin](https://drive.google.com/drive/folders/1XF157ZTtaF5sesjzJDWSyzHVqMXBWzvJ) from Google Drive.
+
+### Screenshots
+
+</br>
+![sc1](/screenshots/sc1.png)  ![sc2](/screenshots/sc2.png)  ![sc3](/screenshots/sc3.png)  ![sc4](/screenshots/sc4.png)
+</br>
+
 ### How do I get set up?
 
 * Install Android Studio
