@@ -1,4 +1,4 @@
-# README
+# FAVICOIN
 
 Favicoin is a simple Android app that connects to a remote API and fetches a list of cryptocurrencies,
 the user is able to view details of a specific cryptocurrency, and favourite it for future use. The
