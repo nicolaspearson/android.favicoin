@@ -6,7 +6,7 @@ app has offline support, and makes use of the following libraries: RxJava, Realm
 
 ### Download
 
-You can download [Favicoin](https://drive.google.com/drive/folders/1XF157ZTtaF5sesjzJDWSyzHVqMXBWzvJ) from Google Drive. I play store will link will be posted soon.
+The app can be downloaded from the [Google Play Store](https://play.google.com/store/apps/details?id=com.lupinemoon.favicoin)
 
 ### Screenshots
 
