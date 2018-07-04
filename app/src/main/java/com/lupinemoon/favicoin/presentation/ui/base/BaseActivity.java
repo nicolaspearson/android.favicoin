@@ -39,10 +39,10 @@ import com.lupinemoon.favicoin.presentation.widgets.PopupLoader;
 import com.lupinemoon.favicoin.presentation.widgets.Toasty;
 import com.lupinemoon.favicoin.presentation.widgets.interfaces.GenericCallback;
 
+import io.github.inflationx.viewpump.ViewPumpContextWrapper;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
 import timber.log.Timber;
-import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
 
 import static com.lupinemoon.favicoin.presentation.utils.NetworkUtils.hasActiveNetworkConnection;
 
@@ -87,7 +87,7 @@ public abstract class BaseActivity<B extends ViewDataBinding> extends AppCompatA
 
     @Override
     protected void attachBaseContext(Context newBase) {
-        super.attachBaseContext(CalligraphyContextWrapper.wrap(newBase));
+        super.attachBaseContext(ViewPumpContextWrapper.wrap(newBase));
     }
 
     @Override

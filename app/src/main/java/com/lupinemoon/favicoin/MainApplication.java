@@ -23,9 +23,11 @@ import com.lupinemoon.favicoin.presentation.widgets.AppLifecycleHandler;
 import com.squareup.leakcanary.LeakCanary;
 
 import io.fabric.sdk.android.Fabric;
+import io.github.inflationx.calligraphy3.CalligraphyConfig;
+import io.github.inflationx.calligraphy3.CalligraphyInterceptor;
+import io.github.inflationx.viewpump.ViewPump;
 import io.realm.Realm;
 import timber.log.Timber;
-import uk.co.chrisjenx.calligraphy.CalligraphyConfig;
 
 public class MainApplication extends Application {
 
@@ -171,13 +173,13 @@ public class MainApplication extends Application {
     private void turnOnStrictMode() {
         if (BuildConfig.DEBUG) {
             StrictMode.setThreadPolicy(new StrictMode.ThreadPolicy.Builder()
-                                               .detectAll()
-                                               .penaltyLog()
-                                               .build());
+                    .detectAll()
+                    .penaltyLog()
+                    .build());
             StrictMode.setVmPolicy(new StrictMode.VmPolicy.Builder()
-                                           .detectAll()
-                                           .penaltyLog()
-                                           .build());
+                    .detectAll()
+                    .penaltyLog()
+                    .build());
         }
     }
 
@@ -188,8 +190,8 @@ public class MainApplication extends Application {
                                 new CrashlyticsCore.Builder()
                                         .disabled(false)
                                         .build()
-                                                      ).build()
-                                             ).appIdentifier(BuildConfig.APPLICATION_ID);
+                        ).build()
+                ).appIdentifier(BuildConfig.APPLICATION_ID);
         Fabric.with(builder.build());
     }
 
@@ -209,11 +211,14 @@ public class MainApplication extends Application {
     }
 
     private void configureCalligraphy() {
-        CalligraphyConfig.initDefault(new CalligraphyConfig.Builder()
-                                              .setDefaultFontPath("fonts/Roboto-Regular.ttf")
-                                              .setFontAttrId(R.attr.fontPath)
-                                              .build()
-                                     );
+        ViewPump.init(ViewPump.builder()
+                .addInterceptor(new CalligraphyInterceptor(
+                        new CalligraphyConfig.Builder()
+                                .setDefaultFontPath("fonts/Roboto-Regular.ttf")
+                                .setFontAttrId(R.attr.fontPath)
+                                .setFontMapper(font -> font)
+                                .build()))
+                .build());
     }
 
     private class CrashlyticsLogTree extends Timber.DebugTree {

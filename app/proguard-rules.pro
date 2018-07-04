@@ -19,9 +19,9 @@
 # App - Some methods are only called from tests, so make sure the shrinker keeps them.
 -keep class com.lupinemoon.favicoin.** { *; }
 
-# Caligraphy
--keep class uk.co.chrisjenx.calligraphy.* { *; }
--keep class uk.co.chrisjenx.calligraphy.*$* { *; }
+# Calligraphy
+-keep class io.github.inflationx.calligraphy3.* { *; }
+-keep class io.github.inflationx.calligraphy3.*$* { *; }
 
 # Databinding
 -dontnote android.databinding.**

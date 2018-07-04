@@ -40,7 +40,7 @@ Here are some basic rules to follow to ensure timely addition of your request:
 
 ## 3rd party libraries used:
 
-* [Caligraphy](https://github.com/chrisjenx/Calligraphy)
+* [Calligraphy](https://github.com/InflationX/Calligraphy)
 * [Data Binding](https://developer.android.com/topic/libraries/data-binding/index.html)
 * [Fabric](https://docs.fabric.io/android/fabric/overview.html)
 * [Glide](https://github.com/bumptech/glide)

@@ -167,22 +167,23 @@ android {
 }
 
 ext {
-    caligraphyVersion = '2.3.0'
-    fabricVersion = '2.9.1'
+    calligraphyVersion = '3.0.0'
+    fabricVersion = '2.9.4'
     glideVersion = '4.6.1'
     glideModuleVersion = '4.6.1'
     leakCanaryVersion = '1.5.4'
-    lombokVersion = '1.16.20'
+    lombokVersion = '1.16.18'
     okHttpLoggingInterceptorVersion = '3.10.0'
-    parcelerVersion = '1.1.10'
-    playServicesVersion = '12.0.1'
+    parcelerVersion = '1.1.11'
+    playServicesVersion = '15.0.1'
     retrofitVersion = '2.4.0'
     rxAndroidVersion = '2.0.2'
-    rxJavaVersion = '2.1.12'
+    rxJavaVersion = '2.1.16'
     rxJavaRetrofitAdapterVersion = '2.4.0'
-    rxJavaExtrasVersion = '0.1.10'
+    rxJavaExtrasVersion = '0.1.26'
     supportLibVersion = '27.1.1'
-    timberVersion = '4.7.0'
+    timberVersion = '4.7.1'
+    viewPumpVersion = '1.0.0'
 }
 
 dependencies {
@@ -203,7 +204,8 @@ dependencies {
     }
 
     // Font
-    implementation "uk.co.chrisjenx:calligraphy:${caligraphyVersion}"
+    implementation "io.github.inflationx:calligraphy3:${calligraphyVersion}"
+    implementation "io.github.inflationx:viewpump:${viewPumpVersion}"
 
     // Image Libs
     implementation "com.github.bumptech.glide:glide:${glideVersion}"

@@ -18,8 +18,8 @@ import android.widget.TextView;
 import com.lupinemoon.favicoin.R;
 import com.lupinemoon.favicoin.presentation.utils.AndroidUtils;
 
+import io.github.inflationx.calligraphy3.CalligraphyUtils;
 import timber.log.Timber;
-import uk.co.chrisjenx.calligraphy.CalligraphyUtils;
 
 public abstract class BaseDrawerActivity<B extends ViewDataBinding> extends BaseActivity<B> implements IBaseView {
 
